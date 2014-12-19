@@ -30,8 +30,10 @@ public class MainProgram extends JFrame{
 	//private MyCanvas canvas = new MyCanvas();
 	
 	int x, y, x_origin, y_origin, increment;
+	double x_midpoint, y_midpoint;
 	// the points of the polygon, a 2D array 
 	int[][] polygon_points = new int[5][3];
+	double[][] scale_polygon_points = new double[5][3];
 	// double duffering, takes an image of the screen and redraws the image when keys are pressed
 	private Image dbImage;
 	private Graphics dbg;
@@ -48,6 +50,7 @@ public class MainProgram extends JFrame{
 						polygon_points[i][0] += increment;
 					}
 				}
+				x_midpoint += increment;
 
 			}
 			// translates the object LEFT using the "L" key
@@ -57,6 +60,7 @@ public class MainProgram extends JFrame{
 						polygon_points[i][0] -= increment;
 					}
 				}
+				x_midpoint -= increment;
 			}
 			// translates the object UP using the "U" key
 			if(keyCode == e.VK_U){
@@ -65,6 +69,7 @@ public class MainProgram extends JFrame{
 						polygon_points[i][1] -= increment;
 					}
 				}
+				y_midpoint -= increment;
 			}
 			// translates the object DOWN using the "D" key
 			if(keyCode == e.VK_D){
@@ -73,52 +78,34 @@ public class MainProgram extends JFrame{
 						polygon_points[i][1] += increment;
 					}
 				}
+				y_midpoint += increment;
 			}
 			// translates the object FORWARD using the "F" key
 			if(keyCode == e.VK_F){
-				double x_val, y_val;
+				double[][] polygon_points_temps = scale_polygon_points;
+				
 				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && (polygon_points[0][1] - 50) > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
 					for(int i = 0; i < 5; i++){
-						for(int j = 0; j < 2; j++){
-							polygon_points[i][j] *= 1.2;
-						}
+						polygon_points_temps[i][0] *= 1.2;
+						polygon_points_temps[i][1] *= 1.2;
+						polygon_points[i][0] = (int)(polygon_points_temps[i][0] + x_midpoint);
+						polygon_points[i][1] = (int)(polygon_points_temps[i][1] + y_midpoint);
 					}
-					// Calculate distance from origin
-					x_val = polygon_points[0][0] - x_origin;
-					// Move left
-					for(int i = 0; i < 5; i++){
-						polygon_points[i][0] -= x_val;
-
-					}
-					// Calculate distance from origin
-					/*y_val = polygon_points[0][1] - y_origin;
-					// Move up
-					for(int j = 0; j < 5; j++){
-						polygon_points[j][1] -= 27; // this is hard coded and not really sure how to calulate them
-					}*/
+					
 				}
 			}
 			// translates the object BACKWARD using the "B" key
 			if(keyCode == e.VK_B){
-				double x_val, y_val;
-				if(true){
+				double[][] polygon_points_temps = scale_polygon_points;
+				
+				if((polygon_points[2][0] - polygon_points[1][0]) > 100){
 					for(int i = 0; i < 5; i++){
-						for(int j = 0; j < 2; j++){
-							polygon_points[i][j] *= 0.9;
-						}
-						
+						polygon_points_temps[i][0] *= 0.9;
+						polygon_points_temps[i][1] *= 0.9;
+						polygon_points[i][0] = (int)(polygon_points_temps[i][0] + x_midpoint);
+						polygon_points[i][1] = (int)(polygon_points_temps[i][1] + y_midpoint);
 					}
-					// Calulate distance from origin
-					//x_val = polygon_points[1][0] - x_origin;
-					/*// Move right
-					for(int i = 0; i < 5; i++){
-						polygon_points[i][0] -= 131; // this is hard coded and not really sure how to calculate them
-
-					}
-					// Move left
-					for(int j = 0; j < 5; j++){
-						polygon_points[j][1] -= 105; // this is hard coded and not really sure how to calulate them
-					}*/
+					
 				}
 			}
 			// rotates the object counter clockwise using the "<" key
@@ -134,7 +121,7 @@ public class MainProgram extends JFrame{
 					
 				}
 			}
-			// rotates the object clockwise using the ">" key
+			// rotates the object clockwise using the "> " key
 			if(keyCode == e.VK_PERIOD){
 				double x_val, y_val, theta = -25.0;
 				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
@@ -176,6 +163,8 @@ public class MainProgram extends JFrame{
 		y = HEIGHT;
 		x_origin = x/2; 
 		y_origin = y/2;
+		x_midpoint = x/2;
+		y_midpoint = y/2;
 		increment = 1;
 		// P1
 		polygon_points[0][0] = x_origin;
@@ -201,6 +190,14 @@ public class MainProgram extends JFrame{
 		polygon_points[4][0] = x_origin - 45;
 		polygon_points[4][1] = y_origin + 30;
 		polygon_points[4][2] = 0;
+		
+		// calculates the scaled points
+		for(int i = 0; i < 5; i++){
+				scale_polygon_points[i][0] = (double)(polygon_points[i][0] - x_origin);
+				scale_polygon_points[i][1] = (double)(polygon_points[i][1] - y_origin);
+				//System.out.println("P" + (i+1) + "=" + scale_polygon_points[i][0] + "," + scale_polygon_points[i][1]);
+		}
+
 		
 		
 		addKeyListener(new MyActionListener());
@@ -248,8 +245,10 @@ public class MainProgram extends JFrame{
 				g.drawString(("P" + (i+1)), polygon_points[i][0], polygon_points[i][1]);
 				g.setColor(Color.ORANGE);
 				g.drawString(("(" + polygon_points[i][0] + "," + polygon_points[i][1] + ")"), polygon_points[i][0] + 20, polygon_points[i][1]);
+				//g.drawString(x_midpoint + ", " + y_midpoint, (int)x_midpoint, (int)y_midpoint);
 			}
-			g.drawString(x_origin + ", " + y_origin, x_origin, y_origin);
+			//g.drawString(x_origin + ", " + y_origin, x_origin, y_origin);
+			
 			
 			
 			// Draws the 3D triangle
