@@ -18,13 +18,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JFrame;
-
 import java.awt.Image;
+import java.math.*;
 
 public class MainProgram extends JFrame{
 	
+	final int WIDTH = 900;
+	final int HEIGHT = 700;
 	// Initials the canvas object
 	//private MyCanvas canvas = new MyCanvas();
 	
@@ -43,82 +44,110 @@ public class MainProgram extends JFrame{
 			// translates the object RIGHT using the "R" key
 			if(keyCode == e.VK_R){
 				if(polygon_points[2][0] < x){
-					polygon_points[0][0] += increment;
-					polygon_points[1][0] += increment;
-					polygon_points[2][0] += increment;
-					polygon_points[3][0] += increment;
-					polygon_points[4][0] += increment;
+					for(int i = 0; i < 5; i++){
+						polygon_points[i][0] += increment;
+					}
 				}
 
 			}
 			// translates the object LEFT using the "L" key
 			if(keyCode == e.VK_L){
 				if(polygon_points[1][0] > 0){
-					polygon_points[0][0] -= increment;
-					polygon_points[1][0] -= increment;
-					polygon_points[2][0] -= increment;
-					polygon_points[3][0] -= increment;
-					polygon_points[4][0] -= increment;
+					for(int i = 0; i < 5; i++){
+						polygon_points[i][0] -= increment;
+					}
 				}
 			}
 			// translates the object UP using the "U" key
 			if(keyCode == e.VK_U){
 				if((polygon_points[0][1] - 20) > 0){
-					polygon_points[0][1] -= increment;
-					polygon_points[1][1] -= increment;
-					polygon_points[2][1] -= increment;
-					polygon_points[3][1] -= increment;
-					polygon_points[4][1] -= increment;
+					for(int i = 0; i < 5; i++){
+						polygon_points[i][1] -= increment;
+					}
 				}
 			}
 			// translates the object DOWN using the "D" key
 			if(keyCode == e.VK_D){
 				if(polygon_points[1][1] < y || polygon_points[2][1] < y){
-					polygon_points[0][1] += increment;
-					polygon_points[1][1] += increment;
-					polygon_points[2][1] += increment;
-					polygon_points[3][1] += increment;
-					polygon_points[4][1] += increment;
+					for(int i = 0; i < 5; i++){
+						polygon_points[i][1] += increment;
+					}
 				}
 			}
 			// translates the object FORWARD using the "F" key
 			if(keyCode == e.VK_F){
-				int x_val, y_val;
-				if(true){
-					/*x_val = polygon_points[0][0] *= 1.01;
-					polygon_points[0][0] = (x_val - (x_val - x_origin));
-					y_val = polygon_points[0][1] /= 1.01;
-					polygon_points[0][1] -= (y_val - polygon_points[0][1]);*/
-					polygon_points[0][0] *= 1.2;
-					polygon_points[0][1] *= 1.2;
-					polygon_points[1][0] *= 1.2;
-					polygon_points[1][1] *= 1.2;
-					polygon_points[2][0] *= 1.2;
-					polygon_points[2][1] *= 1.2;
-					polygon_points[3][0] *= 1.2;
-					polygon_points[3][1] *= 1.2;
-					polygon_points[4][0] *= 1.2;
-					polygon_points[4][1] *= 1.2;
-					
+				double x_val, y_val;
+				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && (polygon_points[0][1] - 50) > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
+					for(int i = 0; i < 5; i++){
+						for(int j = 0; j < 2; j++){
+							polygon_points[i][j] *= 1.2;
+						}
+					}
+					// Calculate distance from origin
 					x_val = polygon_points[0][0] - x_origin;
-					y_val = y_origin - polygon_points[0][1];
-					System.out.println(x_val);
-					System.out.println(y_val);
-
-					
+					// Move left
 					for(int i = 0; i < 5; i++){
 						polygon_points[i][0] -= x_val;
+
+					}
+					// Calculate distance from origin
+					/*y_val = polygon_points[0][1] - y_origin;
+					// Move up
+					for(int j = 0; j < 5; j++){
+						polygon_points[j][1] -= 27; // this is hard coded and not really sure how to calulate them
+					}*/
+				}
+			}
+			// translates the object BACKWARD using the "B" key
+			if(keyCode == e.VK_B){
+				double x_val, y_val;
+				if(true){
+					for(int i = 0; i < 5; i++){
+						for(int j = 0; j < 2; j++){
+							polygon_points[i][j] *= 0.9;
+						}
+						
+					}
+					// Calulate distance from origin
+					//x_val = polygon_points[1][0] - x_origin;
+					/*// Move right
+					for(int i = 0; i < 5; i++){
+						polygon_points[i][0] -= 131; // this is hard coded and not really sure how to calculate them
+
+					}
+					// Move left
+					for(int j = 0; j < 5; j++){
+						polygon_points[j][1] -= 105; // this is hard coded and not really sure how to calulate them
+					}*/
+				}
+			}
+			// rotates the object counter clockwise using the "<" key
+			if(keyCode == e.VK_COMMA){
+				double x_val, y_val, theta = 25.0;
+				if(polygon_points[2][0] < x && (polygon_points[0][1] - 50) > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
+					for(int i = 0; i < 5; i++){
+						x_val = polygon_points[i][0];
+						y_val = polygon_points[i][1];
+						polygon_points[i][0] = (int)(x_val * Math.cos(theta) - y_val * Math.sin(theta));
+						polygon_points[i][1] = (int)(x_val * Math.sin(theta) + y_val * Math.cos(theta));
 					}
 					
-					for(int j = 0; j < 5; j++){
-						polygon_points[j][1] -= y_val;
-					}
-				
-
 				}
-			}			
-			
-			
+			}
+			// rotates the object clockwise using the ">" key
+			if(keyCode == e.VK_PERIOD){
+				double x_val, y_val, theta = -25.0;
+				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
+					for(int i = 0; i < 5; i++){
+						x_val = polygon_points[i][0];
+						y_val = polygon_points[i][1];
+						polygon_points[i][0] = (int)(x_val * Math.cos(theta) - y_val * Math.sin(theta));
+						polygon_points[i][1] = (int)(x_val * Math.sin(theta) + y_val * Math.cos(theta));
+					}
+								
+				}
+			}
+				
 		}
 		
 		public void keyReleased(KeyEvent e){
@@ -127,15 +156,15 @@ public class MainProgram extends JFrame{
 		
 	}
 	
+	
 	// This is the Mouse Handler that will reset the pyramid to the origin
 	public class MyMouseHandler extends MouseAdapter{
 		public void mousePressed (MouseEvent e){
-			int mouse_x = e.getX(); // retrives the x coordinates
+			int mouse_x = e.getX(); // retrieves the x coordinates
 			int mouse_y = e.getY(); // retrieves the y coordinates
 			if(mouse_x > (x - 150) && mouse_x < ((x - 150) + 100)){
 				Reset();
-			}
-			
+			}		
 		}
 	}
 	
@@ -143,34 +172,34 @@ public class MainProgram extends JFrame{
 	public MainProgram(){
 		
 		// Intializes the canvas size and also the origin of the canvas. 
-		x = 600;
-		y = 400;
+		x = WIDTH;
+		y = HEIGHT;
 		x_origin = x/2; 
 		y_origin = y/2;
-		increment = 10;
+		increment = 1;
 		// P1
 		polygon_points[0][0] = x_origin;
-		polygon_points[0][1] = y_origin - 100;
+		polygon_points[0][1] = y_origin - 133;
 		polygon_points[0][2] = 0;
 					
 		// P2
 		polygon_points[1][0] = x_origin - 100;
-		polygon_points[1][1] = y_origin + 100;
+		polygon_points[1][1] = y_origin + 67;
 		polygon_points[1][2] = 0;
 					
 		// P3
 		polygon_points[2][0] = x_origin + 100;
-		polygon_points[2][1] = y_origin + 100;
+		polygon_points[2][1] = y_origin + 67;
 		polygon_points[2][2] = 0;
 					
 		// P4
 		polygon_points[3][0] = x_origin + 45;
-		polygon_points[3][1] = y_origin + 25;
+		polygon_points[3][1] = y_origin + 30;
 		polygon_points[3][2] = 0;
 					
 		// P5
 		polygon_points[4][0] = x_origin - 45;
-		polygon_points[4][1] = y_origin + 25;
+		polygon_points[4][1] = y_origin + 30;
 		polygon_points[4][2] = 0;
 		
 		
@@ -190,7 +219,7 @@ public class MainProgram extends JFrame{
 	
 	public void Reset(){
 		dispose(); // gets rid of old JFrame window
-		new MainProgram();
+		new MainProgram(); // restarts program
 	}
 	
 
@@ -206,9 +235,9 @@ public class MainProgram extends JFrame{
 		}
 
 		//@Override
-		public void paintComponent(Graphics g){
+		public void paintComponent (Graphics g){
 			
-			// Draws the X and Y corrordinants plane. 
+			// Draws the X and Y coordinants plane. 
 			g.setColor(Color.WHITE);
 			g.drawLine(x/2, 0, x/2, y);
 			g.drawLine(0, y/2, x, y/2);
@@ -239,11 +268,16 @@ public class MainProgram extends JFrame{
 			g.drawLine(polygon_points[2][0], polygon_points[2][1], polygon_points[3][0], polygon_points[3][1]); // P3 to P4
 			
 			g.setColor(Color.WHITE);
-			g.drawRect(x - 150, y - 50, 100, 25);
-			g.fillRect(x - 150, y - 50, 100, 25);
+			g.drawRect(WIDTH - 150, HEIGHT - 50, 100, 25);
+			g.fillRect(WIDTH - 150, HEIGHT - 50, 100, 25);
 			g.setColor(Color.BLACK);
-			g.drawString("RESET", x - 120, y - 32);
+			g.drawString("RESET", WIDTH - 120, HEIGHT - 32);
 			
+			//find midpoint
+			g.setColor(Color.PINK);
+			g.drawLine(polygon_points[0][0], polygon_points[0][1], (polygon_points[1][0]+polygon_points[2][0])/ 2, (polygon_points[1][1]+polygon_points[2][1])/2);
+			g.drawLine(polygon_points[1][0], polygon_points[1][1], (polygon_points[0][0]+polygon_points[2][0])/ 2, (polygon_points[0][1]+polygon_points[2][1])/2);
+			g.drawLine(polygon_points[2][0], polygon_points[2][1], (polygon_points[0][0]+polygon_points[1][0])/ 2, (polygon_points[0][1]+polygon_points[1][1])/2);
 			
 			repaint();
 		}
