@@ -35,6 +35,7 @@ public class MainProgram extends JFrame{
 	private Image dbImage;
 	private Graphics dbg;
 	
+	
 	public class MyActionListener extends KeyAdapter{
 		public void keyPressed(KeyEvent e){
 			int keyCode = e.getKeyCode();
@@ -126,16 +127,17 @@ public class MainProgram extends JFrame{
 		
 	}
 	
+	// This is the Mouse Handler that will reset the pyramid to the origin
 	public class MyMouseHandler extends MouseAdapter{
-		public void mouseMoved (MouseEvent e){
-			int mouse_x = e.getX();
-			int mouse_y = e.getY();
-			if(mouse_x > resetButton.x && mouse_x < resetButton.x + resetButton.width){
-				System.out.println("Reset button clicked");
+		public void mousePressed (MouseEvent e){
+			int mouse_x = e.getX(); // retrives the x coordinates
+			int mouse_y = e.getY(); // retrieves the y coordinates
+			if(mouse_x > (x - 150) && mouse_x < ((x - 150) + 100)){
+				Reset();
 			}
 			
-			}
 		}
+	}
 	
 	// main program function that declare the canvas attributes
 	public MainProgram(){
@@ -173,6 +175,7 @@ public class MainProgram extends JFrame{
 		
 		
 		addKeyListener(new MyActionListener());
+		addMouseListener(new MyMouseHandler());
 		setLayout(new BorderLayout());
 		setSize(x, y);
 		setTitle("3D Pyramid - Assignment 1");
@@ -186,6 +189,7 @@ public class MainProgram extends JFrame{
 	}
 	
 	public void Reset(){
+		dispose(); // gets rid of old JFrame window
 		new MainProgram();
 	}
 	
@@ -203,8 +207,6 @@ public class MainProgram extends JFrame{
 
 		//@Override
 		public void paintComponent(Graphics g){
-			
-			
 			
 			// Draws the X and Y corrordinants plane. 
 			g.setColor(Color.WHITE);
@@ -235,6 +237,13 @@ public class MainProgram extends JFrame{
 			g.drawLine(polygon_points[3][0], polygon_points[3][1], polygon_points[4][0], polygon_points[4][1]); // P4 to P5
 			g.setColor(Color.BLUE);
 			g.drawLine(polygon_points[2][0], polygon_points[2][1], polygon_points[3][0], polygon_points[3][1]); // P3 to P4
+			
+			g.setColor(Color.WHITE);
+			g.drawRect(x - 150, y - 50, 100, 25);
+			g.fillRect(x - 150, y - 50, 100, 25);
+			g.setColor(Color.BLACK);
+			g.drawString("RESET", x - 120, y - 32);
+			
 			
 			repaint();
 		}
