@@ -24,11 +24,11 @@ import java.math.*;
 
 public class MainProgram extends JFrame{
 	
+	// initialization of the window width and the window height
 	final int WIDTH = 1024;
 	final int HEIGHT = 700;
-	// Initials the canvas object
-	//private MyCanvas canvas = new MyCanvas();
 	
+	// initialization of x origin and y origin, also screen width and size
 	int x, y, x_origin, y_origin, increment;
 	double x_midpoint, y_midpoint;
 	// the points of the polygon, a 2D array 
@@ -44,6 +44,7 @@ public class MainProgram extends JFrame{
 			int keyCode = e.getKeyCode();
 			
 			// translates the object RIGHT using the "R" key
+			/* This simply adds increment to the all of the x values moving the object to the right  */
 			if(keyCode == e.VK_R){
 				if(polygon_points[2][0] < x){
 					for(int i = 0; i < 5; i++){
@@ -54,6 +55,7 @@ public class MainProgram extends JFrame{
 
 			}
 			// translates the object LEFT using the "L" key
+			/* This simply decreases all of the x values moving the object to the left */
 			if(keyCode == e.VK_L){
 				if(polygon_points[1][0] > 0){
 					for(int i = 0; i < 5; i++){
@@ -63,6 +65,7 @@ public class MainProgram extends JFrame{
 				x_midpoint -= increment;
 			}
 			// translates the object UP using the "U" key
+			/* This simply decreases all of the y values moving the object to the up */
 			if(keyCode == e.VK_U){
 				if((polygon_points[0][1] - 20) > 0){
 					for(int i = 0; i < 5; i++){
@@ -72,6 +75,7 @@ public class MainProgram extends JFrame{
 				y_midpoint -= increment;
 			}
 			// translates the object DOWN using the "D" key
+			/* This simply increase as all of the y values moving the object to the down */
 			if(keyCode == e.VK_D){
 				if(polygon_points[1][1] < y || polygon_points[2][1] < y){
 					for(int i = 0; i < 5; i++){
@@ -81,6 +85,7 @@ public class MainProgram extends JFrame{
 				y_midpoint += increment;
 			}
 			// translates the object FORWARD using the "F" key
+			/* This simply scales the object bigger as if it is coming out towards you */
 			if(keyCode == e.VK_F){
 				double[][] polygon_points_temps = scale_polygon_points;
 				
@@ -94,6 +99,7 @@ public class MainProgram extends JFrame{
 				}
 			}
 			// translates the object BACKWARD using the "B" key
+			/* This simply scales the object smaller as if it is moving away from you */
 			if(keyCode == e.VK_B){
 				double[][] polygon_points_temps = scale_polygon_points;
 				
@@ -108,6 +114,7 @@ public class MainProgram extends JFrame{
 				}
 			}
 			// rotates the object counter clockwise using the "<" key
+			/* This simply scales the object bigger as if it is coming out towards you */
 			if(keyCode == e.VK_COMMA){
 				double theta = 25.0;
 				double[][] polygon_points_temps = scale_polygon_points;
@@ -122,6 +129,7 @@ public class MainProgram extends JFrame{
 				}
 			}
 			// rotates the object clockwise using the "> " key
+			/* This simply scales the object smaller as if it is moving away from you */
 			if(keyCode == e.VK_PERIOD){
 				double theta = -25.0;
 				double[][] polygon_points_temps = scale_polygon_points;
@@ -151,7 +159,7 @@ public class MainProgram extends JFrame{
 			int mouse_x = e.getX(); // retrieves the x coordinates
 			int mouse_y = e.getY(); // retrieves the y coordinates
 			if(mouse_x > (x - 150) && mouse_x < ((x - 150) + 100)){
-				Reset();
+				Reset(); //resets if the mouse is clicked on the reset button
 			}		
 		}
 	}
@@ -160,39 +168,39 @@ public class MainProgram extends JFrame{
 	public MainProgram(){
 		
 		// Intializes the canvas size and also the origin of the canvas. 
-		x = WIDTH;
-		y = HEIGHT;
-		x_origin = x/2; 
-		y_origin = y/2;
+		x = WIDTH; // canvas width
+		y = HEIGHT; //canvas height
+		x_origin = x/2; // origin of canvas
+		y_origin = y/2; // origin of canvas
 		x_midpoint = x/2;
 		y_midpoint = y/2;
 		increment = 10;
 		// P1
-		polygon_points[0][0] = x_origin;
-		polygon_points[0][1] = y_origin - 133;
+		polygon_points[0][0] = x_origin; // x coordinates of P1
+		polygon_points[0][1] = y_origin - 133; // y coordinates of P1
 		polygon_points[0][2] = 0;
 					
 		// P2
-		polygon_points[1][0] = x_origin - 100;
-		polygon_points[1][1] = y_origin + 67;
+		polygon_points[1][0] = x_origin - 100; // x coordinates of P2
+		polygon_points[1][1] = y_origin + 67; // y coordinates of P2
 		polygon_points[1][2] = 0;
 					
 		// P3
-		polygon_points[2][0] = x_origin + 100;
-		polygon_points[2][1] = y_origin + 67;
+		polygon_points[2][0] = x_origin + 100; // x coordinates of P3
+		polygon_points[2][1] = y_origin + 67; // y coordinates of P3
 		polygon_points[2][2] = 0;
 					
 		// P4
-		polygon_points[3][0] = x_origin + 45;
-		polygon_points[3][1] = y_origin + 30;
+		polygon_points[3][0] = x_origin + 45; // x coordinates of P4
+		polygon_points[3][1] = y_origin + 30; // y coordinates of P4
 		polygon_points[3][2] = 0;
 					
 		// P5
-		polygon_points[4][0] = x_origin - 45;
-		polygon_points[4][1] = y_origin + 30;
+		polygon_points[4][0] = x_origin - 45; // x coordinates of P5
+		polygon_points[4][1] = y_origin + 30; // y coordinates of P5
 		polygon_points[4][2] = 0;
 		
-		// calculates the scaled points
+		// calculates the scaled points, from the origin or (0,0)
 		for(int i = 0; i < 5; i++){
 				scale_polygon_points[i][0] = (double)(polygon_points[i][0] - x_origin);
 				scale_polygon_points[i][1] = (double)(polygon_points[i][1] - y_origin);
@@ -200,13 +208,12 @@ public class MainProgram extends JFrame{
 		}
 
 		
-		
+		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
 		addMouseListener(new MyMouseHandler());
 		setLayout(new BorderLayout());
 		setSize(x, y);
 		setTitle("3D Pyramid - Assignment 1");
-		//add("Center", canvas);
 		setBackground(new Color(45,57,95));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -215,73 +222,68 @@ public class MainProgram extends JFrame{
 		
 	}
 	
+	// This function will trigger if the reset button 
 	public void Reset(){
 		dispose(); // gets rid of old JFrame window
 		new MainProgram(); // restarts program
 	}
 	
-
-	// the MyCanvas class extends canvas and lets us draw onto the canvas
-	//private class MyCanvas extends Canvas{
 	
-		public void paint(Graphics g){
-			dbImage = createImage(getWidth(), getHeight());
-			dbg = dbImage.getGraphics();
-			paintComponent(dbg);
-			g.drawImage(dbImage, 0, 0, this);
+	public void paint(Graphics g){
+		dbImage = createImage(getWidth(), getHeight());
+		dbg = dbImage.getGraphics();
+		paintComponent(dbg);
+		g.drawImage(dbImage, 0, 0, this);
 			
-		}
+	}
 
-		//@Override
-		public void paintComponent (Graphics g){
+	public void paintComponent (Graphics g){
 			
-			// Draws the X and Y coordinants plane. 
-			g.setColor(Color.WHITE);
-			g.drawLine(x/2, 0, x/2, y);
-			g.drawLine(0, y/2, x, y/2);
+		// Draws the X and Y coordinants plane. 
+		g.setColor(Color.WHITE);
+		g.drawLine(x/2, 0, x/2, y);
+		g.drawLine(0, y/2, x, y/2);
 			
-			// Draws each point P1 (x, y), P2(x, y) ... 
-			for(int i = 0; i < 5; i++){
-				g.setColor(Color.CYAN);
-				g.drawString(("P" + (i+1)), polygon_points[i][0], polygon_points[i][1]);
-				g.setColor(Color.ORANGE);
-				g.drawString(("(" + polygon_points[i][0] + "," + polygon_points[i][1] + ")"), polygon_points[i][0] + 20, polygon_points[i][1]);
-				//g.drawString(x_midpoint + ", " + y_midpoint, (int)x_midpoint, (int)y_midpoint);
-			}
-			//g.drawString(x_origin + ", " + y_origin, x_origin, y_origin);
-			
-			
-			
-			// Draws the 3D triangle
-			g.setColor(Color.BLACK);
-			g.drawLine(polygon_points[0][0], polygon_points[0][1], polygon_points[1][0], polygon_points[1][1]); // P1 to P2
-			g.drawLine(polygon_points[2][0], polygon_points[2][1], polygon_points[0][0], polygon_points[0][1]); // P1 to P3
-			g.drawLine(polygon_points[3][0], polygon_points[3][1], polygon_points[0][0], polygon_points[0][1]); // P1 to P4
-			g.drawLine(polygon_points[4][0], polygon_points[4][1], polygon_points[0][0], polygon_points[0][1]); // P1 to P5
-			g.setColor(Color.YELLOW);
-			g.drawLine(polygon_points[1][0], polygon_points[1][1], polygon_points[4][0], polygon_points[4][1]); // P2 to P4
-			g.setColor(Color.GREEN);
-			g.drawLine(polygon_points[1][0], polygon_points[1][1], polygon_points[2][0], polygon_points[2][1]); // P2 to P3
-			g.setColor(Color.RED);
-			g.drawLine(polygon_points[3][0], polygon_points[3][1], polygon_points[4][0], polygon_points[4][1]); // P4 to P5
-			g.setColor(Color.BLUE);
-			g.drawLine(polygon_points[2][0], polygon_points[2][1], polygon_points[3][0], polygon_points[3][1]); // P3 to P4
-			
-			g.setColor(Color.WHITE);
-			g.drawRect(WIDTH - 150, HEIGHT - 50, 100, 25);
-			g.fillRect(WIDTH - 150, HEIGHT - 50, 100, 25);
-			g.setColor(Color.BLACK);
-			g.drawString("RESET", WIDTH - 120, HEIGHT - 32);
-			
-			//find midpoint
-			//g.setColor(Color.PINK);
-			//g.drawLine(polygon_points[0][0], polygon_points[0][1], (polygon_points[1][0]+polygon_points[2][0])/ 2, (polygon_points[1][1]+polygon_points[2][1])/2);
-			//g.drawLine(polygon_points[1][0], polygon_points[1][1], (polygon_points[0][0]+polygon_points[2][0])/ 2, (polygon_points[0][1]+polygon_points[2][1])/2);
-			//g.drawLine(polygon_points[2][0], polygon_points[2][1], (polygon_points[0][0]+polygon_points[1][0])/ 2, (polygon_points[0][1]+polygon_points[1][1])/2);
-			
-			repaint();
+		// Draws each point P1 (x, y), P2(x, y) ... 
+		/*for(int i = 0; i < 5; i++){
+			g.setColor(Color.CYAN);
+			g.drawString(("P" + (i+1)), polygon_points[i][0], polygon_points[i][1]);
+			g.setColor(Color.ORANGE);
+			g.drawString(("(" + polygon_points[i][0] + "," + polygon_points[i][1] + ")"), polygon_points[i][0] + 20, polygon_points[i][1]);
+			g.drawString(x_midpoint + ", " + y_midpoint, (int)x_midpoint, (int)y_midpoint);
 		}
-	//}	
+		g.drawString(x_origin + ", " + y_origin, x_origin, y_origin);*/
+			
+		// Draws the 3D triangle
+		g.setColor(Color.BLACK);
+		g.drawLine(polygon_points[0][0], polygon_points[0][1], polygon_points[1][0], polygon_points[1][1]); // P1 to P2
+		g.drawLine(polygon_points[2][0], polygon_points[2][1], polygon_points[0][0], polygon_points[0][1]); // P1 to P3
+		g.drawLine(polygon_points[3][0], polygon_points[3][1], polygon_points[0][0], polygon_points[0][1]); // P1 to P4
+		g.drawLine(polygon_points[4][0], polygon_points[4][1], polygon_points[0][0], polygon_points[0][1]); // P1 to P5
+		g.setColor(Color.YELLOW);
+		g.drawLine(polygon_points[1][0], polygon_points[1][1], polygon_points[4][0], polygon_points[4][1]); // P2 to P4
+		g.setColor(Color.GREEN);
+		g.drawLine(polygon_points[1][0], polygon_points[1][1], polygon_points[2][0], polygon_points[2][1]); // P2 to P3
+		g.setColor(Color.RED);
+		g.drawLine(polygon_points[3][0], polygon_points[3][1], polygon_points[4][0], polygon_points[4][1]); // P4 to P5
+		g.setColor(Color.BLUE);
+		g.drawLine(polygon_points[2][0], polygon_points[2][1], polygon_points[3][0], polygon_points[3][1]); // P3 to P4
+			
+		// Draws to RESET button
+		g.setColor(Color.WHITE);
+		g.drawRect(WIDTH - 150, HEIGHT - 50, 100, 25);
+		g.fillRect(WIDTH - 150, HEIGHT - 50, 100, 25);
+		g.setColor(Color.BLACK);
+		g.drawString("RESET", WIDTH - 120, HEIGHT - 32);
+			
+		//finds and draws the coordinates of the midpoint
+		//g.setColor(Color.PINK);
+		//g.drawLine(polygon_points[0][0], polygon_points[0][1], (polygon_points[1][0]+polygon_points[2][0])/ 2, (polygon_points[1][1]+polygon_points[2][1])/2);
+		//g.drawLine(polygon_points[1][0], polygon_points[1][1], (polygon_points[0][0]+polygon_points[2][0])/ 2, (polygon_points[0][1]+polygon_points[2][1])/2);
+		//g.drawLine(polygon_points[2][0], polygon_points[2][1], (polygon_points[0][0]+polygon_points[1][0])/ 2, (polygon_points[0][1]+polygon_points[1][1])/2);
+			
+		repaint();
+	}	
 		
 	// main program
 	public static void main(String[] args){
