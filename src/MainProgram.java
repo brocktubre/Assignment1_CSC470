@@ -24,7 +24,7 @@ import java.math.*;
 
 public class MainProgram extends JFrame{
 	
-	final int WIDTH = 900;
+	final int WIDTH = 1024;
 	final int HEIGHT = 700;
 	// Initials the canvas object
 	//private MyCanvas canvas = new MyCanvas();
@@ -38,7 +38,7 @@ public class MainProgram extends JFrame{
 	private Image dbImage;
 	private Graphics dbg;
 	
-	
+	// Action listener for the key board inputs
 	public class MyActionListener extends KeyAdapter{
 		public void keyPressed(KeyEvent e){
 			int keyCode = e.getKeyCode();
@@ -91,7 +91,6 @@ public class MainProgram extends JFrame{
 						polygon_points[i][0] = (int)(polygon_points_temps[i][0] + x_midpoint);
 						polygon_points[i][1] = (int)(polygon_points_temps[i][1] + y_midpoint);
 					}
-					
 				}
 			}
 			// translates the object BACKWARD using the "B" key
@@ -110,28 +109,30 @@ public class MainProgram extends JFrame{
 			}
 			// rotates the object counter clockwise using the "<" key
 			if(keyCode == e.VK_COMMA){
-				double x_val, y_val, theta = 25.0;
-				if(polygon_points[2][0] < x && (polygon_points[0][1] - 50) > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
+				double theta = 25.0;
+				double[][] polygon_points_temps = scale_polygon_points;
+				
+				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && (polygon_points[0][1] - 50) > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
 					for(int i = 0; i < 5; i++){
-						x_val = polygon_points[i][0];
-						y_val = polygon_points[i][1];
-						polygon_points[i][0] = (int)(x_val * Math.cos(theta) - y_val * Math.sin(theta));
-						polygon_points[i][1] = (int)(x_val * Math.sin(theta) + y_val * Math.cos(theta));
+						polygon_points_temps[i][0] = (polygon_points_temps[i][0] * Math.cos(theta) - polygon_points_temps[i][1] * Math.sin(theta));
+						polygon_points_temps[i][1] = (polygon_points_temps[i][0] * Math.sin(theta) + polygon_points_temps[i][1] * Math.cos(theta));
+						polygon_points[i][0] = (int)(polygon_points_temps[i][0] + x_midpoint);
+						polygon_points[i][1] = (int)(polygon_points_temps[i][1] + y_midpoint);
 					}
-					
 				}
 			}
 			// rotates the object clockwise using the "> " key
 			if(keyCode == e.VK_PERIOD){
-				double x_val, y_val, theta = -25.0;
-				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
+				double theta = -25.0;
+				double[][] polygon_points_temps = scale_polygon_points;
+				
+				if(polygon_points[2][0] < x && polygon_points[1][0] > 0 && (polygon_points[0][1] - 50) > 0 && polygon_points[1][1] < y && polygon_points[2][1] < y){
 					for(int i = 0; i < 5; i++){
-						x_val = polygon_points[i][0];
-						y_val = polygon_points[i][1];
-						polygon_points[i][0] = (int)(x_val * Math.cos(theta) - y_val * Math.sin(theta));
-						polygon_points[i][1] = (int)(x_val * Math.sin(theta) + y_val * Math.cos(theta));
+						polygon_points_temps[i][0] = (polygon_points_temps[i][0] * Math.cos(theta) - polygon_points_temps[i][1] * Math.sin(theta));
+						polygon_points_temps[i][1] = (polygon_points_temps[i][0] * Math.sin(theta) + polygon_points_temps[i][1] * Math.cos(theta));
+						polygon_points[i][0] = (int)(polygon_points_temps[i][0] + x_midpoint);
+						polygon_points[i][1] = (int)(polygon_points_temps[i][1] + y_midpoint);
 					}
-								
 				}
 			}
 				
@@ -165,7 +166,7 @@ public class MainProgram extends JFrame{
 		y_origin = y/2;
 		x_midpoint = x/2;
 		y_midpoint = y/2;
-		increment = 1;
+		increment = 10;
 		// P1
 		polygon_points[0][0] = x_origin;
 		polygon_points[0][1] = y_origin - 133;
@@ -273,10 +274,10 @@ public class MainProgram extends JFrame{
 			g.drawString("RESET", WIDTH - 120, HEIGHT - 32);
 			
 			//find midpoint
-			g.setColor(Color.PINK);
-			g.drawLine(polygon_points[0][0], polygon_points[0][1], (polygon_points[1][0]+polygon_points[2][0])/ 2, (polygon_points[1][1]+polygon_points[2][1])/2);
-			g.drawLine(polygon_points[1][0], polygon_points[1][1], (polygon_points[0][0]+polygon_points[2][0])/ 2, (polygon_points[0][1]+polygon_points[2][1])/2);
-			g.drawLine(polygon_points[2][0], polygon_points[2][1], (polygon_points[0][0]+polygon_points[1][0])/ 2, (polygon_points[0][1]+polygon_points[1][1])/2);
+			//g.setColor(Color.PINK);
+			//g.drawLine(polygon_points[0][0], polygon_points[0][1], (polygon_points[1][0]+polygon_points[2][0])/ 2, (polygon_points[1][1]+polygon_points[2][1])/2);
+			//g.drawLine(polygon_points[1][0], polygon_points[1][1], (polygon_points[0][0]+polygon_points[2][0])/ 2, (polygon_points[0][1]+polygon_points[2][1])/2);
+			//g.drawLine(polygon_points[2][0], polygon_points[2][1], (polygon_points[0][0]+polygon_points[1][0])/ 2, (polygon_points[0][1]+polygon_points[1][1])/2);
 			
 			repaint();
 		}
