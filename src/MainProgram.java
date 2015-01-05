@@ -31,13 +31,10 @@ public class MainProgram extends JFrame {
 	final int HEIGHT = 600;
 
 	// initialization of x origin and y origin, also screen width and size
-	int x, y, x_origin, y_origin, z_origin, eye_z, eye_x, eye_y, increment;
-	int x_midpoint, y_midpoint, z_midpoint;
+	float x, y, x_origin, y_origin, z_origin, eye_z, increment;
 	// the points of the polygon, a 2D array
-	int[][] polygon_points = new int[5][3];
-	// double[][] scaled_polygon_points = new double[5][3];
-	int[][] scaled_points = new int[5][3];
-	int[][] screen_points = new int[5][2];
+	float[][] polygon_points = new float[5][3];
+	float[][] screen_points = new float[5][2];
 	// double duffering, takes an image of the screen and redraws the image when
 	// keys are pressed
 	private Image dbImage;
@@ -74,13 +71,21 @@ public class MainProgram extends JFrame {
 			case KeyEvent.VK_B:
 				MoveBackward();
 				break;
+			// if "G" key is pressed
+			case KeyEvent.VK_G:
+				ScaleUp();
+				break;
+			// if "N" key is pressed
+			case KeyEvent.VK_N:
+				ScaleDown();
+				break;
 			// if "UP" key is pressed
 			case KeyEvent.VK_UP:
-				ScaleUp();
+				RotateXClockwise();
 				break;
 			// if "DOWN" key is pressed
 			case KeyEvent.VK_DOWN:
-				ScaleDown();
+				RotateXCounterClockwise();
 				break;
 			// if "RIGHT" key is pressed
 			case KeyEvent.VK_RIGHT:
@@ -104,6 +109,7 @@ public class MainProgram extends JFrame {
 
 		}
 
+		// Worthless function
 		public void keyReleased(KeyEvent e) {
 
 		}
@@ -121,7 +127,7 @@ public class MainProgram extends JFrame {
 		}
 	}
 
-	// constructor
+	// constructor - Lays out the original Polygon points for the pyramid
 	public MainProgram() {
 
 		// Intializes the canvas size and also the origin of the canvas.
@@ -131,57 +137,48 @@ public class MainProgram extends JFrame {
 		x_origin = x / 2; // X origin of canvas
 		y_origin = y / 2; // Y origin of canvas
 		z_origin = 0; // Z origin of canvas
-		// The midpoint of the pyramid
-		x_midpoint = x / 2;
-		y_midpoint = y / 2;
-		z_midpoint = 50;
-		// The views eye corridance (400, 300, 800)
-		eye_x = x_origin;
-		eye_y = y_origin;
-		eye_z = 100;
+		// The distance the eye is to the screen
+		eye_z = 3000;
 		// The scale of increment size
 		increment = 10;
 
 		// P1
 		polygon_points[0][0] = x_origin; // x coordinates of P1
 		polygon_points[0][1] = y_origin - 150; // y coordinates of P1
-		polygon_points[0][2] = z_origin + 50; // z coordinates of P1
+		polygon_points[0][2] = z_origin + 300; // z coordinates of P1
 
 		// P2
 		polygon_points[1][0] = x_origin - 100; // x coordinates of P2
-		polygon_points[1][1] = y_origin + 75; // y coordinates of P2
-		polygon_points[1][2] = z_origin + 25; // z coordinates of P2
+		polygon_points[1][1] = y_origin + 100; // y coordinates of P2
+		polygon_points[1][2] = z_origin + 200; // z coordinates of P2
 
 		// P3
 		polygon_points[2][0] = x_origin + 100; // x coordinates of P3
-		polygon_points[2][1] = y_origin + 75; // y coordinates of P3
-		polygon_points[2][2] = z_origin + 25; // z coordinates of P3
+		polygon_points[2][1] = y_origin + 100; // y coordinates of P3
+		polygon_points[2][2] = z_origin + 200; // z coordinates of P3
 
 		// P4
-		polygon_points[3][0] = x_origin + 45; // x coordinates of P4
-		polygon_points[3][1] = y_origin + 30; // y coordinates of P4
-		polygon_points[3][2] = z_origin + 75; // z coordinates of P4
+		polygon_points[3][0] = x_origin + 75; // x coordinates of P4
+		polygon_points[3][1] = y_origin + 50; // y coordinates of P4
+		polygon_points[3][2] = z_origin + 400; // z coordinates of P4
 
 		// P5
-		polygon_points[4][0] = x_origin - 45; // x coordinates of P5
-		polygon_points[4][1] = y_origin + 30; // y coordinates of P5
-		polygon_points[4][2] = z_origin + 75; // z coordinates of P5
+		polygon_points[4][0] = x_origin - 75; // x coordinates of P5
+		polygon_points[4][1] = y_origin + 50; // y coordinates of P5
+		polygon_points[4][2] = z_origin + 400; // z coordinates of P5
 
 		for (int i = 0; i < 5; i++) {
-			screen_points[i][0] = (int) (eye_z * (polygon_points[i][0] - eye_x)
-					/ (eye_z + polygon_points[i][2]) + eye_x);
-			screen_points[i][1] = (int) (eye_z * (polygon_points[i][1] - eye_y)
-					/ (eye_z + polygon_points[i][2]) + eye_y);
+			screen_points[i][0] = (eye_z * polygon_points[i][0])
+					/ (eye_z + polygon_points[i][2]) + 50;
+			screen_points[i][1] = (eye_z * polygon_points[i][1])
+					/ (eye_z + polygon_points[i][2]) + 50;
 		}
-
-		// calculates the scaled points, from the origin or (0,0)
-		ScalePoints();
 
 		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
 		addMouseListener(new MyMouseHandler());
 		setLayout(new BorderLayout());
-		setSize(x, y);
+		setSize((int) x, (int) y);
 		setTitle("3D Pyramid - Assignment 1");
 		setBackground(new Color(45, 57, 95));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -199,11 +196,10 @@ public class MainProgram extends JFrame {
 	}
 
 	public void paintComponent(Graphics g) {
-		// DrawPlanes(g);
-		// DrawPoints(g);
+		DrawPlanes(g);
 		DrawPyramid(g);
 		DrawResetButton(g);
-		// FindMidPoint(g);
+		// DrawPoints(g);
 
 		repaint();
 
@@ -211,7 +207,7 @@ public class MainProgram extends JFrame {
 
 	// translates the object RIGHT using the "R" key
 	/*
-	 * This simply adds increment to the all of the x values moving the object
+	 * This  adds increment to the all of the x values moving the object
 	 * to the right
 	 */
 	public void MoveRight() {
@@ -219,175 +215,195 @@ public class MainProgram extends JFrame {
 		if (true) {
 			for (int i = 0; i < 5; i++) {
 				polygon_points[i][0] += increment;
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			x_midpoint += increment;
-			ScalePoints();
 		}
-
 	}
 
 	// translates the object LEFT using the "L" key
 	/* This simply decreases all of the x values moving the object to the left */
+	/*
+	 * This subtracts increment to the all of the x values moving the
+	 * object to the right
+	 */
 	public void MoveLeft() {
 		// if (polygon_points[1][0] > 0) {
 		if (true) {
 			for (int i = 0; i < 5; i++) {
 				polygon_points[i][0] -= increment;
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			x_midpoint -= increment;
-			ScalePoints();
 		}
-
 	}
 
 	// translates the object UP using the "U" key
 	/* This simply decreases all of the y values moving the object to the up */
+	/*
+	 * This subtracts increment to the all of the y values moving the
+	 * object to the right
+	 */
 	public void MoveUp() {
 		// if ((polygon_points[0][1] - 20) > 0) {
 		if (true) {
 			for (int i = 0; i < 5; i++) {
 				polygon_points[i][1] -= increment;
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			y_midpoint -= increment;
-			ScalePoints();
 		}
-
 	}
 
 	// translates the object DOWN using the "D" key
 	/*
-	 * This simply increase as all of the y values moving the object to the down
+	 * This increase as all of the y values moving the object to the down
 	 */
 	public void MoveDown() {
 		// if (polygon_points[1][1] < y || polygon_points[2][1] < y) {
 		if (true) {
 			for (int i = 0; i < 5; i++) {
 				polygon_points[i][1] += increment;
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			y_midpoint += increment;
-			ScalePoints();
 		}
 	}
 
 	// translates the object FORWARD using the "F" key
 	/*
-	 * This simply increase as all of the x and y using multiplication values
+	 * This increase as all of the x and y using multiplication values
 	 * moving the object foward
 	 */
 	public void MoveForward() {
-		int[][] temps = scaled_points;
-
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				temps[i][0] *= 1.5;
-				temps[i][1] *= 1.5;
-				polygon_points[i][0] = (int) (temps[i][0] + x_midpoint);
-				polygon_points[i][1] = (int) (temps[i][1] + y_midpoint);
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				polygon_points[i][2] -= increment * 5;
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			//ScalePoints();
 		}
 	}
 
 	// translates the object BACKWARDS using the "B" key
 	/*
-	 * This simply decrese as all of the x and y using multiplication values
+	 * This  decrese as all of the x and y using multiplication values
 	 * moving the object backwards
 	 */
 	public void MoveBackward() {
-		int[][] temps = scaled_points;
 
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				temps[i][0] *= 0.8;
-				temps[i][1] *= 0.8;
-				polygon_points[i][0] = (int) (temps[i][0] + x_midpoint);
-				polygon_points[i][1] = (int) (temps[i][1] + y_midpoint);
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
-
+				polygon_points[i][2] += increment * 5;
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			// ScalePoints();
 		}
 	}
 
 	// scales the object Up using the up arrow key
 	/*
-	 * This simply increases as all of the x and y using multiplication values
+	 * This  increases as all of the x and y using multiplication values
 	 * scaling the object up
 	 */
 	public void ScaleUp() {
-
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				polygon_points[i][0] *= 1.2;
-				polygon_points[i][1] *= 1.2;
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
-
+				polygon_points[i][0] *= 2;
+				polygon_points[i][1] *= 2;
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-
 		}
 	}
 
 	// scales the object Down using the down arrow key
 	/*
-	 * This simply decreases as all of the x and y using multiplication values
+	 * This decreases as all of the x and y using multiplication values
 	 * scaling the object down
 	 */
 	public void ScaleDown() {
-
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				polygon_points[i][0] /= 1.2;
-				polygon_points[i][1] /= 1.2;
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
-
+				polygon_points[i][0] /= 2;
+				polygon_points[i][1] /= 2;
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-
 		}
 	}
 
-	// rotates the object on the Y axis clockwise using the right arrow key
+	/*
+	 * Change description
+	 */
+	public void RotateXClockwise() {
+		double angle = 25.0;
+
+		if (true) {
+			for (int i = 0; i < 5; i++) {
+				polygon_points[i][1] = (polygon_points[i][1]
+						* (float) Math.cos(angle) - polygon_points[i][2]
+						* (float) Math.sin(angle));
+				polygon_points[i][2] = (polygon_points[i][1]
+						* (float) Math.sin(angle) + polygon_points[i][2]
+						* (float) Math.cos(angle));
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
+			}
+		}
+	}
+
+	/*
+	 * Change description
+	 */
+	public void RotateXCounterClockwise() {
+		double angle = -25.0;
+
+		if (true) {
+			for (int i = 0; i < 5; i++) {
+				polygon_points[i][1] = (polygon_points[i][1]
+						* (float) Math.cos(angle) - polygon_points[i][2]
+						* (float) Math.sin(angle));
+				polygon_points[i][2] = (polygon_points[i][1]
+						* (float) Math.sin(angle) + polygon_points[i][2]
+						* (float) Math.cos(angle));
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
+			}
+		}
+
+	}
+
 	/*
 	 * Change description
 	 */
 	public void RotateYClockwise() {
 		double angle = 25.0;
-		int[][] temps = scaled_points;
 
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				temps[i][0]  = (int) (temps[i][0]
-						* Math.cos(angle) - temps[i][2]
-						* Math.sin(angle));
-				temps[i][2] = (int) (temps[i][0]
-						* Math.sin(angle) + temps[i][2]
-						* Math.cos(angle));
-				polygon_points[i][0] = (int)(temps[i][0] + x_midpoint);
-				polygon_points[i][2] = (int)(temps[i][2] + z_midpoint);
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				polygon_points[i][0] = (polygon_points[i][0]
+						* (float) Math.cos(angle) - polygon_points[i][2]
+						* (float) Math.sin(angle));
+				polygon_points[i][2] = (polygon_points[i][0]
+						* (float) Math.sin(angle) + polygon_points[i][2]
+						* (float) Math.cos(angle));
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
 		}
 	}
@@ -398,22 +414,19 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateYCounterClockwise() {
 		double angle = -25.0;
-		int[][] temps = scaled_points;
 
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				temps[i][0]  = (int) (temps[i][0]
-						* Math.cos(angle) - temps[i][2]
-						* Math.sin(angle));
-				temps[i][2] = (int) (temps[i][0]
-						* Math.sin(angle) + temps[i][2]
-						* Math.cos(angle));
-				polygon_points[i][0] = (int)(temps[i][0] + x_midpoint);
-				polygon_points[i][2] = (int)(temps[i][2] + z_midpoint);
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				polygon_points[i][0] = (polygon_points[i][0]
+						* (float) Math.cos(angle) - polygon_points[i][2]
+						* (float) Math.sin(angle));
+				polygon_points[i][2] = (polygon_points[i][0]
+						* (float) Math.sin(angle) + polygon_points[i][2]
+						* (float) Math.cos(angle));
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
 		}
 	}
@@ -424,22 +437,19 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateZClockwise() {
 		double angle = 25.0;
-		int[][] temps = scaled_points;
 
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				temps[i][0]  = (int) (temps[i][0]
-						* Math.cos(angle) - temps[i][1]
-						* Math.sin(angle));
-				temps[i][1] = (int) (temps[i][0]
-						* Math.sin(angle) + temps[i][1]
-						* Math.cos(angle));
-				polygon_points[i][0] = (int)(temps[i][0] + x_midpoint);
-				polygon_points[i][1] = (int)(temps[i][1] + y_midpoint);
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				polygon_points[i][0] = (polygon_points[i][0]
+						* (float) Math.cos(angle) - polygon_points[i][1]
+						* (float) Math.sin(angle));
+				polygon_points[i][1] = (polygon_points[i][0]
+						* (float) Math.sin(angle) + polygon_points[i][1]
+						* (float) Math.cos(angle));
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
 		}
 	}
@@ -450,89 +460,93 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateZCounterClockwise() {
 		double angle = -25.0;
-		int[][] temps = scaled_points;
 
 		if (true) {
 			for (int i = 0; i < 5; i++) {
-				temps[i][0]  = (int) (temps[i][0]
-						* Math.cos(angle) - temps[i][1]
-						* Math.sin(angle));
-				temps[i][1] = (int) (temps[i][0]
-						* Math.sin(angle) + temps[i][1]
-						* Math.cos(angle));
-				polygon_points[i][0] = (int)(temps[i][0] + x_midpoint);
-				polygon_points[i][1] = (int)(temps[i][1] + y_midpoint);
-				screen_points[i][0] = (eye_z * (polygon_points[i][0] - eye_x)
-						/ (eye_z + polygon_points[i][2]) + eye_x);
-				screen_points[i][1] = (eye_z * (polygon_points[i][1] - eye_y)
-						/ (eye_z + polygon_points[i][2]) + eye_y);
+				polygon_points[i][0] = (polygon_points[i][0]
+						* (float) Math.cos(angle) - polygon_points[i][1]
+						* (float) Math.sin(angle));
+				polygon_points[i][1] = (polygon_points[i][0]
+						* (float) Math.sin(angle) + polygon_points[i][1]
+						* (float) Math.cos(angle));
+				screen_points[i][0] = (eye_z * polygon_points[i][0])
+						/ (eye_z + polygon_points[i][2]);
+				screen_points[i][1] = (eye_z * polygon_points[i][1])
+						/ (eye_z + polygon_points[i][2]);
 			}
-			
+
 		}
 	}
 
-	public void ScalePoints() {
-		// calculates the scaled points, from the origin or (0,0)
+	// Draws the oyramid onto the canvas
+	/*
+	 * Draws the pyramid
+	 */
+	public void DrawPyramid(Graphics g) {
+		
+		// Draws the 3D triangle
+		g.setColor(Color.BLACK);
+		g.drawLine((int) screen_points[0][0], (int) screen_points[0][1],
+				(int) screen_points[1][0], (int) screen_points[1][1]); // P1 to
+																		// P2
+		g.drawLine((int) screen_points[2][0], (int) screen_points[2][1],
+				(int) screen_points[0][0], (int) screen_points[0][1]); // P1 to
+																		// P3
+		g.drawLine((int) screen_points[3][0], (int) screen_points[3][1],
+				(int) screen_points[0][0], (int) screen_points[0][1]); // P1 to
+																		// P4
+		g.drawLine((int) screen_points[4][0], (int) screen_points[4][1],
+				(int) screen_points[0][0], (int) screen_points[0][1]); // P1 to
+																		// P5
+		g.setColor(Color.YELLOW);
+		g.drawLine((int) screen_points[1][0], (int) screen_points[1][1],
+				(int) screen_points[4][0], (int) screen_points[4][1]); // P2 to
+																		// P4
+		g.setColor(Color.GREEN);
+		g.drawLine((int) screen_points[1][0], (int) screen_points[1][1],
+				(int) screen_points[2][0], (int) screen_points[2][1]); // P2 to
+																		// P3
+		g.setColor(Color.RED);
+		g.drawLine((int) screen_points[3][0], (int) screen_points[3][1],
+				(int) screen_points[4][0], (int) screen_points[4][1]); // P4 to
+																		// P5
+		g.setColor(Color.BLUE);
+		g.drawLine((int) screen_points[2][0], (int) screen_points[2][1],
+				(int) screen_points[3][0], (int) screen_points[3][1]); // P3 to
+																		// P4
+	}
+
+	// Draws each point P1 (x, y), P2(x, y) ...
+	/*
+	 * Draws each one of the projected points
+	 */
+	public void DrawPoints(Graphics g) {
 		for (int i = 0; i < 5; i++) {
-			scaled_points[i][0] = (polygon_points[i][0] - x_origin);
-			scaled_points[i][1] = (polygon_points[i][1] - y_origin);
+			g.setColor(Color.CYAN);
+			g.drawString(("P" + (i + 1)), (int) screen_points[i][0],
+					(int) screen_points[i][1]);
+			g.setColor(Color.ORANGE);
+			g.drawString(("(" + (int) screen_points[i][0] + ","
+					+ (int) screen_points[i][1] + ")"),
+					(int) screen_points[i][0] + 20, (int) screen_points[i][1]);
 		}
 	}
 
 	// Draws the X and Y coordinants plane.
+	/*
+	 * Draws the X and Y planes
+	 */
 	public void DrawPlanes(Graphics g) {
 		g.setColor(Color.WHITE);
-		g.drawLine(x / 2, 0, x / 2, y);
-		g.drawLine(0, y / 2, x, y / 2);
+		g.drawLine((int) (x / 2), 0, (int) (x / 2), (int) y);
+		g.drawLine(0, (int) (y / 2), (int) x, (int) (y / 2));
 	}
 
-	// Draws each point P1 (x, y), P2(x, y) ...
-	public void DrawPoints(Graphics g) {
-		for (int i = 0; i < 5; i++) {
-			g.setColor(Color.CYAN);
-			g.drawString(("P" + (i + 1)), polygon_points[i][0],
-					polygon_points[i][1]);
-			g.setColor(Color.ORANGE);
-			g.drawString(("(" + polygon_points[i][0] + ","
-					+ polygon_points[i][1] + "," + polygon_points[i][2] + ")"),
-					polygon_points[i][0] + 20, polygon_points[i][1]);
-
-			g.drawString(x_midpoint + ", " + y_midpoint + ", " + z_midpoint,
-					(int) x_midpoint, (int) y_midpoint);
-
-		}
-		// Draws the mid point of the pyrimad
-		g.drawString(x_origin + ", " + y_origin + ", " + z_origin,
-				x_origin - 100, y_origin - 100);
-	}
-
-	public void DrawPyramid(Graphics g) {
-		// Draws the 3D triangle
-		g.setColor(Color.BLACK);
-		g.drawLine(screen_points[0][0], screen_points[0][1],
-				screen_points[1][0], screen_points[1][1]); // P1 to P2
-		g.drawLine(screen_points[2][0], screen_points[2][1],
-				screen_points[0][0], screen_points[0][1]); // P1 to P3
-		g.drawLine(screen_points[3][0], screen_points[3][1],
-				screen_points[0][0], screen_points[0][1]); // P1 to P4
-		g.drawLine(screen_points[4][0], screen_points[4][1],
-				screen_points[0][0], screen_points[0][1]); // P1 to P5
-		g.setColor(Color.YELLOW);
-		g.drawLine(screen_points[1][0], screen_points[1][1],
-				screen_points[4][0], screen_points[4][1]); // P2 to P4
-		g.setColor(Color.GREEN);
-		g.drawLine(screen_points[1][0], screen_points[1][1],
-				screen_points[2][0], screen_points[2][1]); // P2 to P3
-		g.setColor(Color.RED);
-		g.drawLine(screen_points[3][0], screen_points[3][1],
-				screen_points[4][0], screen_points[4][1]); // P4 to P5
-		g.setColor(Color.BLUE);
-		g.drawLine(screen_points[2][0], screen_points[2][1],
-				screen_points[3][0], screen_points[3][1]); // P3 to P4
-	}
-
+	// Draws the reset button onto the canvas
+	/*
+	 * Draws the Reset button onto the canvas
+	 */
 	public void DrawResetButton(Graphics g) {
-		// Draws to RESET button
 		g.setColor(Color.WHITE);
 		g.drawRect(WIDTH - 150, HEIGHT - 50, 100, 25);
 		g.fillRect(WIDTH - 150, HEIGHT - 50, 100, 25);
@@ -540,21 +554,10 @@ public class MainProgram extends JFrame {
 		g.drawString("RESET", WIDTH - 120, HEIGHT - 32);
 	}
 
-	public void FindMidPoint(Graphics g) {
-		// finds and draws the coordinates of the midpoint
-		g.setColor(Color.PINK);
-		g.drawLine(polygon_points[0][0], polygon_points[0][1],
-				(polygon_points[1][0] + polygon_points[2][0]) / 2,
-				(polygon_points[1][1] + polygon_points[2][1]) / 2);
-		g.drawLine(polygon_points[1][0], polygon_points[1][1],
-				(polygon_points[0][0] + polygon_points[2][0]) / 2,
-				(polygon_points[0][1] + polygon_points[2][1]) / 2);
-		g.drawLine(polygon_points[2][0], polygon_points[2][1],
-				(polygon_points[0][0] + polygon_points[1][0]) / 2,
-				(polygon_points[0][1] + polygon_points[1][1]) / 2);
-	}
-
 	// This function will trigger if the reset button
+	/*
+	 * Gets rid of old canvas and prduces new cavnas, reseting the screen
+	 */
 	public void ResetPyramid() {
 		dispose(); // gets rid of old JFrame window
 		new MainProgram(); // restarts program
