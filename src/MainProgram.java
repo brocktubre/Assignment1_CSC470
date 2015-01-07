@@ -31,12 +31,13 @@ public class MainProgram extends JFrame {
 	final int HEIGHT = 600;
 
 	// initialization of x origin and y origin, also screen width and size
-	float eye_z, increment;
+	double eye_z, increment;
 	int x, y, x_origin, y_origin, z_origin;
 	// the points of the polygon, a 2D array
-	float[][] polygon_points = new float[5][3];
-	float[][] screen_points = new float[5][2];
-	float[][] offset = new float[5][3];
+	double[][] polygon_points = new double[5][3];
+	double[][] screen_points = new double[5][2];
+	double[][] temp_screen_points = new double[5][2];
+	double[][] offset = new double[5][3];
 	// double duffering, takes an image of the screen and redraws the image when
 	// keys are pressed
 	private Image dbImage;
@@ -146,27 +147,27 @@ public class MainProgram extends JFrame {
 
 		// P1
 		polygon_points[0][0] = 0; // x coordinates of P1
-		polygon_points[0][1] = -100; // y coordinates of P1
+		polygon_points[0][1] = 100; // y coordinates of P1
 		polygon_points[0][2] = 300; // z coordinates of P1
 
 		// P2
 		polygon_points[1][0] = -100; // x coordinates of P2
-		polygon_points[1][1] = 100; // y coordinates of P2
+		polygon_points[1][1] = -100; // y coordinates of P2
 		polygon_points[1][2] = 200; // z coordinates of P2
 
 		// P3
 		polygon_points[2][0] = 100; // x coordinates of P3
-		polygon_points[2][1] = 100; // y coordinates of P3
+		polygon_points[2][1] = -100; // y coordinates of P3
 		polygon_points[2][2] = 200; // z coordinates of P3
 
 		// P4
 		polygon_points[3][0] = 100; // x coordinates of P4
-		polygon_points[3][1] = 100; // y coordinates of P4
+		polygon_points[3][1] = -100; // y coordinates of P4
 		polygon_points[3][2] = 400; // z coordinates of P4
 
 		// P5
 		polygon_points[4][0] = -100; // x coordinates of P5
-		polygon_points[4][1] = 100; // y coordinates of P5
+		polygon_points[4][1] = -100; // y coordinates of P5
 		polygon_points[4][2] = 400; // z coordinates of P5
 
 		// Sets offset for the screen points once they are ready to be drawn
@@ -175,13 +176,17 @@ public class MainProgram extends JFrame {
 			offset[i][1] = y_origin;
 		}
 
-		// Sets the original perspective projection polygon points and stores them as screen points.	
+		// Sets the original perspective projection polygon points and stores
+		// them as screen points.
 		for (int i = 0; i < 5; i++) {
 			screen_points[i][0] = (eye_z * polygon_points[i][0])
 					/ (eye_z + polygon_points[i][2]);
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+
+		// Adds offset for screen origin
+		AddOffset();
 
 		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
@@ -224,6 +229,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][0] = (eye_z * polygon_points[i][0])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	// translates the object LEFT using the "L" key
@@ -238,16 +244,14 @@ public class MainProgram extends JFrame {
 			screen_points[i][0] = (eye_z * polygon_points[i][0])
 					/ (eye_z + polygon_points[i][2]);
 		}
-
+		AddOffset();
 	}
 
-	// translates the object UP using the "U" key
-	/* This simply decreases all of the y values moving the object to the up */
+	// translates the object DOWN using the "D" key
 	/*
-	 * This subtracts increment to the all of the y values moving the object to
-	 * the right
+	 * This decreases as all of the y values moving the object to the down
 	 */
-	public void MoveUp() {
+	public void MoveDown() {
 
 		for (int i = 0; i < 5; i++) {
 			polygon_points[i][1] -= increment;
@@ -255,18 +259,21 @@ public class MainProgram extends JFrame {
 					/ (eye_z + polygon_points[i][2]);
 
 		}
+		AddOffset();
 	}
 
-	// translates the object DOWN using the "D" key
+	// translates the object UP using the "U" key
 	/*
-	 * This increase as all of the y values moving the object to the down
+	 * This increment to the all of the y values moving the object to
+	 * the up
 	 */
-	public void MoveDown() {
+	public void MoveUp() {
 		for (int i = 0; i < 5; i++) {
 			polygon_points[i][1] += increment;
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 
 	}
 
@@ -277,12 +284,13 @@ public class MainProgram extends JFrame {
 	 */
 	public void MoveForward() {
 		for (int i = 0; i < 5; i++) {
-			polygon_points[i][2] -= increment * 5;
+			polygon_points[i][2] -= increment * 15;
 			screen_points[i][0] = (eye_z * polygon_points[i][0])
 					/ (eye_z + polygon_points[i][2]);
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 
 	}
 
@@ -293,18 +301,19 @@ public class MainProgram extends JFrame {
 	 */
 	public void MoveBackward() {
 		for (int i = 0; i < 5; i++) {
-			polygon_points[i][2] += increment * 5;
+			polygon_points[i][2] += increment * 15;
 			screen_points[i][0] = (eye_z * polygon_points[i][0])
 					/ (eye_z + polygon_points[i][2]);
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	// scales the object Up using the up arrow key
 	/*
-	 * This increases as all of the x, y, and z using multiplication,
-	 * scaling the object up
+	 * This increases as all of the x, y, and z using multiplication, scaling
+	 * the object up
 	 */
 	public void ScaleUp() {
 		for (int i = 0; i < 5; i++) {
@@ -316,13 +325,14 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 
 	}
 
 	// scales the object Down using the down arrow key
 	/*
-	 * This decreases as all of the x, y, and z using division,
-	 * scaling the object down
+	 * This decreases as all of the x, y, and z using division, scaling the
+	 * object down
 	 */
 	public void ScaleDown() {
 		for (int i = 0; i < 5; i++) {
@@ -334,6 +344,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	/*
@@ -354,6 +365,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	/*
@@ -374,6 +386,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	/*
@@ -394,6 +407,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	// rotates the object on the Y axis clockwise using the right arrow key
@@ -415,6 +429,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 	}
 
 	// rotates the object on the Z axis clockwise using the right arrow key
@@ -436,6 +451,7 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 
 	}
 
@@ -458,7 +474,15 @@ public class MainProgram extends JFrame {
 			screen_points[i][1] = (eye_z * polygon_points[i][1])
 					/ (eye_z + polygon_points[i][2]);
 		}
+		AddOffset();
 
+	}
+
+	public void AddOffset() {
+		for (int i = 0; i < 5; i++) {
+			temp_screen_points[i][0] = offset[i][0] + screen_points[i][0];
+			temp_screen_points[i][1] = offset[i][1] - screen_points[i][1];
+		}
 	}
 
 	// Draws the oyramid onto the canvas
@@ -469,49 +493,41 @@ public class MainProgram extends JFrame {
 
 		// Draws the 3D triangle
 		g.setColor(Color.BLACK);
-		g.drawLine((int) (screen_points[0][0] + offset[0][0]),
-				(int) (screen_points[0][1] + offset[0][1]),
-				(int) (screen_points[1][0] + offset[1][0]),
-				(int) (screen_points[1][1] + offset[1][1])); // P1 to
+		g.drawLine((int) temp_screen_points[0][0],
+				(int) temp_screen_points[0][1], (int) temp_screen_points[1][0],
+				(int) temp_screen_points[1][1]); // P1 to
 		// P2
-		g.drawLine((int) (screen_points[2][0] + offset[2][0]),
-				(int) (screen_points[2][1] + offset[2][1]),
-				(int) (screen_points[0][0] + offset[0][0]),
-				(int) (screen_points[0][1] + offset[0][1])); // P1 to
+		g.drawLine((int) temp_screen_points[2][0],
+				(int) temp_screen_points[2][1], (int) temp_screen_points[0][0],
+				(int) temp_screen_points[0][1]); // P1 to
 		// P3
-		g.drawLine((int) (screen_points[3][0] + offset[3][0]),
-				(int) (screen_points[3][1] + offset[3][1]),
-				(int) (screen_points[0][0] + offset[0][0]),
-				(int) (screen_points[0][1] + offset[0][1])); // P1 to
+		g.drawLine((int) temp_screen_points[3][0],
+				(int) temp_screen_points[3][1], (int) temp_screen_points[0][0],
+				(int) temp_screen_points[0][1]); // P1 to
 		// P4
-		g.drawLine((int) (screen_points[4][0] + offset[4][0]),
-				(int) (screen_points[4][1] + offset[4][1]),
-				(int) (screen_points[0][0] + offset[0][0]),
-				(int) (screen_points[0][1] + offset[0][1])); // P1 to
+		g.drawLine((int) temp_screen_points[4][0],
+				(int) temp_screen_points[4][1], (int) temp_screen_points[0][0],
+				(int) temp_screen_points[0][1]); // P1 to
 		// P5
 		g.setColor(Color.YELLOW);
-		g.drawLine((int) (screen_points[1][0] + offset[1][0]),
-				(int) (screen_points[1][1] + offset[1][1]),
-				(int) (screen_points[4][0] + offset[4][0]),
-				(int) (screen_points[4][1] + offset[4][1])); // P2 to
+		g.drawLine((int) temp_screen_points[1][0],
+				(int) temp_screen_points[1][1], (int) temp_screen_points[4][0],
+				(int) temp_screen_points[4][1]); // P2 to
 		// P4
 		g.setColor(Color.GREEN);
-		g.drawLine((int) (screen_points[1][0] + offset[1][0]),
-				(int) (screen_points[1][1] + offset[1][1]),
-				(int) (screen_points[2][0] + offset[2][0]),
-				(int) (screen_points[2][1] + offset[2][1])); // P2 to
+		g.drawLine((int) temp_screen_points[1][0],
+				(int) temp_screen_points[1][1], (int) temp_screen_points[2][0],
+				(int) temp_screen_points[2][1]); // P2 to
 		// P3
 		g.setColor(Color.RED);
-		g.drawLine((int) (screen_points[3][0] + offset[3][0]),
-				(int) (screen_points[3][1] + offset[3][1]),
-				(int) (screen_points[4][0] + offset[4][0]),
-				(int) (screen_points[4][1] + offset[4][1])); // P4 to
+		g.drawLine((int) temp_screen_points[3][0],
+				(int) temp_screen_points[3][1], (int) temp_screen_points[4][0],
+				(int) temp_screen_points[4][1]); // P4 to
 		// P5
 		g.setColor(Color.BLUE);
-		g.drawLine((int) (screen_points[2][0] + offset[2][0]),
-				(int) (screen_points[2][1] + offset[2][1]),
-				(int) (screen_points[3][0] + offset[3][0]),
-				(int) (screen_points[3][1] + offset[3][1])); // P3 to
+		g.drawLine((int) temp_screen_points[2][0],
+				(int) temp_screen_points[2][1], (int) temp_screen_points[3][0],
+				(int) temp_screen_points[3][1]); // P3 to
 		// P4
 	}
 
