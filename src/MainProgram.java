@@ -33,9 +33,7 @@ public class MainProgram extends JFrame {
 		double[][] screen_points = new double[8][2];
 		double[][] temp_screen_points = new double[8][2];
 		double[] offset = new double[2];
-		double[] midpoints = new double[3];
-		double[][] temp = new double[8][4];
-		boolean isSet; // boolean for the
+		boolean isSet; // boolean to know which objects are selected
 		double[][] Px = new double[8][2];
 		double[][] Py = new double[8][2];
 		double[][] Pz = new double[8][2];
@@ -291,17 +289,9 @@ public class MainProgram extends JFrame {
 		cube.polygon_points[7][1] = 20;
 		cube.polygon_points[7][2] = 400;
 
+		// sets the offset for each object
 		pyramid.offset[0] = box.offset[0] = cube.offset[0] = x_origin;
 		pyramid.offset[1] = box.offset[1] = cube.offset[1] = y_origin;
-
-		// sets the midpoints for in place rotation
-		pyramid.midpoints[0] = x_origin;
-		pyramid.midpoints[1] = y_origin;
-		pyramid.midpoints[2] = pyramid.polygon_points[0][2];
-
-		pyramid.temp = pyramid.polygon_points;
-		box.temp = box.polygon_points;
-		cube.temp = cube.polygon_points;
 
 		// Sets the original perspective projection polygon points and stores
 		// them as screen points.
@@ -737,9 +727,11 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet) {
 			Translate();
 			for (int i = 0; i < 5; i++) {
-				pyramid.temp[i][0] = (pyramid.temp[i][0] * Math.cos(angle) - pyramid.temp[i][2]
+				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
+						* Math.cos(angle) - pyramid.polygon_points[i][2]
 						* Math.sin(angle));
-				pyramid.temp[i][2] = (pyramid.temp[i][0] * Math.sin(angle) + pyramid.temp[i][2]
+				pyramid.polygon_points[i][2] = (pyramid.polygon_points[i][0]
+						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
 			TranslateBack();
@@ -781,9 +773,11 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet) {
 			Translate();
 			for (int i = 0; i < 5; i++) {
-				pyramid.temp[i][0] = (pyramid.temp[i][0] * Math.cos(angle) - pyramid.temp[i][2]
+				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
+						* Math.cos(angle) - pyramid.polygon_points[i][2]
 						* Math.sin(angle));
-				pyramid.temp[i][2] = (pyramid.temp[i][0] * Math.sin(angle) + pyramid.temp[i][2]
+				pyramid.polygon_points[i][2] = (pyramid.polygon_points[i][0]
+						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
 			TranslateBack();
@@ -1007,9 +1001,9 @@ public class MainProgram extends JFrame {
 				cube.Px[i][1] = cube.polygon_points[i][0];
 				cube.Py[i][1] = cube.polygon_points[i][1];
 				cube.Pz[i][1] = cube.polygon_points[i][2];
-				cube.polygon_points[i][0] -= (cube.Px[0][1] - cube.Px[0][0]);
-				cube.polygon_points[i][1] -= (cube.Py[0][1] - cube.Py[0][0]);
-				cube.polygon_points[i][2] -= (cube.Pz[0][1] - cube.Pz[0][0]);
+				cube.polygon_points[i][0] -= (cube.Px[1][1] - cube.Px[1][0]);
+				cube.polygon_points[i][1] -= (cube.Py[1][1] - cube.Py[1][0]);
+				cube.polygon_points[i][2] -= (cube.Pz[1][1] - cube.Pz[1][0]);
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
@@ -1020,11 +1014,10 @@ public class MainProgram extends JFrame {
 	}
 
 	/*
-	 * Draws the pyramid
+	 * Draws the pyramid onto the canvas
 	 */
 	public void DrawPyramid(Graphics g) {
 
-		// Draws the 3D pyramid
 		g.setColor(Color.GREEN);
 		g.drawLine((int) pyramid.temp_screen_points[0][0],
 				(int) pyramid.temp_screen_points[0][1],
@@ -1071,7 +1064,7 @@ public class MainProgram extends JFrame {
 
 	// Draws the box onto the canvas
 	/*
-	 * Draws the box
+	 * Draws the box object onto the canvas
 	 */
 	public void DrawBox(Graphics g) {
 		g.setColor(Color.BLUE);
@@ -1126,9 +1119,8 @@ public class MainProgram extends JFrame {
 
 	}
 
-	// Draws the cube onto the canvas
 	/*
-	 * Draws the cube
+	 * Draws the cube object onto canvas
 	 */
 	public void DrawCube(Graphics g) {
 		g.setColor(Color.RED);
@@ -1183,7 +1175,6 @@ public class MainProgram extends JFrame {
 
 	}
 
-	// Draws the X and Y coordinants plane.
 	/*
 	 * Draws the X and Y planes
 	 */
@@ -1193,9 +1184,8 @@ public class MainProgram extends JFrame {
 		g.drawLine(0, (int) (y / 2), (int) x, (int) (y / 2));
 	}
 
-	// Draws the reset button onto the canvas
 	/*
-	 * Draws the Reset button onto the canvas
+	 * Draws the Reset, blue, green, and red selector buttons onto the canvas
 	 */
 	public void DrawButtons(Graphics g) {
 
