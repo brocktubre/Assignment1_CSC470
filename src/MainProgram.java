@@ -644,10 +644,10 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
+			
 		}
 		if (box.isSet) {
-			Translate();
+			
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] = (box.polygon_points[i][1]
 						* Math.cos(angle) - box.polygon_points[i][2]
@@ -656,10 +656,10 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
+			
 		}
 		if (cube.isSet) {
-			Translate();
+	
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] = (cube.polygon_points[i][1]
 						* Math.cos(angle) - cube.polygon_points[i][2]
@@ -668,8 +668,9 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
+			
 		}
+		TranslateBack();
 		AddOffset();
 	}
 
@@ -679,8 +680,8 @@ public class MainProgram extends JFrame {
 	public void RotateXCounterClockwise() {
 		double angle = -25.0;
 
+		Translate();
 		if (pyramid.isSet) {
-			Translate();
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] = (pyramid.polygon_points[i][1]
 						* Math.cos(angle) - pyramid.polygon_points[i][2]
@@ -689,10 +690,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (box.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] = (box.polygon_points[i][1]
 						* Math.cos(angle) - box.polygon_points[i][2]
@@ -701,10 +700,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (cube.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] = (cube.polygon_points[i][1]
 						* Math.cos(angle) - cube.polygon_points[i][2]
@@ -713,8 +710,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
+		TranslateBack();
 		AddOffset();
 	}
 
@@ -724,8 +721,8 @@ public class MainProgram extends JFrame {
 	public void RotateYClockwise() {
 		double angle = 25.0;
 
+		Translate();
 		if (pyramid.isSet) {
-			Translate();
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
 						* Math.cos(angle) - pyramid.polygon_points[i][2]
@@ -734,10 +731,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (box.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] = (box.polygon_points[i][0]
 						* Math.cos(angle) - box.polygon_points[i][2]
@@ -746,10 +741,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (cube.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
 						* Math.cos(angle) - cube.polygon_points[i][2]
@@ -758,9 +751,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
-
+		TranslateBack();
 		AddOffset();
 	}
 
@@ -770,8 +762,8 @@ public class MainProgram extends JFrame {
 	public void RotateYCounterClockwise() {
 		double angle = -25.0;
 
+		Translate();
 		if (pyramid.isSet) {
-			Translate();
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
 						* Math.cos(angle) - pyramid.polygon_points[i][2]
@@ -780,10 +772,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (box.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] = (box.polygon_points[i][0]
 						* Math.cos(angle) - box.polygon_points[i][2]
@@ -792,10 +782,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (cube.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
 						* Math.cos(angle) - cube.polygon_points[i][2]
@@ -804,9 +792,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
-
+		TranslateBack();
 		AddOffset();
 	}
 
@@ -817,8 +804,8 @@ public class MainProgram extends JFrame {
 	public void RotateZClockwise() {
 		double angle = 25.0;
 
+		Translate();
 		if (pyramid.isSet) {
-			Translate();
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
 						* Math.cos(angle) - pyramid.polygon_points[i][1]
@@ -827,10 +814,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (box.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] = (box.polygon_points[i][0]
 						* Math.cos(angle) - box.polygon_points[i][1]
@@ -839,10 +824,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (cube.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
 						* Math.cos(angle) - cube.polygon_points[i][1]
@@ -851,9 +834,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
-
+		TranslateBack();
 		AddOffset();
 
 	}
@@ -864,9 +846,9 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateZCounterClockwise() {
 		double angle = -25.0;
-
+		
+		Translate();
 		if (pyramid.isSet) {
-			Translate();
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
 						* Math.cos(angle) - pyramid.polygon_points[i][1]
@@ -875,10 +857,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (box.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] = (box.polygon_points[i][0]
 						* Math.cos(angle) - box.polygon_points[i][1]
@@ -887,10 +867,8 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			TranslateBack();
 		}
 		if (cube.isSet) {
-			Translate();
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
 						* Math.cos(angle) - cube.polygon_points[i][1]
@@ -899,9 +877,9 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			TranslateBack();
+			
 		}
-
+		TranslateBack();
 		AddOffset();
 
 	}
