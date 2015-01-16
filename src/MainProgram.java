@@ -609,7 +609,7 @@ public class MainProgram extends JFrame {
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		AddOffset();
 
@@ -668,7 +668,7 @@ public class MainProgram extends JFrame {
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		AddOffset();
 	}
@@ -677,50 +677,61 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the X axis clockwise
 	 */
 	public void RotateXClockwise() {
-		double angle = 25.0;
+		double angle = 0.20;
 		double x, y, z;
-		double tx, ty, tz;
-		
+		double Tx, Ty, Tz;
+
 		FindMidPoint();
 
-		//Translate();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				tx = pyramid.polygon_points
-				pyramid.polygon_points[i][1] = (pyramid.polygon_points[i][1]
-						* Math.cos(angle) - pyramid.polygon_points[i][2]
-						* Math.sin(angle));
-				pyramid.polygon_points[i][2] = (pyramid.polygon_points[i][1]
-						* Math.sin(angle) + pyramid.polygon_points[i][2]
-						* Math.cos(angle));
+				Ty = pyramid.polygon_points[i][1] - pyramid.midpoints[1];
+				Tz = pyramid.polygon_points[i][2] - pyramid.midpoints[2];
+				y = Ty * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Ty * Math.sin(angle) + Tz * Math.cos(angle);
+				y += pyramid.midpoints[1];
+				z += pyramid.midpoints[2];
+				pyramid.polygon_points[i][1] = y;
+				pyramid.polygon_points[i][2] = z;
+				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
+						/ (eye_z + pyramid.polygon_points[i][2]);
+				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
+						/ (eye_z + pyramid.polygon_points[i][2]);
 			}
 
 		}
 		if (box.isSet) {
-
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][1] = (box.polygon_points[i][1]
-						* Math.cos(angle) - box.polygon_points[i][2]
-						* Math.sin(angle));
-				box.polygon_points[i][2] = (box.polygon_points[i][1]
-						* Math.sin(angle) + box.polygon_points[i][2]
-						* Math.cos(angle));
+				Ty = box.polygon_points[i][1] - box.midpoints[1];
+				Tz = box.polygon_points[i][2] - box.midpoints[2];
+				y = Ty * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Ty * Math.sin(angle) + Tz * Math.cos(angle);
+				y += box.midpoints[1];
+				z += box.midpoints[2];
+				box.polygon_points[i][1] = y;
+				box.polygon_points[i][2] = z;
+				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
+						/ (eye_z + box.polygon_points[i][2]);
+				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
+						/ (eye_z + box.polygon_points[i][2]);
 			}
-
 		}
 		if (cube.isSet) {
-
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][1] = (cube.polygon_points[i][1]
-						* Math.cos(angle) - cube.polygon_points[i][2]
-						* Math.sin(angle));
-				cube.polygon_points[i][2] = (cube.polygon_points[i][1]
-						* Math.sin(angle) + cube.polygon_points[i][2]
-						* Math.cos(angle));
+				Ty = cube.polygon_points[i][1] - cube.midpoints[1];
+				Tz = cube.polygon_points[i][2] - cube.midpoints[2];
+				y = Ty * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Ty * Math.sin(angle) + Tz * Math.cos(angle);
+				y += cube.midpoints[1];
+				z += cube.midpoints[2];
+				cube.polygon_points[i][1] = y;
+				cube.polygon_points[i][2] = z;
+				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
+						/ (eye_z + cube.polygon_points[i][2]);
+				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
-
 		}
-		TranslateBack();
 		AddOffset();
 	}
 
@@ -728,40 +739,61 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the X axis counter clockwise
 	 */
 	public void RotateXCounterClockwise() {
-		double angle = -25.0;
+		double angle = 0.20;
+		double x, y, z;
+		double Tx, Ty, Tz;
 
-		Translate();
+		FindMidPoint();
+
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][1] = (pyramid.polygon_points[i][1]
-						* Math.cos(angle) - pyramid.polygon_points[i][2]
-						* Math.sin(angle));
-				pyramid.polygon_points[i][2] = (pyramid.polygon_points[i][1]
-						* Math.sin(angle) + pyramid.polygon_points[i][2]
-						* Math.cos(angle));
+				Ty = pyramid.polygon_points[i][1] - pyramid.midpoints[1];
+				Tz = pyramid.polygon_points[i][2] - pyramid.midpoints[2];
+				y = Ty * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Ty * Math.sin(angle) + Tz * Math.cos(angle);
+				y += pyramid.midpoints[1];
+				z += pyramid.midpoints[2];
+				pyramid.polygon_points[i][1] = y;
+				pyramid.polygon_points[i][2] = z;
+				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
+						/ (eye_z + pyramid.polygon_points[i][2]);
+				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
+						/ (eye_z + pyramid.polygon_points[i][2]);
 			}
+
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][1] = (box.polygon_points[i][1]
-						* Math.cos(angle) - box.polygon_points[i][2]
-						* Math.sin(angle));
-				box.polygon_points[i][2] = (box.polygon_points[i][1]
-						* Math.sin(angle) + box.polygon_points[i][2]
-						* Math.cos(angle));
+				Ty = box.polygon_points[i][1] - box.midpoints[1];
+				Tz = box.polygon_points[i][2] - box.midpoints[2];
+				y = Ty * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Ty * Math.sin(angle) + Tz * Math.cos(angle);
+				y += box.midpoints[1];
+				z += box.midpoints[2];
+				box.polygon_points[i][1] = y;
+				box.polygon_points[i][2] = z;
+				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
+						/ (eye_z + box.polygon_points[i][2]);
+				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
+						/ (eye_z + box.polygon_points[i][2]);
 			}
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][1] = (cube.polygon_points[i][1]
-						* Math.cos(angle) - cube.polygon_points[i][2]
-						* Math.sin(angle));
-				cube.polygon_points[i][2] = (cube.polygon_points[i][1]
-						* Math.sin(angle) + cube.polygon_points[i][2]
-						* Math.cos(angle));
+				Ty = cube.polygon_points[i][1] - cube.midpoints[1];
+				Tz = cube.polygon_points[i][2] - cube.midpoints[2];
+				y = Ty * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Ty * Math.sin(angle) + Tz * Math.cos(angle);
+				y += cube.midpoints[1];
+				z += cube.midpoints[2];
+				cube.polygon_points[i][1] = y;
+				cube.polygon_points[i][2] = z;
+				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
+						/ (eye_z + cube.polygon_points[i][2]);
+				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		}
-		TranslateBack();
 		AddOffset();
 	}
 
@@ -769,40 +801,59 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the Y axis clockwise
 	 */
 	public void RotateYClockwise() {
-		double angle = 25.0;
-
-		Translate();
+		double angle = 0.20;
+		double x, y, z;
+		double Tx, Ty, Tz;
+		
+		FindMidPoint();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
-						* Math.cos(angle) - pyramid.polygon_points[i][2]
-						* Math.sin(angle));
-				pyramid.polygon_points[i][2] = (pyramid.polygon_points[i][0]
-						* Math.sin(angle) + pyramid.polygon_points[i][2]
-						* Math.cos(angle));
+				Tx = pyramid.polygon_points[i][0] - pyramid.midpoints[0];
+				Tz = pyramid.polygon_points[i][2] - pyramid.midpoints[2];
+				x = Tx * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Tx * Math.sin(angle) + Tz * Math.cos(angle);
+				x += pyramid.midpoints[0];
+				z += pyramid.midpoints[2];
+				pyramid.polygon_points[i][0] = x;
+				pyramid.polygon_points[i][2] = z;
+				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
+						/ (eye_z + pyramid.polygon_points[i][2]);
+				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
+						/ (eye_z + pyramid.polygon_points[i][2]);
 			}
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][0] = (box.polygon_points[i][0]
-						* Math.cos(angle) - box.polygon_points[i][2]
-						* Math.sin(angle));
-				box.polygon_points[i][2] = (box.polygon_points[i][0]
-						* Math.sin(angle) + box.polygon_points[i][2]
-						* Math.cos(angle));
+				Tx = box.polygon_points[i][0] - box.midpoints[0];
+				Tz = box.polygon_points[i][2] - box.midpoints[2];
+				x = Tx * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Tx * Math.sin(angle) + Tz * Math.cos(angle);
+				x += box.midpoints[0];
+				z += box.midpoints[2];
+				box.polygon_points[i][0] = x;
+				box.polygon_points[i][2] = z;
+				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
+						/ (eye_z + box.polygon_points[i][2]);
+				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
+						/ (eye_z + box.polygon_points[i][2]);
 			}
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
-						* Math.cos(angle) - cube.polygon_points[i][2]
-						* Math.sin(angle));
-				cube.polygon_points[i][2] = (cube.polygon_points[i][0]
-						* Math.sin(angle) + cube.polygon_points[i][2]
-						* Math.cos(angle));
+				Tx = cube.polygon_points[i][0] - cube.midpoints[0];
+				Tz = cube.polygon_points[i][2] - cube.midpoints[2];
+				x = Tx * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Tx * Math.sin(angle) + Tz * Math.cos(angle);
+				x += cube.midpoints[0];
+				z += cube.midpoints[2];
+				cube.polygon_points[i][0] = x;
+				cube.polygon_points[i][2] = z;
+				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
+						/ (eye_z + cube.polygon_points[i][2]);
+				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		}
-		TranslateBack();
 		AddOffset();
 	}
 
@@ -810,40 +861,59 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the Y axis counter clockwise
 	 */
 	public void RotateYCounterClockwise() {
-		double angle = -25.0;
-
-		Translate();
+		double angle = -0.20;
+		double x, y, z;
+		double Tx, Ty, Tz;
+		
+		FindMidPoint();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
-						* Math.cos(angle) - pyramid.polygon_points[i][2]
-						* Math.sin(angle));
-				pyramid.polygon_points[i][2] = (pyramid.polygon_points[i][0]
-						* Math.sin(angle) + pyramid.polygon_points[i][2]
-						* Math.cos(angle));
+				Tx = pyramid.polygon_points[i][0] - pyramid.midpoints[0];
+				Tz = pyramid.polygon_points[i][2] - pyramid.midpoints[2];
+				x = Tx * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Tx * Math.sin(angle) + Tz * Math.cos(angle);
+				x += pyramid.midpoints[0];
+				z += pyramid.midpoints[2];
+				pyramid.polygon_points[i][0] = x;
+				pyramid.polygon_points[i][2] = z;
+				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
+						/ (eye_z + pyramid.polygon_points[i][2]);
+				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
+						/ (eye_z + pyramid.polygon_points[i][2]);
 			}
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][0] = (box.polygon_points[i][0]
-						* Math.cos(angle) - box.polygon_points[i][2]
-						* Math.sin(angle));
-				box.polygon_points[i][2] = (box.polygon_points[i][0]
-						* Math.sin(angle) + box.polygon_points[i][2]
-						* Math.cos(angle));
+				Tx = box.polygon_points[i][0] - box.midpoints[0];
+				Tz = box.polygon_points[i][2] - box.midpoints[2];
+				x = Tx * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Tx * Math.sin(angle) + Tz * Math.cos(angle);
+				x += box.midpoints[0];
+				z += box.midpoints[2];
+				box.polygon_points[i][0] = x;
+				box.polygon_points[i][2] = z;
+				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
+						/ (eye_z + box.polygon_points[i][2]);
+				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
+						/ (eye_z + box.polygon_points[i][2]);
 			}
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
-						* Math.cos(angle) - cube.polygon_points[i][2]
-						* Math.sin(angle));
-				cube.polygon_points[i][2] = (cube.polygon_points[i][0]
-						* Math.sin(angle) + cube.polygon_points[i][2]
-						* Math.cos(angle));
+				Tx = cube.polygon_points[i][0] - cube.midpoints[0];
+				Tz = cube.polygon_points[i][2] - cube.midpoints[2];
+				x = Tx * Math.cos(angle) - Tz * Math.sin(angle);
+				z = Tx * Math.sin(angle) + Tz * Math.cos(angle);
+				x += cube.midpoints[0];
+				z += cube.midpoints[2];
+				cube.polygon_points[i][0] = x;
+				cube.polygon_points[i][2] = z;
+				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
+						/ (eye_z + cube.polygon_points[i][2]);
+				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		}
-		TranslateBack();
 		AddOffset();
 	}
 
@@ -852,40 +922,59 @@ public class MainProgram extends JFrame {
 	 * Change description
 	 */
 	public void RotateZClockwise() {
-		double angle = 25.0;
-
-		Translate();
+		double angle = 0.20;
+		double x, y, z;
+		double Tx, Ty, Tz;
+		
+		FindMidPoint();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
-						* Math.cos(angle) - pyramid.polygon_points[i][1]
-						* Math.sin(angle));
-				pyramid.polygon_points[i][1] = (pyramid.polygon_points[i][0]
-						* Math.sin(angle) + pyramid.polygon_points[i][1]
-						* Math.cos(angle));
+				Tx = pyramid.polygon_points[i][0] - pyramid.midpoints[0];
+				Ty = pyramid.polygon_points[i][1] - pyramid.midpoints[1];
+				x = Tx * Math.cos(angle) - Ty * Math.sin(angle);
+				y = Tx * Math.sin(angle) + Ty * Math.cos(angle);
+				x += pyramid.midpoints[0];
+				y += pyramid.midpoints[1];
+				pyramid.polygon_points[i][0] = x;
+				pyramid.polygon_points[i][1] = y;
+				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
+						/ (eye_z + pyramid.polygon_points[i][2]);
+				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
+						/ (eye_z + pyramid.polygon_points[i][2]);
 			}
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][0] = (box.polygon_points[i][0]
-						* Math.cos(angle) - box.polygon_points[i][1]
-						* Math.sin(angle));
-				box.polygon_points[i][1] = (box.polygon_points[i][0]
-						* Math.sin(angle) + box.polygon_points[i][1]
-						* Math.cos(angle));
+				Tx = box.polygon_points[i][0] - box.midpoints[0];
+				Ty = box.polygon_points[i][1] - box.midpoints[1];
+				x = Tx * Math.cos(angle) - Ty * Math.sin(angle);
+				y = Tx * Math.sin(angle) + Ty * Math.cos(angle);
+				x += box.midpoints[0];
+				y += box.midpoints[1];
+				box.polygon_points[i][0] = x;
+				box.polygon_points[i][1] = y;
+				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
+						/ (eye_z + box.polygon_points[i][2]);
+				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
+						/ (eye_z + box.polygon_points[i][2]);
 			}
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
-						* Math.cos(angle) - cube.polygon_points[i][1]
-						* Math.sin(angle));
-				cube.polygon_points[i][1] = (cube.polygon_points[i][0]
-						* Math.sin(angle) + cube.polygon_points[i][1]
-						* Math.cos(angle));
+				Tx = cube.polygon_points[i][0] - cube.midpoints[0];
+				Ty = cube.polygon_points[i][1] - cube.midpoints[1];
+				x = Tx * Math.cos(angle) - Ty * Math.sin(angle);
+				y = Tx * Math.sin(angle) + Ty * Math.cos(angle);
+				x += cube.midpoints[0];
+				y += cube.midpoints[1];
+				cube.polygon_points[i][0] = x;
+				cube.polygon_points[i][1] = y;
+				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
+						/ (eye_z + cube.polygon_points[i][2]);
+				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
+						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		}
-		TranslateBack();
 		AddOffset();
 
 	}
@@ -895,88 +984,21 @@ public class MainProgram extends JFrame {
 	 * Change description
 	 */
 	public void RotateZCounterClockwise() {
-		double angle = -25.0;
-
-		Translate();
+		double angle = -0.20;
+		double x, y, z;
+		double Tx, Ty, Tz;
+		
+		FindMidPoint();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][0] = (pyramid.polygon_points[i][0]
-						* Math.cos(angle) - pyramid.polygon_points[i][1]
-						* Math.sin(angle));
-				pyramid.polygon_points[i][1] = (pyramid.polygon_points[i][0]
-						* Math.sin(angle) + pyramid.polygon_points[i][1]
-						* Math.cos(angle));
-			}
-		}
-		if (box.isSet) {
-			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][0] = (box.polygon_points[i][0]
-						* Math.cos(angle) - box.polygon_points[i][1]
-						* Math.sin(angle));
-				box.polygon_points[i][1] = (box.polygon_points[i][0]
-						* Math.sin(angle) + box.polygon_points[i][1]
-						* Math.cos(angle));
-			}
-		}
-		if (cube.isSet) {
-			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
-						* Math.cos(angle) - cube.polygon_points[i][1]
-						* Math.sin(angle));
-				cube.polygon_points[i][1] = (cube.polygon_points[i][0]
-						* Math.sin(angle) + cube.polygon_points[i][1]
-						* Math.cos(angle));
-			}
-
-		}
-		TranslateBack();
-		AddOffset();
-
-	}
-
-	/*
-	 * Translate the object to the origin, basically storing its 'current' x, y,
-	 * z points
-	 */
-	public void Translate() {
-
-		if (pyramid.isSet) {
-			for (int i = 0; i < 5; i++) {
-				pyramid.Px[i][0] = pyramid.polygon_points[i][0];
-				pyramid.Py[i][0] = pyramid.polygon_points[i][1];
-				pyramid.Pz[i][0] = pyramid.polygon_points[i][2];
-			}
-		}
-		if (box.isSet) {
-			for (int i = 0; i < 8; i++) {
-				box.Px[i][0] = box.polygon_points[i][0];
-				box.Py[i][0] = box.polygon_points[i][1];
-				box.Pz[i][0] = box.polygon_points[i][2];
-			}
-		}
-		if (cube.isSet) {
-			for (int i = 0; i < 8; i++) {
-				cube.Px[i][0] = cube.polygon_points[i][0];
-				cube.Py[i][0] = cube.polygon_points[i][1];
-				cube.Pz[i][0] = cube.polygon_points[i][2];
-			}
-		}
-	}
-
-	/*
-	 * Translate the object back to the origin, basically using its 'current' x,
-	 * y, z points and the 'old' x, y, z points takes the differance and
-	 * substracts that form each x, y, z.
-	 */
-	public void TranslateBack() {
-		if (pyramid.isSet) {
-			for (int i = 0; i < 5; i++) {
-				pyramid.Px[i][1] = pyramid.polygon_points[i][0];
-				pyramid.Py[i][1] = pyramid.polygon_points[i][1];
-				pyramid.Pz[i][1] = pyramid.polygon_points[i][2];
-				pyramid.polygon_points[i][0] -= (pyramid.Px[0][1] - pyramid.Px[0][0]);
-				pyramid.polygon_points[i][1] -= (pyramid.Py[0][1] - pyramid.Py[0][0]);
-				pyramid.polygon_points[i][2] -= (pyramid.Pz[0][1] - pyramid.Pz[0][0]);
+				Tx = pyramid.polygon_points[i][0] - pyramid.midpoints[0];
+				Ty = pyramid.polygon_points[i][1] - pyramid.midpoints[1];
+				x = Tx * Math.cos(angle) - Ty * Math.sin(angle);
+				y = Tx * Math.sin(angle) + Ty * Math.cos(angle);
+				x += pyramid.midpoints[0];
+				y += pyramid.midpoints[1];
+				pyramid.polygon_points[i][0] = x;
+				pyramid.polygon_points[i][1] = y;
 				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
 						/ (eye_z + pyramid.polygon_points[i][2]);
 				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
@@ -985,12 +1007,14 @@ public class MainProgram extends JFrame {
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.Px[i][1] = box.polygon_points[i][0];
-				box.Py[i][1] = box.polygon_points[i][1];
-				box.Pz[i][1] = box.polygon_points[i][2];
-				box.polygon_points[i][0] -= (box.Px[0][1] - box.Px[0][0]);
-				box.polygon_points[i][1] -= (box.Py[0][1] - box.Py[0][0]);
-				box.polygon_points[i][2] -= (box.Pz[0][1] - box.Pz[0][0]);
+				Tx = box.polygon_points[i][0] - box.midpoints[0];
+				Ty = box.polygon_points[i][1] - box.midpoints[1];
+				x = Tx * Math.cos(angle) - Ty * Math.sin(angle);
+				y = Tx * Math.sin(angle) + Ty * Math.cos(angle);
+				x += box.midpoints[0];
+				y += box.midpoints[1];
+				box.polygon_points[i][0] = x;
+				box.polygon_points[i][1] = y;
 				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
 						/ (eye_z + box.polygon_points[i][2]);
 				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
@@ -999,21 +1023,27 @@ public class MainProgram extends JFrame {
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.Px[i][1] = cube.polygon_points[i][0];
-				cube.Py[i][1] = cube.polygon_points[i][1];
-				cube.Pz[i][1] = cube.polygon_points[i][2];
-				cube.polygon_points[i][0] -= (cube.Px[0][1] - cube.Px[0][0]);
-				cube.polygon_points[i][1] -= (cube.Py[0][1] - cube.Py[0][0]);
-				cube.polygon_points[i][2] -= (cube.Pz[0][1] - cube.Pz[0][0]);
+				Tx = cube.polygon_points[i][0] - cube.midpoints[0];
+				Ty = cube.polygon_points[i][1] - cube.midpoints[1];
+				x = Tx * Math.cos(angle) - Ty * Math.sin(angle);
+				y = Tx * Math.sin(angle) + Ty * Math.cos(angle);
+				x += cube.midpoints[0];
+				y += cube.midpoints[1];
+				cube.polygon_points[i][0] = x;
+				cube.polygon_points[i][1] = y;
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
 						/ (eye_z + cube.polygon_points[i][2]);
 			}
 		}
+		AddOffset();
 
 	}
-
+	
+	/*
+	 * Finds the Mid point of each object
+	 */
 	public void FindMidPoint() {
 		double minX, maxX, minY, maxY, minZ, maxZ;
 
@@ -1024,22 +1054,22 @@ public class MainProgram extends JFrame {
 			maxY = pyramid.polygon_points[0][1];
 			minZ = pyramid.polygon_points[0][2];
 			maxZ = pyramid.polygon_points[0][2];
-			
+
 			for (int i = 0; i < 5; i++) {
-				if(minX < pyramid.polygon_points[i][0])
+				if (minX < pyramid.polygon_points[i][0])
 					minX = pyramid.polygon_points[i][0];
-				if(maxX > pyramid.polygon_points[i][0])
+				if (maxX > pyramid.polygon_points[i][0])
 					maxX = pyramid.polygon_points[i][0];
-				if(minY < pyramid.polygon_points[i][1])
+				if (minY < pyramid.polygon_points[i][1])
 					minY = pyramid.polygon_points[i][1];
-				if(maxY > pyramid.polygon_points[i][1])
+				if (maxY > pyramid.polygon_points[i][1])
 					maxY = pyramid.polygon_points[i][1];
-				if(minZ < pyramid.polygon_points[i][2])
+				if (minZ < pyramid.polygon_points[i][2])
 					minZ = pyramid.polygon_points[i][2];
-				if(maxZ > pyramid.polygon_points[i][2])
+				if (maxZ > pyramid.polygon_points[i][2])
 					maxZ = pyramid.polygon_points[i][2];
 			}
-			
+
 			pyramid.midpoints[0] = (minX + maxX) / 2;
 			pyramid.midpoints[1] = (minY + maxY) / 2;
 			pyramid.midpoints[2] = (minZ + maxZ) / 2;
@@ -1051,19 +1081,19 @@ public class MainProgram extends JFrame {
 			maxY = box.polygon_points[0][1];
 			minZ = box.polygon_points[0][2];
 			maxZ = box.polygon_points[0][2];
-			
+
 			for (int i = 0; i < 8; i++) {
-				if(minX < box.polygon_points[i][0])
+				if (minX < box.polygon_points[i][0])
 					minX = box.polygon_points[i][0];
-				if(maxX > box.polygon_points[i][0])
+				if (maxX > box.polygon_points[i][0])
 					maxX = box.polygon_points[i][0];
-				if(minY < box.polygon_points[i][1])
+				if (minY < box.polygon_points[i][1])
 					minY = box.polygon_points[i][1];
-				if(maxY > box.polygon_points[i][1])
+				if (maxY > box.polygon_points[i][1])
 					maxY = box.polygon_points[i][1];
-				if(minZ < box.polygon_points[i][2])
+				if (minZ < box.polygon_points[i][2])
 					minZ = box.polygon_points[i][2];
-				if(maxZ > box.polygon_points[i][2])
+				if (maxZ > box.polygon_points[i][2])
 					maxZ = box.polygon_points[i][2];
 			}
 			box.midpoints[0] = (minX + maxX) / 2;
@@ -1077,19 +1107,19 @@ public class MainProgram extends JFrame {
 			maxY = cube.polygon_points[0][1];
 			minZ = cube.polygon_points[0][2];
 			maxZ = cube.polygon_points[0][2];
-			
+
 			for (int i = 0; i < 8; i++) {
-				if(minX < cube.polygon_points[i][0])
+				if (minX < cube.polygon_points[i][0])
 					minX = cube.polygon_points[i][0];
-				if(maxX > cube.polygon_points[i][0])
+				if (maxX > cube.polygon_points[i][0])
 					maxX = cube.polygon_points[i][0];
-				if(minY < cube.polygon_points[i][1])
+				if (minY < cube.polygon_points[i][1])
 					minY = cube.polygon_points[i][1];
-				if(maxY > cube.polygon_points[i][1])
+				if (maxY > cube.polygon_points[i][1])
 					maxY = cube.polygon_points[i][1];
-				if(minZ < cube.polygon_points[i][2])
+				if (minZ < cube.polygon_points[i][2])
 					minZ = cube.polygon_points[i][2];
-				if(maxZ > cube.polygon_points[i][2])
+				if (maxZ > cube.polygon_points[i][2])
 					maxZ = cube.polygon_points[i][2];
 			}
 			cube.midpoints[0] = (minX + maxX) / 2;
