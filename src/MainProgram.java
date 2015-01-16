@@ -36,9 +36,9 @@ public class MainProgram extends JFrame {
 		double[] midpoints = new double[3];
 		double[][] temp = new double[8][4];
 		boolean isSet; // boolean for the
-		double[][] Tx = new double[8][2];
-		double[][] Ty = new double[8][2];
-		double[][] Tz = new double[8][2];
+		double[][] Px = new double[8][2];
+		double[][] Py = new double[8][2];
+		double[][] Pz = new double[8][2];
 	}
 
 	Obj pyramid = new Obj();
@@ -883,7 +883,7 @@ public class MainProgram extends JFrame {
 			}
 			TranslateBack();
 		}
-		if (box.isSet){
+		if (box.isSet) {
 			Translate();
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] = (box.polygon_points[i][0]
@@ -895,7 +895,7 @@ public class MainProgram extends JFrame {
 			}
 			TranslateBack();
 		}
-		if (cube.isSet){
+		if (cube.isSet) {
 			Translate();
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] = (cube.polygon_points[i][0]
@@ -938,43 +938,50 @@ public class MainProgram extends JFrame {
 						- cube.screen_points[i][1];
 			}
 	}
-	
-	// Draws the oyramid onto the canvas
 
+	/*
+	 * Translate the object to the origin, basically storing its 'current' x, y,
+	 * z points
+	 */
 	public void Translate() {
 
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.Tx[i][0] = (pyramid.polygon_points[i][0] + pyramid.temp[i][0]) / 2;
-				pyramid.Ty[i][0] = (pyramid.polygon_points[i][1] + pyramid.temp[i][1]) / 2;
-				pyramid.Tz[i][0] = (pyramid.polygon_points[i][2] + pyramid.temp[i][2]) / 2;
+				pyramid.Px[i][0] = pyramid.polygon_points[i][0];
+				pyramid.Py[i][0] = pyramid.polygon_points[i][1];
+				pyramid.Pz[i][0] = pyramid.polygon_points[i][2];
 			}
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.Tx[i][0] = (box.polygon_points[i][0] + box.temp[i][0]) / 2;
-				box.Ty[i][0] = (box.polygon_points[i][1] + box.temp[i][1]) / 2;
-				box.Tz[i][0] = (box.polygon_points[i][2] + box.temp[i][2]) / 2;
+				box.Px[i][0] = box.polygon_points[i][0];
+				box.Py[i][0] = box.polygon_points[i][1];
+				box.Pz[i][0] = box.polygon_points[i][2];
 			}
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.Tx[i][0] = (cube.polygon_points[i][0] + cube.temp[i][0]) / 2;
-				cube.Ty[i][0] = (cube.polygon_points[i][1] + cube.temp[i][1]) / 2;
-				cube.Tz[i][0] = (cube.polygon_points[i][2] + cube.temp[i][2]) / 2;
+				cube.Px[i][0] = cube.polygon_points[i][0];
+				cube.Py[i][0] = cube.polygon_points[i][1];
+				cube.Pz[i][0] = cube.polygon_points[i][2];
 			}
 		}
 	}
 
+	/*
+	 * Translate the object back to the origin, basically using its 'current' x,
+	 * y, z points and the 'old' x, y, z points takes the differance and
+	 * substracts that form each x, y, z.
+	 */
 	public void TranslateBack() {
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
-				pyramid.Tx[i][1] = (pyramid.polygon_points[i][0] + pyramid.temp[i][0]) / 2;
-				pyramid.Ty[i][1] = (pyramid.polygon_points[i][1] + pyramid.temp[i][1]) / 2;
-				pyramid.Tz[i][1] = (pyramid.polygon_points[i][2] + pyramid.temp[i][2]) / 2;
-				pyramid.polygon_points[i][0] -= (pyramid.Tx[0][1] - pyramid.Tx[0][0]);
-				pyramid.polygon_points[i][1] -= (pyramid.Ty[0][1] - pyramid.Ty[0][0]);
-				pyramid.polygon_points[i][2] -= (pyramid.Tz[0][1] - pyramid.Tz[0][0]);
+				pyramid.Px[i][1] = pyramid.polygon_points[i][0];
+				pyramid.Py[i][1] = pyramid.polygon_points[i][1];
+				pyramid.Pz[i][1] = pyramid.polygon_points[i][2];
+				pyramid.polygon_points[i][0] -= (pyramid.Px[0][1] - pyramid.Px[0][0]);
+				pyramid.polygon_points[i][1] -= (pyramid.Py[0][1] - pyramid.Py[0][0]);
+				pyramid.polygon_points[i][2] -= (pyramid.Pz[0][1] - pyramid.Pz[0][0]);
 				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
 						/ (eye_z + pyramid.polygon_points[i][2]);
 				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
@@ -983,12 +990,12 @@ public class MainProgram extends JFrame {
 		}
 		if (box.isSet) {
 			for (int i = 0; i < 8; i++) {
-				box.Tx[i][1] = (box.polygon_points[i][0] + box.temp[i][0]) / 2;
-				box.Ty[i][1] = (box.polygon_points[i][1] + box.temp[i][1]) / 2;
-				box.Tz[i][1] = (box.polygon_points[i][2] + box.temp[i][2]) / 2;
-				box.polygon_points[i][0] -= (box.Tx[0][1] - box.Tx[0][0]);
-				box.polygon_points[i][1] -= (box.Ty[0][1] - box.Ty[0][0]);
-				box.polygon_points[i][2] -= (box.Tz[0][1] - box.Tz[0][0]);
+				box.Px[i][1] = box.polygon_points[i][0];
+				box.Py[i][1] = box.polygon_points[i][1];
+				box.Pz[i][1] = box.polygon_points[i][2];
+				box.polygon_points[i][0] -= (box.Px[0][1] - box.Px[0][0]);
+				box.polygon_points[i][1] -= (box.Py[0][1] - box.Py[0][0]);
+				box.polygon_points[i][2] -= (box.Pz[0][1] - box.Pz[0][0]);
 				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
 						/ (eye_z + box.polygon_points[i][2]);
 				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
@@ -997,12 +1004,12 @@ public class MainProgram extends JFrame {
 		}
 		if (cube.isSet) {
 			for (int i = 0; i < 8; i++) {
-				cube.Tx[i][1] = (cube.polygon_points[i][0] + cube.temp[i][0]) / 2;
-				cube.Ty[i][1] = (cube.polygon_points[i][1] + cube.temp[i][1]) / 2;
-				cube.Tz[i][1] = (cube.polygon_points[i][2] + cube.temp[i][2]) / 2;
-				cube.polygon_points[i][0] -= (cube.Tx[0][1] - cube.Tx[0][0]);
-				cube.polygon_points[i][1] -= (cube.Ty[0][1] - cube.Ty[0][0]);
-				cube.polygon_points[i][2] -= (cube.Tz[0][1] - cube.Tz[0][0]);
+				cube.Px[i][1] = cube.polygon_points[i][0];
+				cube.Py[i][1] = cube.polygon_points[i][1];
+				cube.Pz[i][1] = cube.polygon_points[i][2];
+				cube.polygon_points[i][0] -= (cube.Px[0][1] - cube.Px[0][0]);
+				cube.polygon_points[i][1] -= (cube.Py[0][1] - cube.Py[0][0]);
+				cube.polygon_points[i][2] -= (cube.Pz[0][1] - cube.Pz[0][0]);
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
