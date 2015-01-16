@@ -906,33 +906,6 @@ public class MainProgram extends JFrame {
 
 	}
 
-	// Adds the appropriate offset so the camera is looking at the origin of the
-	// screen
-	public void AddOffset() {
-
-		if (pyramid.isSet)
-			for (int i = 0; i < 5; i++) {
-				pyramid.temp_screen_points[i][0] = pyramid.offset[0]
-						+ pyramid.screen_points[i][0];
-				pyramid.temp_screen_points[i][1] = pyramid.offset[1]
-						- pyramid.screen_points[i][1];
-			}
-		if (box.isSet)
-			for (int i = 0; i < 8; i++) {
-				box.temp_screen_points[i][0] = box.offset[0]
-						+ box.screen_points[i][0];
-				box.temp_screen_points[i][1] = box.offset[1]
-						- box.screen_points[i][1];
-			}
-		if (cube.isSet)
-			for (int i = 0; i < 8; i++) {
-				cube.temp_screen_points[i][0] = cube.offset[0]
-						+ cube.screen_points[i][0];
-				cube.temp_screen_points[i][1] = cube.offset[1]
-						- cube.screen_points[i][1];
-			}
-	}
-
 	/*
 	 * Translate the object to the origin, basically storing its 'current' x, y,
 	 * z points
@@ -1001,9 +974,9 @@ public class MainProgram extends JFrame {
 				cube.Px[i][1] = cube.polygon_points[i][0];
 				cube.Py[i][1] = cube.polygon_points[i][1];
 				cube.Pz[i][1] = cube.polygon_points[i][2];
-				cube.polygon_points[i][0] -= (cube.Px[1][1] - cube.Px[1][0]);
-				cube.polygon_points[i][1] -= (cube.Py[1][1] - cube.Py[1][0]);
-				cube.polygon_points[i][2] -= (cube.Pz[1][1] - cube.Pz[1][0]);
+				cube.polygon_points[i][0] -= (cube.Px[0][1] - cube.Px[0][0]);
+				cube.polygon_points[i][1] -= (cube.Py[0][1] - cube.Py[0][0]);
+				cube.polygon_points[i][2] -= (cube.Pz[0][1] - cube.Pz[0][0]);
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
@@ -1011,6 +984,35 @@ public class MainProgram extends JFrame {
 			}
 		}
 
+	}
+
+	/*
+	 * Adds the appropriate offset so the camera is looking at the origin of the
+	 * screen
+	 */
+	public void AddOffset() {
+
+		if (pyramid.isSet)
+			for (int i = 0; i < 5; i++) {
+				pyramid.temp_screen_points[i][0] = pyramid.offset[0]
+						+ pyramid.screen_points[i][0];
+				pyramid.temp_screen_points[i][1] = pyramid.offset[1]
+						- pyramid.screen_points[i][1];
+			}
+		if (box.isSet)
+			for (int i = 0; i < 8; i++) {
+				box.temp_screen_points[i][0] = box.offset[0]
+						+ box.screen_points[i][0];
+				box.temp_screen_points[i][1] = box.offset[1]
+						- box.screen_points[i][1];
+			}
+		if (cube.isSet)
+			for (int i = 0; i < 8; i++) {
+				cube.temp_screen_points[i][0] = cube.offset[0]
+						+ cube.screen_points[i][0];
+				cube.temp_screen_points[i][1] = cube.offset[1]
+						- cube.screen_points[i][1];
+			}
 	}
 
 	/*
