@@ -29,9 +29,10 @@ public class MainProgram extends JFrame {
 	// Obj object defining each 3D object
 	public class Obj {
 		// the points of the polygon,
-		double[][] polygon_points = new double[8][4];
+		double[][] polygon_points = new double[8][3];
 		double[][] screen_points = new double[8][2];
 		double[][] temp_screen_points = new double[8][2];
+		double[] midpoints = new double[3];
 		double[] offset = new double[2];
 		boolean isSet; // boolean to know which objects are selected
 		double[][] Px = new double[8][2];
@@ -376,6 +377,7 @@ public class MainProgram extends JFrame {
 	 * right
 	 */
 	public void MoveRight() {
+		FindMidPoint();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] += increment;
@@ -405,6 +407,7 @@ public class MainProgram extends JFrame {
 	 * the right
 	 */
 	public void MoveLeft() {
+		FindMidPoint();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] -= increment;
@@ -432,6 +435,7 @@ public class MainProgram extends JFrame {
 	 * This decreases as all of the y values moving the object to the down
 	 */
 	public void MoveDown() {
+		FindMidPoint();
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] -= increment;
@@ -461,6 +465,7 @@ public class MainProgram extends JFrame {
 	 * This increment to the all of the y values moving the object to the up
 	 */
 	public void MoveUp() {
+		FindMidPoint();
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] += increment;
@@ -489,6 +494,7 @@ public class MainProgram extends JFrame {
 	 * the object foward
 	 */
 	public void MoveForward() {
+		FindMidPoint();
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][2] -= increment * 15;
@@ -522,6 +528,7 @@ public class MainProgram extends JFrame {
 	 * object backwards
 	 */
 	public void MoveBackward() {
+		FindMidPoint();
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][2] += increment * 15;
@@ -555,11 +562,18 @@ public class MainProgram extends JFrame {
 	 * the object up
 	 */
 	public void ScaleUp() {
+		FindMidPoint();
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][0] *= 2;
-				pyramid.polygon_points[i][1] *= 2;
-				pyramid.polygon_points[i][2] *= 2;
+				pyramid.polygon_points[i][0] -= pyramid.midpoints[0];
+				pyramid.polygon_points[i][1] -= pyramid.midpoints[1];
+				pyramid.polygon_points[i][2] -= pyramid.midpoints[2];
+				pyramid.polygon_points[i][0] *= 1.2;
+				pyramid.polygon_points[i][1] *= 1.2;
+				pyramid.polygon_points[i][2] *= 1.2;
+				pyramid.polygon_points[i][0] += pyramid.midpoints[0];
+				pyramid.polygon_points[i][1] += pyramid.midpoints[1];
+				pyramid.polygon_points[i][2] += pyramid.midpoints[2];
 				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
 						/ (eye_z + pyramid.polygon_points[i][2]);
 				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
@@ -567,9 +581,15 @@ public class MainProgram extends JFrame {
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][0] *= 2;
-				box.polygon_points[i][1] *= 2;
-				box.polygon_points[i][2] *= 2;
+				box.polygon_points[i][0] -= box.midpoints[0];
+				box.polygon_points[i][1] -= box.midpoints[1];
+				box.polygon_points[i][2] -= box.midpoints[2];
+				box.polygon_points[i][0] *= 1.2;
+				box.polygon_points[i][1] *= 1.2;
+				box.polygon_points[i][2] *= 1.2;
+				box.polygon_points[i][0] += box.midpoints[0];
+				box.polygon_points[i][1] += box.midpoints[1];
+				box.polygon_points[i][2] += box.midpoints[2];
 				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
 						/ (eye_z + box.polygon_points[i][2]);
 				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
@@ -577,9 +597,15 @@ public class MainProgram extends JFrame {
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][0] *= 2;
-				cube.polygon_points[i][1] *= 2;
-				cube.polygon_points[i][2] *= 2;
+				cube.polygon_points[i][0] -= cube.midpoints[0];
+				cube.polygon_points[i][1] -= cube.midpoints[1];
+				cube.polygon_points[i][2] -= cube.midpoints[2];
+				cube.polygon_points[i][0] *= 1.2;
+				cube.polygon_points[i][1] *= 1.2;
+				cube.polygon_points[i][2] *= 1.2;
+				cube.polygon_points[i][0] += cube.midpoints[0];
+				cube.polygon_points[i][1] += cube.midpoints[1];
+				cube.polygon_points[i][2] += cube.midpoints[2];
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
@@ -595,11 +621,18 @@ public class MainProgram extends JFrame {
 	 * object down
 	 */
 	public void ScaleDown() {
+		FindMidPoint();
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
-				pyramid.polygon_points[i][0] /= 2;
-				pyramid.polygon_points[i][1] /= 2;
-				pyramid.polygon_points[i][2] /= 2;
+				pyramid.polygon_points[i][0] -= pyramid.midpoints[0];
+				pyramid.polygon_points[i][1] -= pyramid.midpoints[1];
+				pyramid.polygon_points[i][2] -= pyramid.midpoints[2];
+				pyramid.polygon_points[i][0] /= 1.2;
+				pyramid.polygon_points[i][1] /= 1.2;
+				pyramid.polygon_points[i][2] /= 1.2;
+				pyramid.polygon_points[i][0] += pyramid.midpoints[0];
+				pyramid.polygon_points[i][1] += pyramid.midpoints[1];
+				pyramid.polygon_points[i][2] += pyramid.midpoints[2];
 				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
 						/ (eye_z + pyramid.polygon_points[i][2]);
 				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
@@ -607,9 +640,15 @@ public class MainProgram extends JFrame {
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
-				box.polygon_points[i][0] /= 2;
-				box.polygon_points[i][1] /= 2;
-				box.polygon_points[i][2] /= 2;
+				box.polygon_points[i][0] -= box.midpoints[0];
+				box.polygon_points[i][1] -= box.midpoints[1];
+				box.polygon_points[i][2] -= box.midpoints[2];
+				box.polygon_points[i][0] /= 1.2;
+				box.polygon_points[i][1] /= 1.2;
+				box.polygon_points[i][2] /= 1.2;
+				box.polygon_points[i][0] += box.midpoints[0];
+				box.polygon_points[i][1] += box.midpoints[1];
+				box.polygon_points[i][2] += box.midpoints[2];
 				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
 						/ (eye_z + box.polygon_points[i][2]);
 				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
@@ -617,13 +656,19 @@ public class MainProgram extends JFrame {
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
-				cube.polygon_points[i][0] /= 2;
-				cube.polygon_points[i][1] /= 2;
-				cube.polygon_points[i][2] /= 2;
+				cube.polygon_points[i][0] -= cube.midpoints[0];
+				cube.polygon_points[i][1] -= cube.midpoints[1];
+				cube.polygon_points[i][2] -= cube.midpoints[2];
+				cube.polygon_points[i][0] /= 1.2;
+				cube.polygon_points[i][1] /= 1.2;
+				cube.polygon_points[i][2] /= 1.2;
+				cube.polygon_points[i][0] += cube.midpoints[0];
+				cube.polygon_points[i][1] += cube.midpoints[1];
+				cube.polygon_points[i][2] += cube.midpoints[2];
 				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
 						/ (eye_z + cube.polygon_points[i][2]);
 				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+						/ (eye_z + box.polygon_points[i][2]);
 			}
 		AddOffset();
 	}
@@ -633,10 +678,15 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateXClockwise() {
 		double angle = 25.0;
+		double x, y, z;
+		double tx, ty, tz;
+		
+		FindMidPoint();
 
-		Translate();
+		//Translate();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
+				tx = pyramid.polygon_points
 				pyramid.polygon_points[i][1] = (pyramid.polygon_points[i][1]
 						* Math.cos(angle) - pyramid.polygon_points[i][2]
 						* Math.sin(angle));
@@ -644,10 +694,10 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + pyramid.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			
+
 		}
 		if (box.isSet) {
-			
+
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] = (box.polygon_points[i][1]
 						* Math.cos(angle) - box.polygon_points[i][2]
@@ -656,10 +706,10 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + box.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			
+
 		}
 		if (cube.isSet) {
-	
+
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] = (cube.polygon_points[i][1]
 						* Math.cos(angle) - cube.polygon_points[i][2]
@@ -668,7 +718,7 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][2]
 						* Math.cos(angle));
 			}
-			
+
 		}
 		TranslateBack();
 		AddOffset();
@@ -846,7 +896,7 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateZCounterClockwise() {
 		double angle = -25.0;
-		
+
 		Translate();
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
@@ -877,7 +927,7 @@ public class MainProgram extends JFrame {
 						* Math.sin(angle) + cube.polygon_points[i][1]
 						* Math.cos(angle));
 			}
-			
+
 		}
 		TranslateBack();
 		AddOffset();
@@ -962,6 +1012,90 @@ public class MainProgram extends JFrame {
 			}
 		}
 
+	}
+
+	public void FindMidPoint() {
+		double minX, maxX, minY, maxY, minZ, maxZ;
+
+		if (pyramid.isSet) {
+			minX = pyramid.polygon_points[0][0];
+			maxX = pyramid.polygon_points[0][0];
+			minY = pyramid.polygon_points[0][1];
+			maxY = pyramid.polygon_points[0][1];
+			minZ = pyramid.polygon_points[0][2];
+			maxZ = pyramid.polygon_points[0][2];
+			
+			for (int i = 0; i < 5; i++) {
+				if(minX < pyramid.polygon_points[i][0])
+					minX = pyramid.polygon_points[i][0];
+				if(maxX > pyramid.polygon_points[i][0])
+					maxX = pyramid.polygon_points[i][0];
+				if(minY < pyramid.polygon_points[i][1])
+					minY = pyramid.polygon_points[i][1];
+				if(maxY > pyramid.polygon_points[i][1])
+					maxY = pyramid.polygon_points[i][1];
+				if(minZ < pyramid.polygon_points[i][2])
+					minZ = pyramid.polygon_points[i][2];
+				if(maxZ > pyramid.polygon_points[i][2])
+					maxZ = pyramid.polygon_points[i][2];
+			}
+			
+			pyramid.midpoints[0] = (minX + maxX) / 2;
+			pyramid.midpoints[1] = (minY + maxY) / 2;
+			pyramid.midpoints[2] = (minZ + maxZ) / 2;
+		}
+		if (box.isSet) {
+			minX = box.polygon_points[0][0];
+			maxX = box.polygon_points[0][0];
+			minY = box.polygon_points[0][1];
+			maxY = box.polygon_points[0][1];
+			minZ = box.polygon_points[0][2];
+			maxZ = box.polygon_points[0][2];
+			
+			for (int i = 0; i < 8; i++) {
+				if(minX < box.polygon_points[i][0])
+					minX = box.polygon_points[i][0];
+				if(maxX > box.polygon_points[i][0])
+					maxX = box.polygon_points[i][0];
+				if(minY < box.polygon_points[i][1])
+					minY = box.polygon_points[i][1];
+				if(maxY > box.polygon_points[i][1])
+					maxY = box.polygon_points[i][1];
+				if(minZ < box.polygon_points[i][2])
+					minZ = box.polygon_points[i][2];
+				if(maxZ > box.polygon_points[i][2])
+					maxZ = box.polygon_points[i][2];
+			}
+			box.midpoints[0] = (minX + maxX) / 2;
+			box.midpoints[1] = (minY + maxY) / 2;
+			box.midpoints[2] = (minZ + maxZ) / 2;
+		}
+		if (cube.isSet) {
+			minX = cube.polygon_points[0][0];
+			maxX = cube.polygon_points[0][0];
+			minY = cube.polygon_points[0][1];
+			maxY = cube.polygon_points[0][1];
+			minZ = cube.polygon_points[0][2];
+			maxZ = cube.polygon_points[0][2];
+			
+			for (int i = 0; i < 8; i++) {
+				if(minX < cube.polygon_points[i][0])
+					minX = cube.polygon_points[i][0];
+				if(maxX > cube.polygon_points[i][0])
+					maxX = cube.polygon_points[i][0];
+				if(minY < cube.polygon_points[i][1])
+					minY = cube.polygon_points[i][1];
+				if(maxY > cube.polygon_points[i][1])
+					maxY = cube.polygon_points[i][1];
+				if(minZ < cube.polygon_points[i][2])
+					minZ = cube.polygon_points[i][2];
+				if(maxZ > cube.polygon_points[i][2])
+					maxZ = cube.polygon_points[i][2];
+			}
+			cube.midpoints[0] = (minX + maxX) / 2;
+			cube.midpoints[1] = (minY + maxY) / 2;
+			cube.midpoints[2] = (minZ + maxZ) / 2;
+		}
 	}
 
 	/*
