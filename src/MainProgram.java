@@ -30,13 +30,10 @@ public class MainProgram extends JFrame {
 	public class Obj {
 		// the points of the polygon,
 		double[][] polygon_points = new double[8][3];
-		double[][] screen_points = new double[8][2];
+		double[][] screen_points = new double[8][3];
 		double[] midpoints = new double[3];
 		double[] offset = new double[2];
 		boolean isSet; // boolean to know which objects are selected
-		double[][] Px = new double[8][2];
-		double[][] Py = new double[8][2];
-		double[][] Pz = new double[8][2];
 	}
 
 	Obj pyramid = new Obj();
@@ -298,28 +295,10 @@ public class MainProgram extends JFrame {
 		PerspectivePorjection(pyramid, 5);
 		PerspectivePorjection(box, 8);
 		PerspectivePorjection(cube, 8);
-
-		// Adds offset for screen origin
-		for (int i = 0; i < 5; i++) {
-			pyramid.screen_points[i][0] = pyramid.offset[0]
-					+ pyramid.screen_points[i][0];
-			pyramid.screen_points[i][1] = pyramid.offset[1]
-					- pyramid.screen_points[i][1];
-		}
-
-		for (int i = 0; i < 8; i++) {
-			box.screen_points[i][0] = box.offset[0]
-					+ box.screen_points[i][0];
-			box.screen_points[i][1] = box.offset[1]
-					- box.screen_points[i][1];
-		}
-
-		for (int i = 0; i < 8; i++) {
-			cube.screen_points[i][0] = cube.offset[0]
-					+ cube.screen_points[i][0];
-			cube.screen_points[i][1] = cube.offset[1]
-					- cube.screen_points[i][1];
-		}
+		
+		pyramid.isSet = box.isSet = cube.isSet = true;
+		AddOffset();
+		pyramid.isSet = box.isSet = cube.isSet = false;
 
 		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
@@ -1009,11 +988,17 @@ public class MainProgram extends JFrame {
 		}
 	}
 	
+	
+	/*
+	 * Calculates the perspective project points for converting 3D to 2D
+	 */
 	public void PerspectivePorjection(Obj obj, int points){
 		for(int i = 0; i < points; i++){
 			obj.screen_points[i][0] = (eye_z * obj.polygon_points[i][0])
 					/ (eye_z + obj.polygon_points[i][2]);
 			obj.screen_points[i][1] = (eye_z * obj.polygon_points[i][1])
+					/ (eye_z + obj.polygon_points[i][2]);
+			obj.screen_points[i][2] = obj.polygon_points[i][2]
 					/ (eye_z + obj.polygon_points[i][2]);
 		}
 		
