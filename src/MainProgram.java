@@ -31,7 +31,6 @@ public class MainProgram extends JFrame {
 		// the points of the polygon,
 		double[][] polygon_points = new double[8][3];
 		double[][] screen_points = new double[8][2];
-		double[][] temp_screen_points = new double[8][2];
 		double[] midpoints = new double[3];
 		double[] offset = new double[2];
 		boolean isSet; // boolean to know which objects are selected
@@ -273,22 +272,22 @@ public class MainProgram extends JFrame {
 		// P5
 		cube.polygon_points[4][0] = 250;
 		cube.polygon_points[4][1] = 100;
-		cube.polygon_points[4][2] = 400;
+		cube.polygon_points[4][2] = 300;
 
 		// P6
 		cube.polygon_points[5][0] = 150;
 		cube.polygon_points[5][1] = 100;
-		cube.polygon_points[5][2] = 400;
+		cube.polygon_points[5][2] = 300;
 
 		// P7
 		cube.polygon_points[6][0] = 250;
 		cube.polygon_points[6][1] = 20;
-		cube.polygon_points[6][2] = 400;
+		cube.polygon_points[6][2] = 300;
 
 		// P8
 		cube.polygon_points[7][0] = 150;
 		cube.polygon_points[7][1] = 20;
-		cube.polygon_points[7][2] = 400;
+		cube.polygon_points[7][2] = 300;
 
 		// sets the offset for each object
 		pyramid.offset[0] = box.offset[0] = cube.offset[0] = x_origin;
@@ -296,46 +295,29 @@ public class MainProgram extends JFrame {
 
 		// Sets the original perspective projection polygon points and stores
 		// them as screen points.
-		for (int i = 0; i < 5; i++) {
-			pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-					/ (eye_z + pyramid.polygon_points[i][2]);
-			pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-					/ (eye_z + pyramid.polygon_points[i][2]);
-		}
-
-		for (int i = 0; i < 8; i++) {
-			box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-					/ (eye_z + box.polygon_points[i][2]);
-			box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-					/ (eye_z + box.polygon_points[i][2]);
-		}
-
-		for (int i = 0; i < 8; i++) {
-			cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-					/ (eye_z + cube.polygon_points[i][2]);
-			cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-					/ (eye_z + cube.polygon_points[i][2]);
-		}
+		PerspectivePorjection(pyramid, 5);
+		PerspectivePorjection(box, 8);
+		PerspectivePorjection(cube, 8);
 
 		// Adds offset for screen origin
 		for (int i = 0; i < 5; i++) {
-			pyramid.temp_screen_points[i][0] = pyramid.offset[0]
+			pyramid.screen_points[i][0] = pyramid.offset[0]
 					+ pyramid.screen_points[i][0];
-			pyramid.temp_screen_points[i][1] = pyramid.offset[1]
+			pyramid.screen_points[i][1] = pyramid.offset[1]
 					- pyramid.screen_points[i][1];
 		}
 
 		for (int i = 0; i < 8; i++) {
-			box.temp_screen_points[i][0] = box.offset[0]
+			box.screen_points[i][0] = box.offset[0]
 					+ box.screen_points[i][0];
-			box.temp_screen_points[i][1] = box.offset[1]
+			box.screen_points[i][1] = box.offset[1]
 					- box.screen_points[i][1];
 		}
 
 		for (int i = 0; i < 8; i++) {
-			cube.temp_screen_points[i][0] = cube.offset[0]
+			cube.screen_points[i][0] = cube.offset[0]
 					+ cube.screen_points[i][0];
-			cube.temp_screen_points[i][1] = cube.offset[1]
+			cube.screen_points[i][1] = cube.offset[1]
 					- cube.screen_points[i][1];
 		}
 
@@ -381,21 +363,18 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] += increment;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] += increment;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] += increment;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -411,21 +390,18 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] -= increment;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] -= increment;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] -= increment;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -439,22 +415,20 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] -= increment;
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] -= increment;
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
+				
 
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] -= increment;
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 
 			}
 		AddOffset();
@@ -469,20 +443,17 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] += increment;
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] += increment;
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] += increment;
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 
@@ -498,26 +469,17 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][2] -= increment * 15;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][2] -= increment * 15;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][2] -= increment * 15;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -532,26 +494,17 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][2] += increment * 15;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][2] += increment * 15;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][2] += increment * 15;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -574,10 +527,7 @@ public class MainProgram extends JFrame {
 				pyramid.polygon_points[i][0] += pyramid.midpoints[0];
 				pyramid.polygon_points[i][1] += pyramid.midpoints[1];
 				pyramid.polygon_points[i][2] += pyramid.midpoints[2];
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -590,10 +540,7 @@ public class MainProgram extends JFrame {
 				box.polygon_points[i][0] += box.midpoints[0];
 				box.polygon_points[i][1] += box.midpoints[1];
 				box.polygon_points[i][2] += box.midpoints[2];
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -606,10 +553,7 @@ public class MainProgram extends JFrame {
 				cube.polygon_points[i][0] += cube.midpoints[0];
 				cube.polygon_points[i][1] += cube.midpoints[1];
 				cube.polygon_points[i][2] += cube.midpoints[2];
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 
@@ -633,10 +577,7 @@ public class MainProgram extends JFrame {
 				pyramid.polygon_points[i][0] += pyramid.midpoints[0];
 				pyramid.polygon_points[i][1] += pyramid.midpoints[1];
 				pyramid.polygon_points[i][2] += pyramid.midpoints[2];
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -649,10 +590,7 @@ public class MainProgram extends JFrame {
 				box.polygon_points[i][0] += box.midpoints[0];
 				box.polygon_points[i][1] += box.midpoints[1];
 				box.polygon_points[i][2] += box.midpoints[2];
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -665,10 +603,7 @@ public class MainProgram extends JFrame {
 				cube.polygon_points[i][0] += cube.midpoints[0];
 				cube.polygon_points[i][1] += cube.midpoints[1];
 				cube.polygon_points[i][2] += cube.midpoints[2];
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -678,8 +613,8 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateXClockwise() {
 		double angle = 0.20;
-		double x, y, z;
-		double Tx, Ty, Tz;
+		double y, z;
+		double Ty, Tz;
 
 		FindMidPoint();
 
@@ -693,10 +628,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][1] = y;
 				pyramid.polygon_points[i][2] = z;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 
 		}
@@ -710,10 +642,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][1] = y;
 				box.polygon_points[i][2] = z;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -726,10 +655,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][1] = y;
 				cube.polygon_points[i][2] = z;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -739,9 +665,9 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the X axis counter clockwise
 	 */
 	public void RotateXCounterClockwise() {
-		double angle = 0.20;
-		double x, y, z;
-		double Tx, Ty, Tz;
+		double angle = -0.20;
+		double y, z;
+		double Ty, Tz;
 
 		FindMidPoint();
 
@@ -755,10 +681,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][1] = y;
 				pyramid.polygon_points[i][2] = z;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 
 		}
@@ -772,10 +695,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][1] = y;
 				box.polygon_points[i][2] = z;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -788,10 +708,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][1] = y;
 				cube.polygon_points[i][2] = z;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -802,8 +719,8 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateYClockwise() {
 		double angle = 0.20;
-		double x, y, z;
-		double Tx, Ty, Tz;
+		double x, z;
+		double Tx, Tz;
 		
 		FindMidPoint();
 		if (pyramid.isSet) {
@@ -816,10 +733,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][2] = z;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -832,10 +746,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][2] = z;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -848,10 +759,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][2] = z;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -862,8 +770,8 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateYCounterClockwise() {
 		double angle = -0.20;
-		double x, y, z;
-		double Tx, Ty, Tz;
+		double x, z;
+		double Tx, Tz;
 		
 		FindMidPoint();
 		if (pyramid.isSet) {
@@ -876,10 +784,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][2] = z;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -892,10 +797,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][2] = z;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -908,10 +810,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][2] = z;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -923,8 +822,8 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateZClockwise() {
 		double angle = 0.20;
-		double x, y, z;
-		double Tx, Ty, Tz;
+		double x, y;
+		double Tx, Ty;
 		
 		FindMidPoint();
 		if (pyramid.isSet) {
@@ -937,10 +836,7 @@ public class MainProgram extends JFrame {
 				y += pyramid.midpoints[1];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][1] = y;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -953,10 +849,7 @@ public class MainProgram extends JFrame {
 				y += box.midpoints[1];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][1] = y;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -969,10 +862,7 @@ public class MainProgram extends JFrame {
 				y += cube.midpoints[1];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][1] = y;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -985,8 +875,8 @@ public class MainProgram extends JFrame {
 	 */
 	public void RotateZCounterClockwise() {
 		double angle = -0.20;
-		double x, y, z;
-		double Tx, Ty, Tz;
+		double x, y;
+		double Tx, Ty;
 		
 		FindMidPoint();
 		if (pyramid.isSet) {
@@ -999,10 +889,7 @@ public class MainProgram extends JFrame {
 				y += pyramid.midpoints[1];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][1] = y;
-				pyramid.screen_points[i][0] = (eye_z * pyramid.polygon_points[i][0])
-						/ (eye_z + pyramid.polygon_points[i][2]);
-				pyramid.screen_points[i][1] = (eye_z * pyramid.polygon_points[i][1])
-						/ (eye_z + pyramid.polygon_points[i][2]);
+				PerspectivePorjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -1015,10 +902,7 @@ public class MainProgram extends JFrame {
 				y += box.midpoints[1];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][1] = y;
-				box.screen_points[i][0] = (eye_z * box.polygon_points[i][0])
-						/ (eye_z + box.polygon_points[i][2]);
-				box.screen_points[i][1] = (eye_z * box.polygon_points[i][1])
-						/ (eye_z + box.polygon_points[i][2]);
+				PerspectivePorjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -1031,10 +915,7 @@ public class MainProgram extends JFrame {
 				y += cube.midpoints[1];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][1] = y;
-				cube.screen_points[i][0] = (eye_z * cube.polygon_points[i][0])
-						/ (eye_z + cube.polygon_points[i][2]);
-				cube.screen_points[i][1] = (eye_z * cube.polygon_points[i][1])
-						/ (eye_z + cube.polygon_points[i][2]);
+				PerspectivePorjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -1127,6 +1008,16 @@ public class MainProgram extends JFrame {
 			cube.midpoints[2] = (minZ + maxZ) / 2;
 		}
 	}
+	
+	public void PerspectivePorjection(Obj obj, int points){
+		for(int i = 0; i < points; i++){
+			obj.screen_points[i][0] = (eye_z * obj.polygon_points[i][0])
+					/ (eye_z + obj.polygon_points[i][2]);
+			obj.screen_points[i][1] = (eye_z * obj.polygon_points[i][1])
+					/ (eye_z + obj.polygon_points[i][2]);
+		}
+		
+	}
 
 	/*
 	 * Adds the appropriate offset so the camera is looking at the origin of the
@@ -1136,23 +1027,23 @@ public class MainProgram extends JFrame {
 
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
-				pyramid.temp_screen_points[i][0] = pyramid.offset[0]
+				pyramid.screen_points[i][0] = pyramid.offset[0]
 						+ pyramid.screen_points[i][0];
-				pyramid.temp_screen_points[i][1] = pyramid.offset[1]
+				pyramid.screen_points[i][1] = pyramid.offset[1]
 						- pyramid.screen_points[i][1];
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
-				box.temp_screen_points[i][0] = box.offset[0]
+				box.screen_points[i][0] = box.offset[0]
 						+ box.screen_points[i][0];
-				box.temp_screen_points[i][1] = box.offset[1]
+				box.screen_points[i][1] = box.offset[1]
 						- box.screen_points[i][1];
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
-				cube.temp_screen_points[i][0] = cube.offset[0]
+				cube.screen_points[i][0] = cube.offset[0]
 						+ cube.screen_points[i][0];
-				cube.temp_screen_points[i][1] = cube.offset[1]
+				cube.screen_points[i][1] = cube.offset[1]
 						- cube.screen_points[i][1];
 			}
 	}
@@ -1163,45 +1054,45 @@ public class MainProgram extends JFrame {
 	public void DrawPyramid(Graphics g) {
 
 		g.setColor(Color.GREEN);
-		g.drawLine((int) pyramid.temp_screen_points[0][0],
-				(int) pyramid.temp_screen_points[0][1],
-				(int) pyramid.temp_screen_points[1][0],
-				(int) pyramid.temp_screen_points[1][1]); // P1 to
+		g.drawLine((int) pyramid.screen_points[0][0],
+				(int) pyramid.screen_points[0][1],
+				(int) pyramid.screen_points[1][0],
+				(int) pyramid.screen_points[1][1]); // P1 to
 		// P2
-		g.drawLine((int) pyramid.temp_screen_points[2][0],
-				(int) pyramid.temp_screen_points[2][1],
-				(int) pyramid.temp_screen_points[0][0],
-				(int) pyramid.temp_screen_points[0][1]); // P1 to
+		g.drawLine((int) pyramid.screen_points[2][0],
+				(int) pyramid.screen_points[2][1],
+				(int) pyramid.screen_points[0][0],
+				(int) pyramid.screen_points[0][1]); // P1 to
 		// P3
-		g.drawLine((int) pyramid.temp_screen_points[3][0],
-				(int) pyramid.temp_screen_points[3][1],
-				(int) pyramid.temp_screen_points[0][0],
-				(int) pyramid.temp_screen_points[0][1]); // P1 to
+		g.drawLine((int) pyramid.screen_points[3][0],
+				(int) pyramid.screen_points[3][1],
+				(int) pyramid.screen_points[0][0],
+				(int) pyramid.screen_points[0][1]); // P1 to
 		// P4
-		g.drawLine((int) pyramid.temp_screen_points[4][0],
-				(int) pyramid.temp_screen_points[4][1],
-				(int) pyramid.temp_screen_points[0][0],
-				(int) pyramid.temp_screen_points[0][1]); // P1 to
+		g.drawLine((int) pyramid.screen_points[4][0],
+				(int) pyramid.screen_points[4][1],
+				(int) pyramid.screen_points[0][0],
+				(int) pyramid.screen_points[0][1]); // P1 to
 		// P5
-		g.drawLine((int) pyramid.temp_screen_points[1][0],
-				(int) pyramid.temp_screen_points[1][1],
-				(int) pyramid.temp_screen_points[4][0],
-				(int) pyramid.temp_screen_points[4][1]); // P2 to
+		g.drawLine((int) pyramid.screen_points[1][0],
+				(int) pyramid.screen_points[1][1],
+				(int) pyramid.screen_points[4][0],
+				(int) pyramid.screen_points[4][1]); // P2 to
 		// P4
-		g.drawLine((int) pyramid.temp_screen_points[1][0],
-				(int) pyramid.temp_screen_points[1][1],
-				(int) pyramid.temp_screen_points[2][0],
-				(int) pyramid.temp_screen_points[2][1]); // P2 to
+		g.drawLine((int) pyramid.screen_points[1][0],
+				(int) pyramid.screen_points[1][1],
+				(int) pyramid.screen_points[2][0],
+				(int) pyramid.screen_points[2][1]); // P2 to
 		// P3
-		g.drawLine((int) pyramid.temp_screen_points[3][0],
-				(int) pyramid.temp_screen_points[3][1],
-				(int) pyramid.temp_screen_points[4][0],
-				(int) pyramid.temp_screen_points[4][1]); // P4 to
+		g.drawLine((int) pyramid.screen_points[3][0],
+				(int) pyramid.screen_points[3][1],
+				(int) pyramid.screen_points[4][0],
+				(int) pyramid.screen_points[4][1]); // P4 to
 		// P5
-		g.drawLine((int) pyramid.temp_screen_points[2][0],
-				(int) pyramid.temp_screen_points[2][1],
-				(int) pyramid.temp_screen_points[3][0],
-				(int) pyramid.temp_screen_points[3][1]); // P3 to
+		g.drawLine((int) pyramid.screen_points[2][0],
+				(int) pyramid.screen_points[2][1],
+				(int) pyramid.screen_points[3][0],
+				(int) pyramid.screen_points[3][1]); // P3 to
 		// P4
 
 	}
@@ -1212,54 +1103,54 @@ public class MainProgram extends JFrame {
 	 */
 	public void DrawBox(Graphics g) {
 		g.setColor(Color.BLUE);
-		g.drawLine((int) box.temp_screen_points[0][0],
-				(int) box.temp_screen_points[0][1],
-				(int) box.temp_screen_points[1][0],
-				(int) box.temp_screen_points[1][1]);
-		g.drawLine((int) box.temp_screen_points[1][0],
-				(int) box.temp_screen_points[1][1],
-				(int) box.temp_screen_points[3][0],
-				(int) box.temp_screen_points[3][1]);
-		g.drawLine((int) box.temp_screen_points[3][0],
-				(int) box.temp_screen_points[3][1],
-				(int) box.temp_screen_points[2][0],
-				(int) box.temp_screen_points[2][1]);
-		g.drawLine((int) box.temp_screen_points[2][0],
-				(int) box.temp_screen_points[2][1],
-				(int) box.temp_screen_points[0][0],
-				(int) box.temp_screen_points[0][1]);
-		g.drawLine((int) box.temp_screen_points[4][0],
-				(int) box.temp_screen_points[4][1],
-				(int) box.temp_screen_points[5][0],
-				(int) box.temp_screen_points[5][1]);
-		g.drawLine((int) box.temp_screen_points[5][0],
-				(int) box.temp_screen_points[5][1],
-				(int) box.temp_screen_points[7][0],
-				(int) box.temp_screen_points[7][1]);
-		g.drawLine((int) box.temp_screen_points[7][0],
-				(int) box.temp_screen_points[7][1],
-				(int) box.temp_screen_points[6][0],
-				(int) box.temp_screen_points[6][1]);
-		g.drawLine((int) box.temp_screen_points[6][0],
-				(int) box.temp_screen_points[6][1],
-				(int) box.temp_screen_points[4][0],
-				(int) box.temp_screen_points[4][1]);
-		g.drawLine((int) box.temp_screen_points[0][0],
-				(int) box.temp_screen_points[0][1],
-				(int) box.temp_screen_points[4][0],
-				(int) box.temp_screen_points[4][1]);
-		g.drawLine((int) box.temp_screen_points[1][0],
-				(int) box.temp_screen_points[1][1],
-				(int) box.temp_screen_points[5][0],
-				(int) box.temp_screen_points[5][1]);
-		g.drawLine((int) box.temp_screen_points[2][0],
-				(int) box.temp_screen_points[2][1],
-				(int) box.temp_screen_points[6][0],
-				(int) box.temp_screen_points[6][1]);
-		g.drawLine((int) box.temp_screen_points[3][0],
-				(int) box.temp_screen_points[3][1],
-				(int) box.temp_screen_points[7][0],
-				(int) box.temp_screen_points[7][1]);
+		g.drawLine((int) box.screen_points[0][0],
+				(int) box.screen_points[0][1],
+				(int) box.screen_points[1][0],
+				(int) box.screen_points[1][1]);
+		g.drawLine((int) box.screen_points[1][0],
+				(int) box.screen_points[1][1],
+				(int) box.screen_points[3][0],
+				(int) box.screen_points[3][1]);
+		g.drawLine((int) box.screen_points[3][0],
+				(int) box.screen_points[3][1],
+				(int) box.screen_points[2][0],
+				(int) box.screen_points[2][1]);
+		g.drawLine((int) box.screen_points[2][0],
+				(int) box.screen_points[2][1],
+				(int) box.screen_points[0][0],
+				(int) box.screen_points[0][1]);
+		g.drawLine((int) box.screen_points[4][0],
+				(int) box.screen_points[4][1],
+				(int) box.screen_points[5][0],
+				(int) box.screen_points[5][1]);
+		g.drawLine((int) box.screen_points[5][0],
+				(int) box.screen_points[5][1],
+				(int) box.screen_points[7][0],
+				(int) box.screen_points[7][1]);
+		g.drawLine((int) box.screen_points[7][0],
+				(int) box.screen_points[7][1],
+				(int) box.screen_points[6][0],
+				(int) box.screen_points[6][1]);
+		g.drawLine((int) box.screen_points[6][0],
+				(int) box.screen_points[6][1],
+				(int) box.screen_points[4][0],
+				(int) box.screen_points[4][1]);
+		g.drawLine((int) box.screen_points[0][0],
+				(int) box.screen_points[0][1],
+				(int) box.screen_points[4][0],
+				(int) box.screen_points[4][1]);
+		g.drawLine((int) box.screen_points[1][0],
+				(int) box.screen_points[1][1],
+				(int) box.screen_points[5][0],
+				(int) box.screen_points[5][1]);
+		g.drawLine((int) box.screen_points[2][0],
+				(int) box.screen_points[2][1],
+				(int) box.screen_points[6][0],
+				(int) box.screen_points[6][1]);
+		g.drawLine((int) box.screen_points[3][0],
+				(int) box.screen_points[3][1],
+				(int) box.screen_points[7][0],
+				(int) box.screen_points[7][1]);
 
 	}
 
@@ -1268,54 +1159,54 @@ public class MainProgram extends JFrame {
 	 */
 	public void DrawCube(Graphics g) {
 		g.setColor(Color.RED);
-		g.drawLine((int) cube.temp_screen_points[0][0],
-				(int) cube.temp_screen_points[0][1],
-				(int) cube.temp_screen_points[1][0],
-				(int) cube.temp_screen_points[1][1]);
-		g.drawLine((int) cube.temp_screen_points[1][0],
-				(int) cube.temp_screen_points[1][1],
-				(int) cube.temp_screen_points[3][0],
-				(int) cube.temp_screen_points[3][1]);
-		g.drawLine((int) cube.temp_screen_points[3][0],
-				(int) cube.temp_screen_points[3][1],
-				(int) cube.temp_screen_points[2][0],
-				(int) cube.temp_screen_points[2][1]);
-		g.drawLine((int) cube.temp_screen_points[2][0],
-				(int) cube.temp_screen_points[2][1],
-				(int) cube.temp_screen_points[0][0],
-				(int) cube.temp_screen_points[0][1]);
-		g.drawLine((int) cube.temp_screen_points[4][0],
-				(int) cube.temp_screen_points[4][1],
-				(int) cube.temp_screen_points[5][0],
-				(int) cube.temp_screen_points[5][1]);
-		g.drawLine((int) cube.temp_screen_points[5][0],
-				(int) cube.temp_screen_points[5][1],
-				(int) cube.temp_screen_points[7][0],
-				(int) cube.temp_screen_points[7][1]);
-		g.drawLine((int) cube.temp_screen_points[7][0],
-				(int) cube.temp_screen_points[7][1],
-				(int) cube.temp_screen_points[6][0],
-				(int) cube.temp_screen_points[6][1]);
-		g.drawLine((int) cube.temp_screen_points[6][0],
-				(int) cube.temp_screen_points[6][1],
-				(int) cube.temp_screen_points[4][0],
-				(int) cube.temp_screen_points[4][1]);
-		g.drawLine((int) cube.temp_screen_points[0][0],
-				(int) cube.temp_screen_points[0][1],
-				(int) cube.temp_screen_points[4][0],
-				(int) cube.temp_screen_points[4][1]);
-		g.drawLine((int) cube.temp_screen_points[1][0],
-				(int) cube.temp_screen_points[1][1],
-				(int) cube.temp_screen_points[5][0],
-				(int) cube.temp_screen_points[5][1]);
-		g.drawLine((int) cube.temp_screen_points[2][0],
-				(int) cube.temp_screen_points[2][1],
-				(int) cube.temp_screen_points[6][0],
-				(int) cube.temp_screen_points[6][1]);
-		g.drawLine((int) cube.temp_screen_points[3][0],
-				(int) cube.temp_screen_points[3][1],
-				(int) cube.temp_screen_points[7][0],
-				(int) cube.temp_screen_points[7][1]);
+		g.drawLine((int) cube.screen_points[0][0],
+				(int) cube.screen_points[0][1],
+				(int) cube.screen_points[1][0],
+				(int) cube.screen_points[1][1]);
+		g.drawLine((int) cube.screen_points[1][0],
+				(int) cube.screen_points[1][1],
+				(int) cube.screen_points[3][0],
+				(int) cube.screen_points[3][1]);
+		g.drawLine((int) cube.screen_points[3][0],
+				(int) cube.screen_points[3][1],
+				(int) cube.screen_points[2][0],
+				(int) cube.screen_points[2][1]);
+		g.drawLine((int) cube.screen_points[2][0],
+				(int) cube.screen_points[2][1],
+				(int) cube.screen_points[0][0],
+				(int) cube.screen_points[0][1]);
+		g.drawLine((int) cube.screen_points[4][0],
+				(int) cube.screen_points[4][1],
+				(int) cube.screen_points[5][0],
+				(int) cube.screen_points[5][1]);
+		g.drawLine((int) cube.screen_points[5][0],
+				(int) cube.screen_points[5][1],
+				(int) cube.screen_points[7][0],
+				(int) cube.screen_points[7][1]);
+		g.drawLine((int) cube.screen_points[7][0],
+				(int) cube.screen_points[7][1],
+				(int) cube.screen_points[6][0],
+				(int) cube.screen_points[6][1]);
+		g.drawLine((int) cube.screen_points[6][0],
+				(int) cube.screen_points[6][1],
+				(int) cube.screen_points[4][0],
+				(int) cube.screen_points[4][1]);
+		g.drawLine((int) cube.screen_points[0][0],
+				(int) cube.screen_points[0][1],
+				(int) cube.screen_points[4][0],
+				(int) cube.screen_points[4][1]);
+		g.drawLine((int) cube.screen_points[1][0],
+				(int) cube.screen_points[1][1],
+				(int) cube.screen_points[5][0],
+				(int) cube.screen_points[5][1]);
+		g.drawLine((int) cube.screen_points[2][0],
+				(int) cube.screen_points[2][1],
+				(int) cube.screen_points[6][0],
+				(int) cube.screen_points[6][1]);
+		g.drawLine((int) cube.screen_points[3][0],
+				(int) cube.screen_points[3][1],
+				(int) cube.screen_points[7][0],
+				(int) cube.screen_points[7][1]);
 
 	}
 
