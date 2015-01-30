@@ -9,10 +9,12 @@
  * 	The program runs in Eclipse Version: Luna Service Release 1 (4.4.1). 
  */
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -607,7 +609,7 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the X axis clockwise
 	 */
 	public void RotateXClockwise() {
-		double angle = 0.20;
+		double angle = 0.10;
 		double y, z;
 		double Ty, Tz;
 
@@ -660,7 +662,7 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the X axis counter clockwise
 	 */
 	public void RotateXCounterClockwise() {
-		double angle = -0.20;
+		double angle = -0.10;
 		double y, z;
 		double Ty, Tz;
 
@@ -713,7 +715,7 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the Y axis clockwise
 	 */
 	public void RotateYClockwise() {
-		double angle = 0.20;
+		double angle = 0.10;
 		double x, z;
 		double Tx, Tz;
 
@@ -764,7 +766,7 @@ public class MainProgram extends JFrame {
 	 * Rotates object around the Y axis counter clockwise
 	 */
 	public void RotateYCounterClockwise() {
-		double angle = -0.20;
+		double angle = -0.10;
 		double x, z;
 		double Tx, Tz;
 
@@ -815,7 +817,7 @@ public class MainProgram extends JFrame {
 	 * rotates the object on the Z axis clockwise using the greater than key
 	 */
 	public void RotateZClockwise() {
-		double angle = 0.20;
+		double angle = 0.10;
 		double x, y;
 		double Tx, Ty;
 
@@ -868,7 +870,7 @@ public class MainProgram extends JFrame {
 	 * symbol
 	 */
 	public void RotateZCounterClockwise() {
-		double angle = -0.20;
+		double angle = -0.10;
 		double x, y;
 		double Tx, Ty;
 
@@ -1040,41 +1042,11 @@ public class MainProgram extends JFrame {
 
 		if (pyramid.isSet) {
 
-			alpha[0] = pyramid.polygon_points[2][0]
+			alpha[0] = pyramid.polygon_points[1][0]
 					- pyramid.polygon_points[0][0];
-			alpha[1] = pyramid.polygon_points[2][1]
+			alpha[1] = pyramid.polygon_points[1][1]
 					- pyramid.polygon_points[0][1];
-			alpha[2] = pyramid.polygon_points[2][2]
-					- pyramid.polygon_points[0][2];
-
-			beta[0] = pyramid.polygon_points[1][0]
-					- pyramid.polygon_points[0][0];
-			beta[1] = pyramid.polygon_points[1][1]
-					- pyramid.polygon_points[0][1];
-			beta[2] = pyramid.polygon_points[1][2]
-					- pyramid.polygon_points[0][2];
-
-			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
-			normal[1] = -(alpha[0] * beta[2] - beta[0] * alpha[2]);
-			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
-
-			plane_offset = pyramid.polygon_points[0][0] * normal[0]
-					- pyramid.polygon_points[0][1] * normal[1]
-					+ pyramid.polygon_points[0][2] * normal[2];
-			
-			double test_var = (-eye_z * normal[2]) - plane_offset;
-
-			if (test_var < 0) {
-				pyramid.draw[0] = false;
-			} else {
-				pyramid.draw[0] = true;
-			}
-
-			alpha[0] = pyramid.polygon_points[4][0]
-					- pyramid.polygon_points[0][0];
-			alpha[1] = pyramid.polygon_points[4][1]
-					- pyramid.polygon_points[0][1];
-			alpha[2] = pyramid.polygon_points[4][2]
+			alpha[2] = pyramid.polygon_points[1][2]
 					- pyramid.polygon_points[0][2];
 
 			beta[0] = pyramid.polygon_points[2][0]
@@ -1085,26 +1057,26 @@ public class MainProgram extends JFrame {
 					- pyramid.polygon_points[0][2];
 
 			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
-			normal[1] = -(alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
 			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
 
 			plane_offset = pyramid.polygon_points[0][0] * normal[0]
 					- pyramid.polygon_points[0][1] * normal[1]
 					+ pyramid.polygon_points[0][2] * normal[2];
+			
+			double test_draw = (-eye_z * normal[2]) - plane_offset;
 
-			test_var = (-eye_z * normal[2]) - plane_offset;
-
-			if (test_var < 0) {
-				pyramid.draw[1] = false;
+			if (test_draw < 0) {
+				pyramid.draw[0] = false;
 			} else {
-				pyramid.draw[1] = true;
+				pyramid.draw[0] = true;
 			}
 
-			alpha[0] = pyramid.polygon_points[3][0]
+			alpha[0] = pyramid.polygon_points[2][0]
 					- pyramid.polygon_points[0][0];
-			alpha[1] = pyramid.polygon_points[3][1]
+			alpha[1] = pyramid.polygon_points[2][1]
 					- pyramid.polygon_points[0][1];
-			alpha[2] = pyramid.polygon_points[3][2]
+			alpha[2] = pyramid.polygon_points[2][2]
 					- pyramid.polygon_points[0][2];
 
 			beta[0] = pyramid.polygon_points[4][0]
@@ -1115,76 +1087,106 @@ public class MainProgram extends JFrame {
 					- pyramid.polygon_points[0][2];
 
 			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
-			normal[1] = -(alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
 			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
 
 			plane_offset = pyramid.polygon_points[0][0] * normal[0]
 					- pyramid.polygon_points[0][1] * normal[1]
 					+ pyramid.polygon_points[0][2] * normal[2];
 
-			test_var = (-eye_z * normal[2]) - plane_offset;
+			test_draw = (-eye_z * normal[2]) - plane_offset;
 
-			if (test_var < 0) {
+			if (test_draw < 0) {
+				pyramid.draw[1] = false;
+			} else {
+				pyramid.draw[1] = true;
+			}
+
+			alpha[0] = pyramid.polygon_points[4][0]
+					- pyramid.polygon_points[0][0];
+			alpha[1] = pyramid.polygon_points[4][1]
+					- pyramid.polygon_points[0][1];
+			alpha[2] = pyramid.polygon_points[4][2]
+					- pyramid.polygon_points[0][2];
+
+			beta[0] = pyramid.polygon_points[3][0]
+					- pyramid.polygon_points[0][0];
+			beta[1] = pyramid.polygon_points[3][1]
+					- pyramid.polygon_points[0][1];
+			beta[2] = pyramid.polygon_points[3][2]
+					- pyramid.polygon_points[0][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = pyramid.polygon_points[0][0] * normal[0]
+					- pyramid.polygon_points[0][1] * normal[1]
+					+ pyramid.polygon_points[0][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
 				pyramid.draw[2] = false;
 			} else {
 				pyramid.draw[2] = true;
 			}
 
-			alpha[0] = pyramid.polygon_points[1][0]
+			alpha[0] = pyramid.polygon_points[3][0]
 					- pyramid.polygon_points[0][0];
-			alpha[1] = pyramid.polygon_points[1][1]
+			alpha[1] = pyramid.polygon_points[3][1]
 					- pyramid.polygon_points[0][1];
-			alpha[2] = pyramid.polygon_points[1][2]
+			alpha[2] = pyramid.polygon_points[3][2]
 					- pyramid.polygon_points[0][2];
 
-			beta[0] = pyramid.polygon_points[3][0]
+			beta[0] = pyramid.polygon_points[1][0]
 					- pyramid.polygon_points[0][0];
-			beta[1] = pyramid.polygon_points[3][1]
+			beta[1] = pyramid.polygon_points[1][1]
 					- pyramid.polygon_points[0][1];
-			beta[2] = pyramid.polygon_points[3][2]
+			beta[2] = pyramid.polygon_points[1][2]
 					- pyramid.polygon_points[0][2];
 
 			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
-			normal[1] = -(alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
 			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
 
 			plane_offset = pyramid.polygon_points[0][0] * normal[0]
 					- pyramid.polygon_points[0][1] * normal[1]
 					+ pyramid.polygon_points[0][2] * normal[2];
 
-			test_var = (-eye_z * normal[2]) - plane_offset;
+			test_draw = (-eye_z * normal[2]) - plane_offset;
 
-			if (test_var < 0) {
+			if (test_draw < 0) {
 				pyramid.draw[3] = false;
 			} else {
 				pyramid.draw[3] = true;
 			}
 			
-			alpha[0] = pyramid.polygon_points[4][0]
+			alpha[0] = pyramid.polygon_points[3][0]
 					- pyramid.polygon_points[1][0];
-			alpha[1] = pyramid.polygon_points[4][1]
+			alpha[1] = pyramid.polygon_points[3][1]
 					- pyramid.polygon_points[1][1];
-			alpha[2] = pyramid.polygon_points[4][2]
+			alpha[2] = pyramid.polygon_points[3][2]
 					- pyramid.polygon_points[1][2];
 
-			beta[0] = pyramid.polygon_points[3][0]
+			beta[0] = pyramid.polygon_points[4][0]
 					- pyramid.polygon_points[1][0];
-			beta[1] = pyramid.polygon_points[3][1]
+			beta[1] = pyramid.polygon_points[4][1]
 					- pyramid.polygon_points[1][1];
-			beta[2] = pyramid.polygon_points[3][2]
+			beta[2] = pyramid.polygon_points[4][2]
 					- pyramid.polygon_points[1][2];
 
 			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
-			normal[1] = -(alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
 			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
 
 			plane_offset = pyramid.polygon_points[1][0] * normal[0]
 					- pyramid.polygon_points[1][1] * normal[1]
 					+ pyramid.polygon_points[1][2] * normal[2];
 
-			test_var = (-eye_z * normal[2]) - plane_offset;
+			test_draw = (-eye_z * normal[2]) - plane_offset;
 
-			if (test_var < 0) {
+			if (test_draw < 0) {
 				pyramid.draw[4] = false;
 			} else {
 				pyramid.draw[4] = true;
@@ -1228,7 +1230,10 @@ public class MainProgram extends JFrame {
 	/*
 	 * Draws the pyramid onto the canvas
 	 */
-	public void DrawPyramid(Graphics g) {
+	public void DrawPyramid(Graphics g2) {
+		 
+		Graphics2D g = (Graphics2D) g2;
+		g.setStroke(new BasicStroke(2));
 
 		if (pyramid.cullingIsSet) {
 			CalculateSurfaceNormal();
@@ -1330,46 +1335,46 @@ public class MainProgram extends JFrame {
 			g.drawLine((int) pyramid.screen_points[0][0],
 					(int) pyramid.screen_points[0][1],
 					(int) pyramid.screen_points[2][0],
-					(int) pyramid.screen_points[2][1]); // P1 to
-			// P3
+					(int) pyramid.screen_points[2][1]); // P0 to P2
+			
 			g.drawLine((int) pyramid.screen_points[1][0],
 					(int) pyramid.screen_points[1][1],
 					(int) pyramid.screen_points[0][0],
-					(int) pyramid.screen_points[0][1]); // P1 to
-			// P2
+					(int) pyramid.screen_points[0][1]); // P0 to P2
+			
 			g.drawLine((int) pyramid.screen_points[3][0],
 					(int) pyramid.screen_points[3][1],
 					(int) pyramid.screen_points[0][0],
-					(int) pyramid.screen_points[0][1]); // P1 to
-			// P4
+					(int) pyramid.screen_points[0][1]); // P0 to P3
+
 			g.drawLine((int) pyramid.screen_points[4][0],
 					(int) pyramid.screen_points[4][1],
 					(int) pyramid.screen_points[0][0],
-					(int) pyramid.screen_points[0][1]); // P1 to
-			// P5
+					(int) pyramid.screen_points[0][1]); // P0 to P4
+			
 			g.setColor(Color.YELLOW);
 			g.drawLine((int) pyramid.screen_points[2][0],
 					(int) pyramid.screen_points[2][1],
 					(int) pyramid.screen_points[4][0],
-					(int) pyramid.screen_points[4][1]); // P3 to
-			// P5
+					(int) pyramid.screen_points[4][1]); // P2 to P4
+			
 			g.setColor(Color.RED);
 			g.drawLine((int) pyramid.screen_points[2][0],
 					(int) pyramid.screen_points[2][1],
 					(int) pyramid.screen_points[1][0],
-					(int) pyramid.screen_points[1][1]); // P3 to
-			// P2
+					(int) pyramid.screen_points[1][1]); // P2 to P1
+			
 			g.setColor(new Color(232, 64, 15));
 			g.drawLine((int) pyramid.screen_points[3][0],
 					(int) pyramid.screen_points[3][1],
 					(int) pyramid.screen_points[4][0],
-					(int) pyramid.screen_points[4][1]); // P4 to
-			// P5
+					(int) pyramid.screen_points[4][1]); // P3 to P4
+			
 			g.setColor(Color.WHITE);
 			g.drawLine((int) pyramid.screen_points[1][0],
 					(int) pyramid.screen_points[1][1],
 					(int) pyramid.screen_points[3][0],
-					(int) pyramid.screen_points[3][1]); // P2 to P4
+					(int) pyramid.screen_points[3][1]); // P1 to P3
 		}
 
 	}
