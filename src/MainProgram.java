@@ -38,8 +38,10 @@ public class MainProgram extends JFrame {
 		double[] offset = new double[2];
 		boolean isSet; // boolean to know which objects are selected
 		boolean cullingIsSet;
-		boolean[] draw = new boolean[5];
-		double[][] polygon_cap = new double[5][4];
+		boolean fillingIsSet;
+		boolean[] draw = new boolean[6];
+		double[][] edge_list = new double[8][3];
+		double[][] fill_points = new double[8][2];
 	}
 
 	Obj pyramid = new Obj();
@@ -63,7 +65,6 @@ public class MainProgram extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			// grabs the most recent key that is pressed
 			int keyCode = e.getKeyCode();
-			PrintPoints(pyramid, 5);
 
 			switch (keyCode) {
 			// if "R" key is pressed
@@ -124,7 +125,15 @@ public class MainProgram extends JFrame {
 				break;
 			// if "C" key is pressed
 			case KeyEvent.VK_C:
-				BackFaceCullingToggle();
+				BackFaceCullingOn();
+				break;
+			// if "C" key is pressed
+			case KeyEvent.VK_X:
+				BackFaceCullingOff();
+				break;
+			// if "P" key is pressed
+			case KeyEvent.VK_P:
+				FillObjectToggle();
 				break;
 			default:
 				break;
@@ -258,42 +267,42 @@ public class MainProgram extends JFrame {
 		box.polygon_points[7][2] = 400;
 
 		// P1
-		cube.polygon_points[0][0] = 250;
+		cube.polygon_points[0][0] = 150;
 		cube.polygon_points[0][1] = 100;
 		cube.polygon_points[0][2] = 200;
 
 		// P2
-		cube.polygon_points[1][0] = 150;
+		cube.polygon_points[1][0] = 250;
 		cube.polygon_points[1][1] = 100;
 		cube.polygon_points[1][2] = 200;
 
 		// P3
-		cube.polygon_points[2][0] = 250;
+		cube.polygon_points[2][0] = 150;
 		cube.polygon_points[2][1] = 20;
 		cube.polygon_points[2][2] = 200;
 
 		// P4
-		cube.polygon_points[3][0] = 150;
+		cube.polygon_points[3][0] = 250;
 		cube.polygon_points[3][1] = 20;
 		cube.polygon_points[3][2] = 200;
 
 		// P5
-		cube.polygon_points[4][0] = 250;
+		cube.polygon_points[4][0] = 150;
 		cube.polygon_points[4][1] = 100;
 		cube.polygon_points[4][2] = 300;
 
 		// P6
-		cube.polygon_points[5][0] = 150;
+		cube.polygon_points[5][0] = 250;
 		cube.polygon_points[5][1] = 100;
 		cube.polygon_points[5][2] = 300;
 
 		// P7
-		cube.polygon_points[6][0] = 250;
+		cube.polygon_points[6][0] = 150;
 		cube.polygon_points[6][1] = 20;
 		cube.polygon_points[6][2] = 300;
 
 		// P8
-		cube.polygon_points[7][0] = 150;
+		cube.polygon_points[7][0] = 250;
 		cube.polygon_points[7][1] = 20;
 		cube.polygon_points[7][2] = 300;
 
@@ -342,9 +351,8 @@ public class MainProgram extends JFrame {
 	public void paintComponent(Graphics g) {
 		DrawPlanes(g);
 		DrawPyramid(g);
-		// DrawBox(g);
-		// DrawCube(g);
-		// PrintPoints(pyramid, 5);
+		DrawBox(g);
+		DrawCube(g);
 		DrawButtons(g);
 
 		repaint();
@@ -1017,22 +1025,39 @@ public class MainProgram extends JFrame {
 			obj.screen_points[i][2] = obj.polygon_points[i][2]
 					/ (eye_z + obj.polygon_points[i][2]);
 		}
-
-	}
-	
-	public void BackFaceCullingToggle(){
-		if(pyramid.isSet){
-			if(pyramid.cullingIsSet)
-				pyramid.cullingIsSet = false;
-			else
-				pyramid.cullingIsSet = true;
+		for (int i = 0; i < points; i++) {
+			obj.edge_list[i][0] = obj.polygon_points[i][0];
+			obj.edge_list[i][1] = obj.polygon_points[i][1];
+			obj.edge_list[i][2] = obj.polygon_points[i][2];
 		}
-		
+
 	}
 
 	/*
-	 * This function is called by pressing the "C" key. This function will turn
-	 * the back face culling on, only exposing the faces that are in front.
+	 * This function is called by pressing the "C" key. This function will
+	 * toggle back face culling and remove faces that should not be shown
+	 */
+	public void BackFaceCullingOn() {
+		pyramid.cullingIsSet = true;
+		box.cullingIsSet = true;
+		cube.cullingIsSet = true;
+
+	}
+
+	/*
+	 * This function is called by pressing the "C" key. This function will
+	 * toggle back face culling and remove faces that should not be shown
+	 */
+	public void BackFaceCullingOff() {
+		pyramid.cullingIsSet = false;
+		box.cullingIsSet = false;
+		cube.cullingIsSet = false;
+
+	}
+
+	/*
+	 * This function calculates the surface normal for the back face culling the
+	 * back face culling on, only exposing the faces that are in front.
 	 */
 	public void CalculateSurfaceNormal() {
 		double[] alpha = new double[3];
@@ -1041,7 +1066,6 @@ public class MainProgram extends JFrame {
 		double plane_offset;
 
 		if (pyramid.isSet) {
-
 			alpha[0] = pyramid.polygon_points[1][0]
 					- pyramid.polygon_points[0][0];
 			alpha[1] = pyramid.polygon_points[1][1]
@@ -1063,7 +1087,7 @@ public class MainProgram extends JFrame {
 			plane_offset = pyramid.polygon_points[0][0] * normal[0]
 					- pyramid.polygon_points[0][1] * normal[1]
 					+ pyramid.polygon_points[0][2] * normal[2];
-			
+
 			double test_draw = (-eye_z * normal[2]) - plane_offset;
 
 			if (test_draw < 0) {
@@ -1161,7 +1185,7 @@ public class MainProgram extends JFrame {
 			} else {
 				pyramid.draw[3] = true;
 			}
-			
+
 			alpha[0] = pyramid.polygon_points[3][0]
 					- pyramid.polygon_points[1][0];
 			alpha[1] = pyramid.polygon_points[3][1]
@@ -1191,8 +1215,315 @@ public class MainProgram extends JFrame {
 			} else {
 				pyramid.draw[4] = true;
 			}
-			
-			
+
+		}
+
+		if (box.isSet) {
+			alpha[0] = box.polygon_points[3][0] - box.polygon_points[1][0];
+			alpha[1] = box.polygon_points[3][1] - box.polygon_points[1][1];
+			alpha[2] = box.polygon_points[3][2] - box.polygon_points[1][2];
+
+			beta[0] = box.polygon_points[2][0] - box.polygon_points[1][0];
+			beta[1] = box.polygon_points[2][1] - box.polygon_points[1][1];
+			beta[2] = box.polygon_points[2][2] - box.polygon_points[1][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = box.polygon_points[1][0] * normal[0]
+					- box.polygon_points[1][1] * normal[1]
+					+ box.polygon_points[1][2] * normal[2];
+
+			double test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				box.draw[0] = false;
+			} else {
+				box.draw[0] = true;
+			}
+
+			alpha[0] = box.polygon_points[2][0] - box.polygon_points[0][0];
+			alpha[1] = box.polygon_points[2][1] - box.polygon_points[0][1];
+			alpha[2] = box.polygon_points[2][2] - box.polygon_points[0][2];
+
+			beta[0] = box.polygon_points[6][0] - box.polygon_points[0][0];
+			beta[1] = box.polygon_points[6][1] - box.polygon_points[0][1];
+			beta[2] = box.polygon_points[6][2] - box.polygon_points[0][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = box.polygon_points[0][0] * normal[0]
+					- box.polygon_points[0][1] * normal[1]
+					+ box.polygon_points[0][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				box.draw[1] = false;
+			} else {
+				box.draw[1] = true;
+			}
+
+			alpha[0] = box.polygon_points[6][0] - box.polygon_points[4][0];
+			alpha[1] = box.polygon_points[6][1] - box.polygon_points[4][1];
+			alpha[2] = box.polygon_points[6][2] - box.polygon_points[4][2];
+
+			beta[0] = box.polygon_points[7][0] - box.polygon_points[4][0];
+			beta[1] = box.polygon_points[7][1] - box.polygon_points[4][1];
+			beta[2] = box.polygon_points[7][2] - box.polygon_points[4][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = box.polygon_points[4][0] * normal[0]
+					- box.polygon_points[4][1] * normal[1]
+					+ box.polygon_points[4][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				box.draw[2] = false;
+			} else {
+				box.draw[2] = true;
+			}
+
+			alpha[0] = box.polygon_points[7][0] - box.polygon_points[1][0];
+			alpha[1] = box.polygon_points[7][1] - box.polygon_points[1][1];
+			alpha[2] = box.polygon_points[7][2] - box.polygon_points[1][2];
+
+			beta[0] = box.polygon_points[3][0] - box.polygon_points[1][0];
+			beta[1] = box.polygon_points[3][1] - box.polygon_points[1][1];
+			beta[2] = box.polygon_points[3][2] - box.polygon_points[1][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = box.polygon_points[1][0] * normal[0]
+					- box.polygon_points[1][1] * normal[1]
+					+ box.polygon_points[1][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				box.draw[3] = false;
+			} else {
+				box.draw[3] = true;
+			}
+
+			alpha[0] = box.polygon_points[7][0] - box.polygon_points[3][0];
+			alpha[1] = box.polygon_points[7][1] - box.polygon_points[3][1];
+			alpha[2] = box.polygon_points[7][2] - box.polygon_points[3][2];
+
+			beta[0] = box.polygon_points[6][0] - box.polygon_points[3][0];
+			beta[1] = box.polygon_points[6][1] - box.polygon_points[3][1];
+			beta[2] = box.polygon_points[6][2] - box.polygon_points[3][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = box.polygon_points[3][0] * normal[0]
+					- box.polygon_points[3][1] * normal[1]
+					+ box.polygon_points[3][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				box.draw[4] = false;
+			} else {
+				box.draw[4] = true;
+			}
+
+			alpha[0] = box.polygon_points[1][0] - box.polygon_points[5][0];
+			alpha[1] = box.polygon_points[1][1] - box.polygon_points[5][1];
+			alpha[2] = box.polygon_points[1][2] - box.polygon_points[5][2];
+
+			beta[0] = box.polygon_points[0][0] - box.polygon_points[5][0];
+			beta[1] = box.polygon_points[0][1] - box.polygon_points[5][1];
+			beta[2] = box.polygon_points[0][2] - box.polygon_points[5][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = box.polygon_points[5][0] * normal[0]
+					- box.polygon_points[5][1] * normal[1]
+					+ box.polygon_points[5][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				box.draw[5] = false;
+			} else {
+				box.draw[5] = true;
+			}
+
+		}
+		
+		if (cube.isSet) {
+			alpha[0] = cube.polygon_points[3][0] - cube.polygon_points[1][0];
+			alpha[1] = cube.polygon_points[3][1] - cube.polygon_points[1][1];
+			alpha[2] = cube.polygon_points[3][2] - cube.polygon_points[1][2];
+
+			beta[0] = cube.polygon_points[2][0] - cube.polygon_points[1][0];
+			beta[1] = cube.polygon_points[2][1] - cube.polygon_points[1][1];
+			beta[2] = cube.polygon_points[2][2] - cube.polygon_points[1][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = cube.polygon_points[1][0] * normal[0]
+					- cube.polygon_points[1][1] * normal[1]
+					+ cube.polygon_points[1][2] * normal[2];
+
+			double test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				cube.draw[0] = false;
+			} else {
+				cube.draw[0] = true;
+			}
+
+			alpha[0] = cube.polygon_points[2][0] - cube.polygon_points[0][0];
+			alpha[1] = cube.polygon_points[2][1] - cube.polygon_points[0][1];
+			alpha[2] = cube.polygon_points[2][2] - cube.polygon_points[0][2];
+
+			beta[0] = cube.polygon_points[6][0] - cube.polygon_points[0][0];
+			beta[1] = cube.polygon_points[6][1] - cube.polygon_points[0][1];
+			beta[2] = cube.polygon_points[6][2] - cube.polygon_points[0][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = cube.polygon_points[0][0] * normal[0]
+					- cube.polygon_points[0][1] * normal[1]
+					+ cube.polygon_points[0][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				cube.draw[1] = false;
+			} else {
+				cube.draw[1] = true;
+			}
+
+			alpha[0] = cube.polygon_points[6][0] - cube.polygon_points[4][0];
+			alpha[1] = cube.polygon_points[6][1] - cube.polygon_points[4][1];
+			alpha[2] = cube.polygon_points[6][2] - cube.polygon_points[4][2];
+
+			beta[0] = cube.polygon_points[7][0] - cube.polygon_points[4][0];
+			beta[1] = cube.polygon_points[7][1] - cube.polygon_points[4][1];
+			beta[2] = cube.polygon_points[7][2] - cube.polygon_points[4][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = cube.polygon_points[4][0] * normal[0]
+					- cube.polygon_points[4][1] * normal[1]
+					+ cube.polygon_points[4][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				cube.draw[2] = false;
+			} else {
+				cube.draw[2] = true;
+			}
+
+			alpha[0] = cube.polygon_points[7][0] - cube.polygon_points[1][0];
+			alpha[1] = cube.polygon_points[7][1] - cube.polygon_points[1][1];
+			alpha[2] = cube.polygon_points[7][2] - cube.polygon_points[1][2];
+
+			beta[0] = cube.polygon_points[3][0] - cube.polygon_points[1][0];
+			beta[1] = cube.polygon_points[3][1] - cube.polygon_points[1][1];
+			beta[2] = cube.polygon_points[3][2] - cube.polygon_points[1][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = cube.polygon_points[1][0] * normal[0]
+					- cube.polygon_points[1][1] * normal[1]
+					+ cube.polygon_points[1][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				cube.draw[3] = false;
+			} else {
+				cube.draw[3] = true;
+			}
+
+			alpha[0] = cube.polygon_points[7][0] - cube.polygon_points[3][0];
+			alpha[1] = cube.polygon_points[7][1] - cube.polygon_points[3][1];
+			alpha[2] = cube.polygon_points[7][2] - cube.polygon_points[3][2];
+
+			beta[0] = cube.polygon_points[6][0] - cube.polygon_points[3][0];
+			beta[1] = cube.polygon_points[6][1] - cube.polygon_points[3][1];
+			beta[2] = cube.polygon_points[6][2] - cube.polygon_points[3][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = cube.polygon_points[3][0] * normal[0]
+					- cube.polygon_points[3][1] * normal[1]
+					+ cube.polygon_points[3][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				cube.draw[4] = false;
+			} else {
+				cube.draw[4] = true;
+			}
+
+			alpha[0] = cube.polygon_points[1][0] - cube.polygon_points[5][0];
+			alpha[1] = cube.polygon_points[1][1] - cube.polygon_points[5][1];
+			alpha[2] = cube.polygon_points[1][2] - cube.polygon_points[5][2];
+
+			beta[0] = cube.polygon_points[0][0] - cube.polygon_points[5][0];
+			beta[1] = cube.polygon_points[0][1] - cube.polygon_points[5][1];
+			beta[2] = cube.polygon_points[0][2] - cube.polygon_points[5][2];
+
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+
+			plane_offset = cube.polygon_points[5][0] * normal[0]
+					- cube.polygon_points[5][1] * normal[1]
+					+ cube.polygon_points[5][2] * normal[2];
+
+			test_draw = (-eye_z * normal[2]) - plane_offset;
+
+			if (test_draw < 0) {
+				cube.draw[5] = false;
+			} else {
+				cube.draw[5] = true;
+			}
+
+		}
+
+	}
+
+	/*
+	 * 
+	 * This function fills the selected obj with a solid color
+	 */
+	public void FillObjectToggle() {
+		if (pyramid.isSet) {
+			if (pyramid.fillingIsSet)
+				pyramid.fillingIsSet = false;
+			else
+				pyramid.fillingIsSet = true;
 		}
 
 	}
@@ -1231,12 +1562,63 @@ public class MainProgram extends JFrame {
 	 * Draws the pyramid onto the canvas
 	 */
 	public void DrawPyramid(Graphics g2) {
-		 
+
 		Graphics2D g = (Graphics2D) g2;
 		g.setStroke(new BasicStroke(2));
 
-		if (pyramid.cullingIsSet) {
-			CalculateSurfaceNormal();
+		/*
+		 * if (pyramid.fillingIsSet) { final class Point { double x, y; double
+		 * maxY, minY, dx, initialx; boolean isMax; boolean isMin; }
+		 * 
+		 * Point P0 = new Point(); Point P1 = new Point(); Point P2 = new
+		 * Point();
+		 * 
+		 * P0.x = pyramid.polygon_points[0][0]; P0.y =
+		 * pyramid.polygon_points[0][1]; P1.x = pyramid.polygon_points[1][0];
+		 * P1.y = pyramid.polygon_points[1][1]; P2.x =
+		 * pyramid.polygon_points[2][0]; P2.y = pyramid.polygon_points[2][1];
+		 * 
+		 * double[] P0P1 = new double[4]; double[] P0P2 = new double[4];
+		 * double[] P1P2 = new double[4];
+		 * 
+		 * double y_max = P0.y; double y_min = P0.y;
+		 * 
+		 * if (y_max < P1.y) y_max = P1.y; if (y_min > P1.y) y_min = P1.y;
+		 * 
+		 * P0P1[0] = y_max; P0P1[1] = y_min; P0P1[2] = -((P1.x - P0.x) / (P1.y -
+		 * P0.y)); P0P1[3] = P1.x + (P0P1[2] / 2);
+		 * 
+		 * y_max = P0.y; y_min = P0.y;
+		 * 
+		 * if (y_min > P2.y) y_min = P2.y; if (y_max < P2.y) y_max = P2.y;
+		 * 
+		 * P0P2[0] = y_max; P0P2[1] = y_min; P0P2[2] = -((P2.x - P0.x) / (P2.y -
+		 * P0.y)); P0P2[3] = P1.x + (P0P2[2] / 2);
+		 * 
+		 * y_max = P1.y; y_min = P1.y;
+		 * 
+		 * if (y_max < P2.y) y_max = P2.y; if (y_min > P2.y) y_min = P2.y;
+		 * 
+		 * P1P2[0] = y_max; P1P2[1] = y_min; P1P2[2] = -((P2.x - P1.x) / (P2.y -
+		 * P1.y)); P1P2[3] = P1.x + (P1P2[2] / 2);
+		 * 
+		 * 
+		 * System.out.println("P0: " + P0.x + ", " + P0.y);
+		 * System.out.println("P1: " + P1.x + ", " + P1.y);
+		 * System.out.println("P2: " + P2.x + ", " + P2.y);
+		 * 
+		 * System.out.println("P0P1: " + P0P1[0] + " | " + P0P1[1] + " | " +
+		 * P0P1[2] + " | " + P0P1[3]); System.out.println("P0P2: " + P0P2[0] +
+		 * " | " + P0P2[1] + " | " + P0P2[2] + " | " + P0P2[3]);
+		 * System.out.println("P1P2: " + P1P2[0] + " | " + P1P2[1] + " | " +
+		 * P1P2[2] + " | " + P1P2[3]);
+		 * 
+		 * //g.setColor(Color.WHITE); //g.drawLine(P0P1[0], ); }
+		 */
+
+		CalculateSurfaceNormal();
+
+		if (pyramid.cullingIsSet && pyramid.isSet) {
 			if (pyramid.draw[0]) {
 				g.setColor(Color.GREEN);
 				g.drawLine((int) pyramid.screen_points[0][0],
@@ -1267,7 +1649,7 @@ public class MainProgram extends JFrame {
 				g.drawLine((int) pyramid.screen_points[2][0],
 						(int) pyramid.screen_points[2][1],
 						(int) pyramid.screen_points[4][0],
-						(int) pyramid.screen_points[4][1]); //P2 to P4
+						(int) pyramid.screen_points[4][1]); // P2 to P4
 
 			}
 			if (pyramid.draw[2]) {
@@ -1280,7 +1662,7 @@ public class MainProgram extends JFrame {
 						(int) pyramid.screen_points[4][1],
 						(int) pyramid.screen_points[0][0],
 						(int) pyramid.screen_points[0][1]); // P0 to P4
-				g.setColor(new Color(232, 64, 15));
+				g.setColor(new Color(232, 130, 21));
 				g.drawLine((int) pyramid.screen_points[3][0],
 						(int) pyramid.screen_points[3][1],
 						(int) pyramid.screen_points[4][0],
@@ -1310,7 +1692,7 @@ public class MainProgram extends JFrame {
 						(int) pyramid.screen_points[1][1],
 						(int) pyramid.screen_points[3][0],
 						(int) pyramid.screen_points[3][1]); // P1 to P3
-				g.setColor(new Color(232, 64, 15));
+				g.setColor(new Color(232, 130, 21));
 				g.drawLine((int) pyramid.screen_points[3][0],
 						(int) pyramid.screen_points[3][1],
 						(int) pyramid.screen_points[4][0],
@@ -1325,7 +1707,6 @@ public class MainProgram extends JFrame {
 						(int) pyramid.screen_points[2][1],
 						(int) pyramid.screen_points[1][0],
 						(int) pyramid.screen_points[1][1]); // P2 to P1
-				
 
 			}
 		}
@@ -1336,12 +1717,12 @@ public class MainProgram extends JFrame {
 					(int) pyramid.screen_points[0][1],
 					(int) pyramid.screen_points[2][0],
 					(int) pyramid.screen_points[2][1]); // P0 to P2
-			
+
 			g.drawLine((int) pyramid.screen_points[1][0],
 					(int) pyramid.screen_points[1][1],
 					(int) pyramid.screen_points[0][0],
 					(int) pyramid.screen_points[0][1]); // P0 to P2
-			
+
 			g.drawLine((int) pyramid.screen_points[3][0],
 					(int) pyramid.screen_points[3][1],
 					(int) pyramid.screen_points[0][0],
@@ -1351,25 +1732,25 @@ public class MainProgram extends JFrame {
 					(int) pyramid.screen_points[4][1],
 					(int) pyramid.screen_points[0][0],
 					(int) pyramid.screen_points[0][1]); // P0 to P4
-			
+
 			g.setColor(Color.YELLOW);
 			g.drawLine((int) pyramid.screen_points[2][0],
 					(int) pyramid.screen_points[2][1],
 					(int) pyramid.screen_points[4][0],
 					(int) pyramid.screen_points[4][1]); // P2 to P4
-			
+
 			g.setColor(Color.RED);
 			g.drawLine((int) pyramid.screen_points[2][0],
 					(int) pyramid.screen_points[2][1],
 					(int) pyramid.screen_points[1][0],
 					(int) pyramid.screen_points[1][1]); // P2 to P1
-			
-			g.setColor(new Color(232, 64, 15));
+
+			g.setColor(new Color(232, 130, 21));
 			g.drawLine((int) pyramid.screen_points[3][0],
 					(int) pyramid.screen_points[3][1],
 					(int) pyramid.screen_points[4][0],
 					(int) pyramid.screen_points[4][1]); // P3 to P4
-			
+
 			g.setColor(Color.WHITE);
 			g.drawLine((int) pyramid.screen_points[1][0],
 					(int) pyramid.screen_points[1][1],
@@ -1384,43 +1765,190 @@ public class MainProgram extends JFrame {
 	 * Draws the box object onto the canvas
 	 */
 	public void DrawBox(Graphics g) {
-		g.setColor(Color.BLUE);
-		g.drawLine((int) box.screen_points[0][0],
-				(int) box.screen_points[0][1], (int) box.screen_points[1][0],
-				(int) box.screen_points[1][1]);
-		g.drawLine((int) box.screen_points[1][0],
-				(int) box.screen_points[1][1], (int) box.screen_points[3][0],
-				(int) box.screen_points[3][1]);
-		g.drawLine((int) box.screen_points[3][0],
-				(int) box.screen_points[3][1], (int) box.screen_points[2][0],
-				(int) box.screen_points[2][1]);
-		g.drawLine((int) box.screen_points[2][0],
-				(int) box.screen_points[2][1], (int) box.screen_points[0][0],
-				(int) box.screen_points[0][1]);
-		g.drawLine((int) box.screen_points[4][0],
-				(int) box.screen_points[4][1], (int) box.screen_points[5][0],
-				(int) box.screen_points[5][1]);
-		g.drawLine((int) box.screen_points[5][0],
-				(int) box.screen_points[5][1], (int) box.screen_points[7][0],
-				(int) box.screen_points[7][1]);
-		g.drawLine((int) box.screen_points[7][0],
-				(int) box.screen_points[7][1], (int) box.screen_points[6][0],
-				(int) box.screen_points[6][1]);
-		g.drawLine((int) box.screen_points[6][0],
-				(int) box.screen_points[6][1], (int) box.screen_points[4][0],
-				(int) box.screen_points[4][1]);
-		g.drawLine((int) box.screen_points[0][0],
-				(int) box.screen_points[0][1], (int) box.screen_points[4][0],
-				(int) box.screen_points[4][1]);
-		g.drawLine((int) box.screen_points[1][0],
-				(int) box.screen_points[1][1], (int) box.screen_points[5][0],
-				(int) box.screen_points[5][1]);
-		g.drawLine((int) box.screen_points[2][0],
-				(int) box.screen_points[2][1], (int) box.screen_points[6][0],
-				(int) box.screen_points[6][1]);
-		g.drawLine((int) box.screen_points[3][0],
-				(int) box.screen_points[3][1], (int) box.screen_points[7][0],
-				(int) box.screen_points[7][1]);
+		if (box.cullingIsSet && box.isSet) {
+			if (box.draw[0]) {
+				g.setColor(Color.BLUE);
+				g.drawLine((int) box.screen_points[0][0],
+						(int) box.screen_points[0][1],
+						(int) box.screen_points[2][0],
+						(int) box.screen_points[2][1]); // P0 to P2
+				g.drawLine((int) box.screen_points[1][0],
+						(int) box.screen_points[1][1],
+						(int) box.screen_points[0][0],
+						(int) box.screen_points[0][1]); // P0 to P1
+				g.drawLine((int) box.screen_points[1][0],
+						(int) box.screen_points[1][1],
+						(int) box.screen_points[3][0],
+						(int) box.screen_points[3][1]); // P0 to P3
+				g.setColor(Color.RED);
+				g.drawLine((int) box.screen_points[2][0],
+						(int) box.screen_points[2][1],
+						(int) box.screen_points[3][0],
+						(int) box.screen_points[3][1]); // P2 to P3
+			}
+			if (box.draw[1]) {
+				g.setColor(Color.BLUE);
+				g.drawLine((int) box.screen_points[0][0],
+						(int) box.screen_points[0][1],
+						(int) box.screen_points[2][0],
+						(int) box.screen_points[2][1]); // P0 to P2
+				g.drawLine((int) box.screen_points[4][0],
+						(int) box.screen_points[4][1],
+						(int) box.screen_points[0][0],
+						(int) box.screen_points[0][1]); // P0 to P4
+				g.drawLine((int) box.screen_points[4][0],
+						(int) box.screen_points[4][1],
+						(int) box.screen_points[6][0],
+						(int) box.screen_points[6][1]); // P4 to P6
+				g.setColor(Color.YELLOW);
+				g.drawLine((int) box.screen_points[2][0],
+						(int) box.screen_points[2][1],
+						(int) box.screen_points[6][0],
+						(int) box.screen_points[6][1]); // P2 to P6
+
+			}
+			if (box.draw[2]) {
+				g.setColor(Color.BLUE);
+				g.drawLine((int) box.screen_points[4][0],
+						(int) box.screen_points[4][1],
+						(int) box.screen_points[5][0],
+						(int) box.screen_points[5][1]); // P4 to P5
+				g.drawLine((int) box.screen_points[4][0],
+						(int) box.screen_points[4][1],
+						(int) box.screen_points[6][0],
+						(int) box.screen_points[6][1]); // P4 to P6
+				g.drawLine((int) box.screen_points[5][0],
+						(int) box.screen_points[5][1],
+						(int) box.screen_points[7][0],
+						(int) box.screen_points[7][1]); // P5 to P7
+				g.setColor(new Color(232, 130, 21));
+				g.drawLine((int) box.screen_points[6][0],
+						(int) box.screen_points[6][1],
+						(int) box.screen_points[7][0],
+						(int) box.screen_points[7][1]); // P6 to P7
+
+			}
+			if (box.draw[3]) {
+				g.setColor(Color.BLUE);
+				g.drawLine((int) box.screen_points[1][0],
+						(int) box.screen_points[1][1],
+						(int) box.screen_points[5][0],
+						(int) box.screen_points[5][1]); // P1 to P5
+				g.drawLine((int) box.screen_points[5][0],
+						(int) box.screen_points[5][1],
+						(int) box.screen_points[7][0],
+						(int) box.screen_points[7][1]); // P5 to P7
+				g.drawLine((int) box.screen_points[1][0],
+						(int) box.screen_points[1][1],
+						(int) box.screen_points[3][0],
+						(int) box.screen_points[3][1]); // P1 to P3
+				g.setColor(Color.WHITE);
+				g.drawLine((int) box.screen_points[3][0],
+						(int) box.screen_points[3][1],
+						(int) box.screen_points[7][0],
+						(int) box.screen_points[7][1]); // P3 to P7
+
+			}
+			if (box.draw[4]) {
+				g.setColor(Color.RED);
+				g.drawLine((int) box.screen_points[2][0],
+						(int) box.screen_points[2][1],
+						(int) box.screen_points[3][0],
+						(int) box.screen_points[3][1]); // P2 to P3
+				g.setColor(new Color(232, 130, 21));
+				g.drawLine((int) box.screen_points[6][0],
+						(int) box.screen_points[6][1],
+						(int) box.screen_points[7][0],
+						(int) box.screen_points[7][1]); // P6 to P7
+				g.setColor(Color.YELLOW);
+				g.drawLine((int) box.screen_points[2][0],
+						(int) box.screen_points[2][1],
+						(int) box.screen_points[6][0],
+						(int) box.screen_points[6][1]); // P2 to P6
+				g.setColor(Color.WHITE);
+				g.drawLine((int) box.screen_points[3][0],
+						(int) box.screen_points[3][1],
+						(int) box.screen_points[7][0],
+						(int) box.screen_points[7][1]); // P3 to P7
+
+			}
+			if (box.draw[5]) {
+				g.setColor(Color.BLUE);
+				g.drawLine((int) box.screen_points[0][0],
+						(int) box.screen_points[0][1],
+						(int) box.screen_points[4][0],
+						(int) box.screen_points[4][1]); // P0 to P4
+				g.drawLine((int) box.screen_points[0][0],
+						(int) box.screen_points[0][1],
+						(int) box.screen_points[1][0],
+						(int) box.screen_points[1][1]); // P0 to P1
+				g.drawLine((int) box.screen_points[1][0],
+						(int) box.screen_points[1][1],
+						(int) box.screen_points[5][0],
+						(int) box.screen_points[5][1]); // P1 to P5
+				g.drawLine((int) box.screen_points[4][0],
+						(int) box.screen_points[4][1],
+						(int) box.screen_points[5][0],
+						(int) box.screen_points[5][1]); // P4 to P5
+
+			}
+		}
+
+		else {
+			g.setColor(Color.BLUE);
+			g.drawLine((int) box.screen_points[0][0],
+					(int) box.screen_points[0][1],
+					(int) box.screen_points[1][0],
+					(int) box.screen_points[1][1]); // P0 to P1
+			g.drawLine((int) box.screen_points[1][0],
+					(int) box.screen_points[1][1],
+					(int) box.screen_points[3][0],
+					(int) box.screen_points[3][1]); // P3 to P1
+			g.drawLine((int) box.screen_points[6][0],
+					(int) box.screen_points[6][1],
+					(int) box.screen_points[4][0],
+					(int) box.screen_points[4][1]); // P6 to P4
+			g.drawLine((int) box.screen_points[0][0],
+					(int) box.screen_points[0][1],
+					(int) box.screen_points[4][0],
+					(int) box.screen_points[4][1]); // P0 to P4
+			g.drawLine((int) box.screen_points[1][0],
+					(int) box.screen_points[1][1],
+					(int) box.screen_points[5][0],
+					(int) box.screen_points[5][1]); // P5 to P1
+			g.drawLine((int) box.screen_points[2][0],
+					(int) box.screen_points[2][1],
+					(int) box.screen_points[0][0],
+					(int) box.screen_points[0][1]); // P0 to P2
+			g.drawLine((int) box.screen_points[4][0],
+					(int) box.screen_points[4][1],
+					(int) box.screen_points[5][0],
+					(int) box.screen_points[5][1]); // P4 to P5
+			g.drawLine((int) box.screen_points[5][0],
+					(int) box.screen_points[5][1],
+					(int) box.screen_points[7][0],
+					(int) box.screen_points[7][1]); // P5 to P7
+			g.setColor(Color.RED);
+			g.drawLine((int) box.screen_points[3][0],
+					(int) box.screen_points[3][1],
+					(int) box.screen_points[2][0],
+					(int) box.screen_points[2][1]); // P2 to P3
+			g.setColor(new Color(232, 130, 21));
+			g.drawLine((int) box.screen_points[7][0],
+					(int) box.screen_points[7][1],
+					(int) box.screen_points[6][0],
+					(int) box.screen_points[6][1]); // P6 to P7	
+			g.setColor(Color.YELLOW);
+			g.drawLine((int) box.screen_points[2][0],
+					(int) box.screen_points[2][1],
+					(int) box.screen_points[6][0],
+					(int) box.screen_points[6][1]); // P2 to P6
+			g.setColor(Color.WHITE);
+			g.drawLine((int) box.screen_points[3][0],
+					(int) box.screen_points[3][1],
+					(int) box.screen_points[7][0],
+					(int) box.screen_points[7][1]); // P3 to P7
+		}
 
 	}
 
@@ -1428,66 +1956,190 @@ public class MainProgram extends JFrame {
 	 * Draws the cube object onto canvas
 	 */
 	public void DrawCube(Graphics g) {
-		g.setColor(Color.RED);
-		g.drawLine((int) cube.screen_points[0][0],
-				(int) cube.screen_points[0][1], (int) cube.screen_points[1][0],
-				(int) cube.screen_points[1][1]);
-		g.drawLine((int) cube.screen_points[1][0],
-				(int) cube.screen_points[1][1], (int) cube.screen_points[3][0],
-				(int) cube.screen_points[3][1]);
-		g.drawLine((int) cube.screen_points[3][0],
-				(int) cube.screen_points[3][1], (int) cube.screen_points[2][0],
-				(int) cube.screen_points[2][1]);
-		g.drawLine((int) cube.screen_points[2][0],
-				(int) cube.screen_points[2][1], (int) cube.screen_points[0][0],
-				(int) cube.screen_points[0][1]);
-		g.drawLine((int) cube.screen_points[4][0],
-				(int) cube.screen_points[4][1], (int) cube.screen_points[5][0],
-				(int) cube.screen_points[5][1]);
-		g.drawLine((int) cube.screen_points[5][0],
-				(int) cube.screen_points[5][1], (int) cube.screen_points[7][0],
-				(int) cube.screen_points[7][1]);
-		g.drawLine((int) cube.screen_points[7][0],
-				(int) cube.screen_points[7][1], (int) cube.screen_points[6][0],
-				(int) cube.screen_points[6][1]);
-		g.drawLine((int) cube.screen_points[6][0],
-				(int) cube.screen_points[6][1], (int) cube.screen_points[4][0],
-				(int) cube.screen_points[4][1]);
-		g.drawLine((int) cube.screen_points[0][0],
-				(int) cube.screen_points[0][1], (int) cube.screen_points[4][0],
-				(int) cube.screen_points[4][1]);
-		g.drawLine((int) cube.screen_points[1][0],
-				(int) cube.screen_points[1][1], (int) cube.screen_points[5][0],
-				(int) cube.screen_points[5][1]);
-		g.drawLine((int) cube.screen_points[2][0],
-				(int) cube.screen_points[2][1], (int) cube.screen_points[6][0],
-				(int) cube.screen_points[6][1]);
-		g.drawLine((int) cube.screen_points[3][0],
-				(int) cube.screen_points[3][1], (int) cube.screen_points[7][0],
-				(int) cube.screen_points[7][1]);
+		if (cube.cullingIsSet && cube.isSet) {
+			if (cube.draw[0]) {
+				g.setColor(Color.CYAN);
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1]); // P0 to P2
+				g.drawLine((int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P0 to P1
+				g.drawLine((int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P0 to P3
+				g.setColor(Color.RED);
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P2 to P3
+			}
+			if (cube.draw[1]) {
+				g.setColor(Color.CYAN);
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1]); // P0 to P2
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P0 to P4
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P4 to P6
+				g.setColor(Color.YELLOW);
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P2 to P6
 
-	}
+			}
+			if (cube.draw[2]) {
+				g.setColor(Color.CYAN);
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P4 to P6
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P7
+				g.setColor(new Color(232, 130, 21));
+				g.drawLine((int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P6 to P7
 
-	public void CalculatePlaneEq(double x, double y, double z) {
+			}
+			if (cube.draw[3]) {
+				g.setColor(Color.CYAN);
+				g.drawLine((int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1],
+						(int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1]); // P1 to P5
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P1 to P3
+				g.setColor(Color.WHITE);
+				g.drawLine((int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P3 to P7
 
-	}
+			}
+			if (cube.draw[4]) {
+				g.setColor(Color.RED);
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P2 to P3
+				g.setColor(new Color(232, 130, 21));
+				g.drawLine((int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P6 to P7
+				g.setColor(Color.YELLOW);
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P2 to P6
+				g.setColor(Color.WHITE);
+				g.drawLine((int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P3 to P7
 
-	public void PrintPoints(Obj obj, int points) {
-		/*
-		 * for(int i = 0; i < points; i++){ System.out.println("P"+ (i+1) + ": "
-		 * + obj.polygon_points[i][0] + ", " + obj.polygon_points[i][1] + ", " +
-		 * obj.polygon_points[i][2]); }
-		 */
+			}
+			if (cube.draw[5]) {
+				g.setColor(Color.CYAN);
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1]); // P0 to P4
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P0 to P1
+				g.drawLine((int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1],
+						(int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1]); // P1 to P5
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1]); // P4 to P5
 
-		/*
-		 * double minZ = FindMinZ(obj, 5);
-		 * 
-		 * for(int i = 0; i < points; i++){ if(obj.polygon_points[i][2] == minZ)
-		 * System.out.println("P" + (i+1) + " has the smallest Z vaule at " +
-		 * minZ);
-		 * 
-		 * }
-		 */
+			}
+		}
+
+		else {
+			g.setColor(Color.CYAN);
+			g.drawLine((int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1],
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P0 to P1
+			g.drawLine((int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1],
+					(int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1]); // P3 to P1
+			g.drawLine((int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1],
+					(int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1]); // P6 to P4
+			g.drawLine((int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1],
+					(int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1]); // P0 to P4
+			g.drawLine((int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1],
+					(int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1]); // P5 to P1
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P0 to P2
+			g.drawLine((int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1],
+					(int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1],
+					(int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1]); // P5 to P7
+			g.setColor(Color.RED);
+			g.drawLine((int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1],
+					(int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1]); // P2 to P3
+			g.setColor(new Color(232, 130, 21));
+			g.drawLine((int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1],
+					(int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1]); // P6 to P7	
+			g.setColor(Color.YELLOW);
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1]); // P2 to P6
+			g.setColor(Color.WHITE);
+			g.drawLine((int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1],
+					(int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1]); // P3 to P7
+		}
 
 	}
 
@@ -1522,7 +2174,7 @@ public class MainProgram extends JFrame {
 		g.fillOval(WIDTH - 110, HEIGHT - 85, 25, 25);
 
 		// Red button
-		g.setColor(Color.RED);
+		g.setColor(Color.CYAN);
 		g.drawOval(WIDTH - 70, HEIGHT - 85, 25, 25);
 		g.fillOval(WIDTH - 70, HEIGHT - 85, 25, 25);
 
@@ -1544,7 +2196,7 @@ public class MainProgram extends JFrame {
 		if (cube.isSet) {
 			g.setColor(Color.BLACK);
 			g.drawOval(WIDTH - 70, HEIGHT - 85, 25, 25);
-			g.setColor(new Color(87, 5, 4));
+			g.setColor(new Color(3, 71, 71));
 			g.fillOval(WIDTH - 70, HEIGHT - 85, 25, 25);
 		}
 
