@@ -44,20 +44,23 @@ public class MainProgram extends JFrame {
 		double[][] fill_screen_points = new double[8][3];
 	}
 
+	Obj pyramid = new Obj();
+	Obj box = new Obj();
+	Obj cube = new Obj();
+
 	public class Segment {
 		double x0, y0, x1, y1, z0, z1;
 		double maxY, minY, dx, initial_x;
 	}
 
-	Obj pyramid = new Obj();
-	Obj box = new Obj();
-	Obj cube = new Obj();
+	// FRONT FACE
+	Segment segP0P1 = new Segment();
+	Segment segP0P2 = new Segment();
+	Segment segP1P2 = new Segment();
 
 	// initialization of the window width and the window height
 	final int WIDTH = 800;
 	final int HEIGHT = 600;
-
-	int count = 1;
 
 	// initialization of x origin and y origin, also screen width and size
 	double eye_z, increment;
@@ -72,7 +75,6 @@ public class MainProgram extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			// grabs the most recent key that is pressed
 			int keyCode = e.getKeyCode();
-			count = 1;
 
 			switch (keyCode) {
 			// if "R" key is pressed
@@ -135,13 +137,17 @@ public class MainProgram extends JFrame {
 			case KeyEvent.VK_C:
 				BackFaceCullingOn();
 				break;
-			// if "C" key is pressed
+			// if "X" key is pressed
 			case KeyEvent.VK_X:
 				BackFaceCullingOff();
 				break;
 			// if "P" key is pressed
 			case KeyEvent.VK_P:
-				FillObjectToggle();
+				FillObjectOn();
+				break;
+			// if "O" key is pressed
+			case KeyEvent.VK_O:
+				FillObjectOff();
 				break;
 			default:
 				break;
@@ -330,17 +336,12 @@ public class MainProgram extends JFrame {
 		AddOffset();
 		pyramid.isSet = box.isSet = cube.isSet = false;
 
-		/*
-		 * This is where the back face culling will be implemented. Shoul be
-		 * able to switch backface culling on and off.
-		 */
-
 		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
 		addMouseListener(new MyMouseHandler());
 		setLayout(new BorderLayout());
 		setSize((int) x, (int) y);
-		setTitle("3D Pyramid - Assignment 2");
+		setTitle("3D Pyramid - Assignment 3");
 		setBackground(new Color(45, 57, 95));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -1540,12 +1541,21 @@ public class MainProgram extends JFrame {
 		}
 	}
 
-	public void CalculateFill() {
+	/*
+	 * 
+	 * This function fills the selected obj with a solid color
+	 */
+	public void FillObjectOn() {
+		pyramid.fillingIsSet = true;
 
-		// FRONT FACE
-		Segment segP0P1 = new Segment();
-		Segment segP0P2 = new Segment();
-		Segment segP1P2 = new Segment();
+	}
+
+	public void FillObjectOff() {
+		pyramid.fillingIsSet = false;
+
+	}
+
+	public void CalculateFill() {
 
 		segP0P1.x0 = pyramid.fill_polygon_points[0][0] = pyramid.polygon_points[0][0]; // P0.x
 		segP0P1.y0 = pyramid.fill_polygon_points[0][1] = pyramid.polygon_points[0][1]; // P0.y
@@ -1670,26 +1680,19 @@ public class MainProgram extends JFrame {
 			segP1P2.initial_x = segP1P2.x0;
 		if (segP1P2.maxY == segP1P2.y1)
 			segP1P2.initial_x = segP1P2.x1;
-
+		
 		pyramid.fill_polygon_points[0][0] = segP0P1.initial_x;
 		pyramid.fill_polygon_points[0][1] = segP0P1.maxY;
+		
+		pyramid.fill_polygon_points[1][0] = segP0P1.initial_x - segP0P1.dx;
+		pyramid.fill_polygon_points[1][1] = segP0P1.maxY - 1;
+
+		pyramid.fill_polygon_points[2][0] = segP0P1.initial_x - segP0P1.dx;
+		pyramid.fill_polygon_points[2][1] = segP0P1.maxY - 1;
 
 		PerspectiveProjectionFilling(pyramid, 3);
-		AddOffset();
+		AddFillingOffset();
 
-	}
-
-	/*
-	 * 
-	 * This function fills the selected obj with a solid color
-	 */
-	public void FillObjectToggle() {
-		if (pyramid.isSet) {
-			if (pyramid.fillingIsSet)
-				pyramid.fillingIsSet = false;
-			else
-				pyramid.fillingIsSet = true;
-		}
 
 	}
 
@@ -1699,13 +1702,15 @@ public class MainProgram extends JFrame {
 	 */
 	public void AddOffset() {
 
-		if (pyramid.isSet)
+		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.screen_points[i][0] = pyramid.offset[0]
 						+ pyramid.screen_points[i][0];
 				pyramid.screen_points[i][1] = pyramid.offset[1]
 						- pyramid.screen_points[i][1];
+
 			}
+		}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.screen_points[i][0] = box.offset[0]
@@ -1720,14 +1725,16 @@ public class MainProgram extends JFrame {
 				cube.screen_points[i][1] = cube.offset[1]
 						- cube.screen_points[i][1];
 			}
-		
-		for (int i = 0; i < 5; i++) {
-			pyramid.fill_screen_points[i][0] = pyramid.offset[0]
-				+ pyramid.fill_screen_points[i][0];
-			pyramid.fill_screen_points[i][1] = pyramid.offset[1]
-				- pyramid.fill_screen_points[i][1];
-		}
-
+	}
+	
+	public void AddFillingOffset(){
+		if (pyramid.fillingIsSet)
+			for (int i = 0; i < 3; i++) {
+				pyramid.fill_screen_points[i][0] = pyramid.offset[0]
+						+ pyramid.fill_screen_points[i][0];
+				pyramid.fill_screen_points[i][1] = pyramid.offset[1]
+						- pyramid.fill_screen_points[i][1];
+			}
 	}
 
 	/*
@@ -1738,17 +1745,24 @@ public class MainProgram extends JFrame {
 		Graphics2D g = (Graphics2D) g2;
 		g.setStroke(new BasicStroke(5));
 
-		CalculateFill();
-		g.setColor(Color.GRAY);
-		g.drawLine((int) pyramid.fill_screen_points[0][0],
-				(int) pyramid.fill_screen_points[0][1],
-				(int) pyramid.fill_screen_points[0][0],
-				(int) pyramid.fill_screen_points[0][1]);
+		if (pyramid.fillingIsSet && pyramid.isSet) {
+			CalculateFill();
+			g.setColor(Color.GRAY);
+			g.drawLine((int) pyramid.fill_screen_points[0][0],
+					(int) pyramid.fill_screen_points[0][1],
+					(int) pyramid.fill_screen_points[0][0],
+					(int) pyramid.fill_screen_points[0][1]);
+			g.drawLine((int) pyramid.fill_screen_points[1][0],
+					(int) pyramid.fill_screen_points[1][1],
+					(int) pyramid.fill_screen_points[2][0],
+					(int) pyramid.fill_screen_points[2][1]);
+		}
 
 		g.setStroke(new BasicStroke(1));
 		// These lines are drawn if back face culling is turned on and the
 		// pyramid is selected
-		if (pyramid.cullingIsSet && pyramid.isSet) {
+		
+		if (pyramid.isSet && pyramid.cullingIsSet) {
 			CalculateSurfaceNormal();
 			if (pyramid.draw[0]) {
 				g.setColor(Color.GREEN);
