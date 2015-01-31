@@ -40,8 +40,13 @@ public class MainProgram extends JFrame {
 		boolean cullingIsSet;
 		boolean fillingIsSet;
 		boolean[] draw = new boolean[6];
-		double[][] edge_list = new double[8][3];
-		double[][] fill_points = new double[8][2];
+		double[][] fill_polygon_points = new double[8][3];
+		double[][] fill_screen_points = new double[8][3];
+	}
+
+	public class Segment {
+		double x0, y0, x1, y1, z0, z1;
+		double maxY, minY, dx, initial_x;
 	}
 
 	Obj pyramid = new Obj();
@@ -51,6 +56,8 @@ public class MainProgram extends JFrame {
 	// initialization of the window width and the window height
 	final int WIDTH = 800;
 	final int HEIGHT = 600;
+
+	int count = 1;
 
 	// initialization of x origin and y origin, also screen width and size
 	double eye_z, increment;
@@ -65,6 +72,7 @@ public class MainProgram extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			// grabs the most recent key that is pressed
 			int keyCode = e.getKeyCode();
+			count = 1;
 
 			switch (keyCode) {
 			// if "R" key is pressed
@@ -1025,10 +1033,16 @@ public class MainProgram extends JFrame {
 			obj.screen_points[i][2] = obj.polygon_points[i][2]
 					/ (eye_z + obj.polygon_points[i][2]);
 		}
+	}
+
+	public void PerspectiveProjectionFilling(Obj obj, int points) {
 		for (int i = 0; i < points; i++) {
-			obj.edge_list[i][0] = obj.polygon_points[i][0];
-			obj.edge_list[i][1] = obj.polygon_points[i][1];
-			obj.edge_list[i][2] = obj.polygon_points[i][2];
+			obj.fill_screen_points[i][0] = (eye_z * obj.fill_polygon_points[i][0])
+					/ (eye_z + obj.fill_polygon_points[i][2]);
+			obj.fill_screen_points[i][1] = (eye_z * obj.fill_polygon_points[i][1])
+					/ (eye_z + obj.fill_polygon_points[i][2]);
+			obj.fill_screen_points[i][2] = obj.fill_polygon_points[i][2]
+					/ (eye_z + obj.fill_polygon_points[i][2]);
 		}
 
 	}
@@ -1060,29 +1074,32 @@ public class MainProgram extends JFrame {
 	 * back face culling on, only exposing the faces that are in front.
 	 */
 	public void CalculateSurfaceNormal() {
-		double[] alpha = new double[3];
-		double[] beta = new double[3];
-		double[] normal = new double[3];
-		double plane_offset;
+		double[] alpha = new double[3]; // stores the alpha values
+		double[] beta = new double[3]; // stores the beta values
+		double[] normal = new double[3]; // stores the surface normal values
+		double plane_offset; // stores the plane offset value
 
 		if (pyramid.isSet) {
-			alpha[0] = pyramid.polygon_points[1][0]
+			alpha[0] = pyramid.polygon_points[1][0] // alpha X
 					- pyramid.polygon_points[0][0];
-			alpha[1] = pyramid.polygon_points[1][1]
+			alpha[1] = pyramid.polygon_points[1][1] // alpha Y
 					- pyramid.polygon_points[0][1];
-			alpha[2] = pyramid.polygon_points[1][2]
+			alpha[2] = pyramid.polygon_points[1][2] // alpha Z
 					- pyramid.polygon_points[0][2];
 
-			beta[0] = pyramid.polygon_points[2][0]
+			beta[0] = pyramid.polygon_points[2][0] // beta X
 					- pyramid.polygon_points[0][0];
-			beta[1] = pyramid.polygon_points[2][1]
+			beta[1] = pyramid.polygon_points[2][1] // beta Y
 					- pyramid.polygon_points[0][1];
-			beta[2] = pyramid.polygon_points[2][2]
+			beta[2] = pyramid.polygon_points[2][2] // beta Z
 					- pyramid.polygon_points[0][2];
 
-			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2];
-			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]);
-			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1];
+			normal[0] = alpha[1] * beta[2] - beta[1] * alpha[2]; // surface
+																	// noraml X
+			normal[1] = (alpha[0] * beta[2] - beta[0] * alpha[2]); // surface
+																	// noraml Y
+			normal[2] = alpha[0] * beta[1] - beta[0] * alpha[1]; // surface
+																	// noraml Z
 
 			plane_offset = pyramid.polygon_points[0][0] * normal[0]
 					- pyramid.polygon_points[0][1] * normal[1]
@@ -1090,6 +1107,8 @@ public class MainProgram extends JFrame {
 
 			double test_draw = (-eye_z * normal[2]) - plane_offset;
 
+			// deteremines wether the polygon will or will not be drawn
+			// This is the front face
 			if (test_draw < 0) {
 				pyramid.draw[0] = false;
 			} else {
@@ -1120,6 +1139,8 @@ public class MainProgram extends JFrame {
 
 			test_draw = (-eye_z * normal[2]) - plane_offset;
 
+			// deteremines wether the polygon will or will not be drawn
+			// This is the left face
 			if (test_draw < 0) {
 				pyramid.draw[1] = false;
 			} else {
@@ -1150,6 +1171,8 @@ public class MainProgram extends JFrame {
 
 			test_draw = (-eye_z * normal[2]) - plane_offset;
 
+			// deteremines wether the polygon will or will not be drawn
+			// This is the back face
 			if (test_draw < 0) {
 				pyramid.draw[2] = false;
 			} else {
@@ -1180,6 +1203,8 @@ public class MainProgram extends JFrame {
 
 			test_draw = (-eye_z * normal[2]) - plane_offset;
 
+			// deteremines wether the polygon will or will not be drawn
+			// This is the right face
 			if (test_draw < 0) {
 				pyramid.draw[3] = false;
 			} else {
@@ -1210,6 +1235,8 @@ public class MainProgram extends JFrame {
 
 			test_draw = (-eye_z * normal[2]) - plane_offset;
 
+			// deteremines wether the polygon will or will not be drawn
+			// This is the bottom face (base)
 			if (test_draw < 0) {
 				pyramid.draw[4] = false;
 			} else {
@@ -1364,7 +1391,7 @@ public class MainProgram extends JFrame {
 			}
 
 		}
-		
+
 		if (cube.isSet) {
 			alpha[0] = cube.polygon_points[3][0] - cube.polygon_points[1][0];
 			alpha[1] = cube.polygon_points[3][1] - cube.polygon_points[1][1];
@@ -1511,6 +1538,144 @@ public class MainProgram extends JFrame {
 			}
 
 		}
+	}
+
+	public void CalculateFill() {
+
+		// FRONT FACE
+		Segment segP0P1 = new Segment();
+		Segment segP0P2 = new Segment();
+		Segment segP1P2 = new Segment();
+
+		segP0P1.x0 = pyramid.fill_polygon_points[0][0] = pyramid.polygon_points[0][0]; // P0.x
+		segP0P1.y0 = pyramid.fill_polygon_points[0][1] = pyramid.polygon_points[0][1]; // P0.y
+		segP0P1.z0 = pyramid.fill_polygon_points[0][2] = pyramid.polygon_points[0][2]; // P0.z
+		segP0P1.x1 = pyramid.fill_polygon_points[1][0] = pyramid.polygon_points[1][0]; // P1.x
+		segP0P1.y1 = pyramid.fill_polygon_points[1][1] = pyramid.polygon_points[1][1]; // P1.y
+		segP0P1.z1 = pyramid.fill_polygon_points[1][2] = pyramid.polygon_points[1][2]; // P1.z
+		segP0P2.x0 = pyramid.fill_polygon_points[0][0] = pyramid.polygon_points[0][0]; // P0.x
+		segP0P2.y0 = pyramid.fill_polygon_points[0][1] = pyramid.polygon_points[0][1]; // P0.y
+		segP0P2.z0 = pyramid.fill_polygon_points[0][2] = pyramid.polygon_points[0][2]; // P0.z
+		segP0P2.x1 = pyramid.fill_polygon_points[2][0] = pyramid.polygon_points[2][0]; // P2.x
+		segP0P2.y1 = pyramid.fill_polygon_points[2][1] = pyramid.polygon_points[2][1]; // P2.y
+		segP0P2.z1 = pyramid.fill_polygon_points[2][2] = pyramid.polygon_points[2][2]; // P2.z
+		segP1P2.x0 = pyramid.fill_polygon_points[1][0] = pyramid.polygon_points[1][0]; // P1.x
+		segP1P2.y0 = pyramid.fill_polygon_points[1][1] = pyramid.polygon_points[1][1]; // P1.y
+		segP1P2.z0 = pyramid.fill_polygon_points[1][2] = pyramid.polygon_points[1][2]; // P1.z
+		segP1P2.x1 = pyramid.fill_polygon_points[2][0] = pyramid.polygon_points[2][0]; // P2.x
+		segP1P2.y1 = pyramid.fill_polygon_points[2][1] = pyramid.polygon_points[2][1]; // P2.y
+		segP1P2.z1 = pyramid.fill_polygon_points[2][2] = pyramid.polygon_points[2][2]; // P2.z
+
+		segP0P1.maxY = segP0P1.y0;
+
+		if (segP0P1.maxY < segP0P1.y1)
+			segP0P1.maxY = segP0P1.y1;
+		if (segP0P1.maxY < segP0P2.y0)
+			segP0P1.maxY = segP0P2.y0;
+		if (segP0P1.maxY < segP0P2.y1)
+			segP0P1.maxY = segP0P2.y1;
+		if (segP0P1.maxY < segP1P2.y0)
+			segP0P1.maxY = segP1P2.y0;
+		if (segP0P1.maxY < segP1P2.y1)
+			segP0P1.maxY = segP1P2.y1;
+
+		segP0P1.minY = segP0P1.y0;
+
+		if (segP0P1.minY > segP0P1.y1)
+			segP0P1.minY = segP0P1.y1;
+		if (segP0P1.minY > segP0P2.y0)
+			segP0P1.minY = segP0P2.y0;
+		if (segP0P1.minY > segP0P2.y1)
+			segP0P1.minY = segP0P2.y1;
+		if (segP0P1.minY > segP1P2.y0)
+			segP0P1.minY = segP1P2.y0;
+		if (segP0P1.minY > segP1P2.y1)
+			segP0P1.minY = segP1P2.y1;
+
+		if ((segP0P1.y1 - segP0P1.y0) == 0)
+			segP0P1.dx = 0;
+		else
+			segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
+		if (segP0P1.maxY == segP0P1.y0)
+			segP0P1.initial_x = segP0P1.x0;
+		if (segP0P1.maxY == segP0P1.y1)
+			segP0P1.initial_x = segP0P1.x1;
+
+		segP0P2.maxY = segP0P2.y0;
+
+		if (segP0P2.maxY < segP0P2.y1)
+			segP0P2.maxY = segP0P2.y1;
+		if (segP0P2.maxY < segP0P2.y0)
+			segP0P2.maxY = segP0P2.y0;
+		if (segP0P2.maxY < segP0P2.y1)
+			segP0P2.maxY = segP0P2.y1;
+		if (segP0P2.maxY < segP1P2.y0)
+			segP0P2.maxY = segP1P2.y0;
+		if (segP0P2.maxY < segP1P2.y1)
+			segP0P2.maxY = segP1P2.y1;
+
+		segP0P2.minY = segP0P2.y0;
+
+		if (segP0P2.minY > segP0P2.y1)
+			segP0P2.minY = segP0P2.y1;
+		if (segP0P2.minY > segP0P2.y0)
+			segP0P2.minY = segP0P2.y0;
+		if (segP0P2.minY > segP0P2.y1)
+			segP0P2.minY = segP0P2.y1;
+		if (segP0P2.minY > segP1P2.y0)
+			segP0P2.minY = segP1P2.y0;
+		if (segP0P2.minY > segP1P2.y1)
+			segP0P2.minY = segP1P2.y1;
+
+		if ((segP0P2.y1 - segP0P2.y0) == 0)
+			segP0P2.dx = 0;
+		else
+			segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
+		if (segP0P2.maxY == segP0P2.y0)
+			segP0P2.initial_x = segP0P2.x0;
+		if (segP0P2.maxY == segP0P2.y1)
+			segP0P2.initial_x = segP0P2.x1;
+
+		segP1P2.maxY = segP1P2.y0;
+
+		if (segP1P2.maxY < segP1P2.y1)
+			segP1P2.maxY = segP1P2.y1;
+		if (segP1P2.maxY < segP1P2.y0)
+			segP1P2.maxY = segP1P2.y0;
+		if (segP1P2.maxY < segP1P2.y1)
+			segP1P2.maxY = segP1P2.y1;
+		if (segP1P2.maxY < segP1P2.y0)
+			segP1P2.maxY = segP1P2.y0;
+		if (segP1P2.maxY < segP1P2.y1)
+			segP1P2.maxY = segP1P2.y1;
+
+		segP1P2.minY = segP1P2.y0;
+
+		if (segP1P2.minY > segP1P2.y1)
+			segP1P2.minY = segP1P2.y1;
+		if (segP1P2.minY > segP1P2.y0)
+			segP1P2.minY = segP1P2.y0;
+		if (segP1P2.minY > segP1P2.y1)
+			segP1P2.minY = segP1P2.y1;
+		if (segP1P2.minY > segP1P2.y0)
+			segP1P2.minY = segP1P2.y0;
+		if (segP1P2.minY > segP1P2.y1)
+			segP1P2.minY = segP1P2.y1;
+
+		if ((segP1P2.y1 - segP1P2.y0) == 0)
+			segP1P2.dx = 0;
+		else
+			segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
+		if (segP1P2.maxY == segP1P2.y0)
+			segP1P2.initial_x = segP1P2.x0;
+		if (segP1P2.maxY == segP1P2.y1)
+			segP1P2.initial_x = segP1P2.x1;
+
+		pyramid.fill_polygon_points[0][0] = segP0P1.initial_x;
+		pyramid.fill_polygon_points[0][1] = segP0P1.maxY;
+
+		PerspectiveProjectionFilling(pyramid, 3);
+		AddOffset();
 
 	}
 
@@ -1555,6 +1720,13 @@ public class MainProgram extends JFrame {
 				cube.screen_points[i][1] = cube.offset[1]
 						- cube.screen_points[i][1];
 			}
+		
+		for (int i = 0; i < 5; i++) {
+			pyramid.fill_screen_points[i][0] = pyramid.offset[0]
+				+ pyramid.fill_screen_points[i][0];
+			pyramid.fill_screen_points[i][1] = pyramid.offset[1]
+				- pyramid.fill_screen_points[i][1];
+		}
 
 	}
 
@@ -1564,61 +1736,20 @@ public class MainProgram extends JFrame {
 	public void DrawPyramid(Graphics g2) {
 
 		Graphics2D g = (Graphics2D) g2;
-		g.setStroke(new BasicStroke(2));
+		g.setStroke(new BasicStroke(5));
 
-		/*
-		 * if (pyramid.fillingIsSet) { final class Point { double x, y; double
-		 * maxY, minY, dx, initialx; boolean isMax; boolean isMin; }
-		 * 
-		 * Point P0 = new Point(); Point P1 = new Point(); Point P2 = new
-		 * Point();
-		 * 
-		 * P0.x = pyramid.polygon_points[0][0]; P0.y =
-		 * pyramid.polygon_points[0][1]; P1.x = pyramid.polygon_points[1][0];
-		 * P1.y = pyramid.polygon_points[1][1]; P2.x =
-		 * pyramid.polygon_points[2][0]; P2.y = pyramid.polygon_points[2][1];
-		 * 
-		 * double[] P0P1 = new double[4]; double[] P0P2 = new double[4];
-		 * double[] P1P2 = new double[4];
-		 * 
-		 * double y_max = P0.y; double y_min = P0.y;
-		 * 
-		 * if (y_max < P1.y) y_max = P1.y; if (y_min > P1.y) y_min = P1.y;
-		 * 
-		 * P0P1[0] = y_max; P0P1[1] = y_min; P0P1[2] = -((P1.x - P0.x) / (P1.y -
-		 * P0.y)); P0P1[3] = P1.x + (P0P1[2] / 2);
-		 * 
-		 * y_max = P0.y; y_min = P0.y;
-		 * 
-		 * if (y_min > P2.y) y_min = P2.y; if (y_max < P2.y) y_max = P2.y;
-		 * 
-		 * P0P2[0] = y_max; P0P2[1] = y_min; P0P2[2] = -((P2.x - P0.x) / (P2.y -
-		 * P0.y)); P0P2[3] = P1.x + (P0P2[2] / 2);
-		 * 
-		 * y_max = P1.y; y_min = P1.y;
-		 * 
-		 * if (y_max < P2.y) y_max = P2.y; if (y_min > P2.y) y_min = P2.y;
-		 * 
-		 * P1P2[0] = y_max; P1P2[1] = y_min; P1P2[2] = -((P2.x - P1.x) / (P2.y -
-		 * P1.y)); P1P2[3] = P1.x + (P1P2[2] / 2);
-		 * 
-		 * 
-		 * System.out.println("P0: " + P0.x + ", " + P0.y);
-		 * System.out.println("P1: " + P1.x + ", " + P1.y);
-		 * System.out.println("P2: " + P2.x + ", " + P2.y);
-		 * 
-		 * System.out.println("P0P1: " + P0P1[0] + " | " + P0P1[1] + " | " +
-		 * P0P1[2] + " | " + P0P1[3]); System.out.println("P0P2: " + P0P2[0] +
-		 * " | " + P0P2[1] + " | " + P0P2[2] + " | " + P0P2[3]);
-		 * System.out.println("P1P2: " + P1P2[0] + " | " + P1P2[1] + " | " +
-		 * P1P2[2] + " | " + P1P2[3]);
-		 * 
-		 * //g.setColor(Color.WHITE); //g.drawLine(P0P1[0], ); }
-		 */
+		CalculateFill();
+		g.setColor(Color.GRAY);
+		g.drawLine((int) pyramid.fill_screen_points[0][0],
+				(int) pyramid.fill_screen_points[0][1],
+				(int) pyramid.fill_screen_points[0][0],
+				(int) pyramid.fill_screen_points[0][1]);
 
-		CalculateSurfaceNormal();
-
+		g.setStroke(new BasicStroke(1));
+		// These lines are drawn if back face culling is turned on and the
+		// pyramid is selected
 		if (pyramid.cullingIsSet && pyramid.isSet) {
+			CalculateSurfaceNormal();
 			if (pyramid.draw[0]) {
 				g.setColor(Color.GREEN);
 				g.drawLine((int) pyramid.screen_points[0][0],
@@ -1937,7 +2068,7 @@ public class MainProgram extends JFrame {
 			g.drawLine((int) box.screen_points[7][0],
 					(int) box.screen_points[7][1],
 					(int) box.screen_points[6][0],
-					(int) box.screen_points[6][1]); // P6 to P7	
+					(int) box.screen_points[6][1]); // P6 to P7
 			g.setColor(Color.YELLOW);
 			g.drawLine((int) box.screen_points[2][0],
 					(int) box.screen_points[2][1],
@@ -2128,7 +2259,7 @@ public class MainProgram extends JFrame {
 			g.drawLine((int) cube.screen_points[7][0],
 					(int) cube.screen_points[7][1],
 					(int) cube.screen_points[6][0],
-					(int) cube.screen_points[6][1]); // P6 to P7	
+					(int) cube.screen_points[6][1]); // P6 to P7
 			g.setColor(Color.YELLOW);
 			g.drawLine((int) cube.screen_points[2][0],
 					(int) cube.screen_points[2][1],
