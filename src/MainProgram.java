@@ -25,9 +25,11 @@ import javax.swing.JFrame;
 
 import java.awt.Image;
 import java.math.*;
-import java.util.Random;
+import java.util.ArrayList;
 
 public class MainProgram extends JFrame {
+
+	int count = 1;
 
 	// Obj object defining each 3D object
 	public class Obj {
@@ -40,8 +42,8 @@ public class MainProgram extends JFrame {
 		boolean cullingIsSet;
 		boolean fillingIsSet;
 		boolean[] draw = new boolean[6];
-		double[][] fill_polygon_points = new double[8][3];
-		double[][] fill_screen_points = new double[8][3];
+		double[][] fill_polygon_points = new double[3][3];
+		double[][] fill_screen_points = new double[3][3];
 	}
 
 	Obj pyramid = new Obj();
@@ -51,12 +53,16 @@ public class MainProgram extends JFrame {
 	public class Segment {
 		double x0, y0, x1, y1, z0, z1;
 		double maxY, minY, dx, initial_x;
+		boolean isActive = true;
+		boolean inGlobal = false;
 	}
 
 	// FRONT FACE
 	Segment segP0P1 = new Segment();
 	Segment segP0P2 = new Segment();
 	Segment segP1P2 = new Segment();
+
+	ArrayList<Segment> Global_ET = new ArrayList<Segment>();
 
 	// initialization of the window width and the window height
 	final int WIDTH = 800;
@@ -76,6 +82,7 @@ public class MainProgram extends JFrame {
 			// grabs the most recent key that is pressed
 			int keyCode = e.getKeyCode();
 
+			count = 1;
 			switch (keyCode) {
 			// if "R" key is pressed
 			case KeyEvent.VK_R:
@@ -211,33 +218,33 @@ public class MainProgram extends JFrame {
 		y_origin = y / 2; // Y origin of canvas
 		z_origin = 0; // Z origin of canvas
 		// The distance the eye is to the screen
-		eye_z = 3000.0;
+		eye_z = 2000.0;
 		// The scale of increment size
 		increment = 10;
 
 		// P1
-		pyramid.polygon_points[0][0] = 0; // x coordinates of P1
-		pyramid.polygon_points[0][1] = 100; // y coordinates of P1
+		pyramid.polygon_points[0][0] = 200; // x coordinates of P1
+		pyramid.polygon_points[0][1] = 300; // y coordinates of P1
 		pyramid.polygon_points[0][2] = 300; // z coordinates of P1
 
 		// P2
-		pyramid.polygon_points[1][0] = 100; // x coordinates of P2
-		pyramid.polygon_points[1][1] = -100; // y coordinates of P2
+		pyramid.polygon_points[1][0] = 300; // x coordinates of P2
+		pyramid.polygon_points[1][1] = 100; // y coordinates of P2
 		pyramid.polygon_points[1][2] = 200; // z coordinates of P2
 
 		// P3
-		pyramid.polygon_points[2][0] = -100; // x coordinates of P3
-		pyramid.polygon_points[2][1] = -100; // y coordinates of P3
+		pyramid.polygon_points[2][0] = 100; // x coordinates of P3
+		pyramid.polygon_points[2][1] = 100; // y coordinates of P3
 		pyramid.polygon_points[2][2] = 200; // z coordinates of P3
 
 		// P4
-		pyramid.polygon_points[3][0] = 100; // x coordinates of P4
-		pyramid.polygon_points[3][1] = -100; // y coordinates of P4
+		pyramid.polygon_points[3][0] = 300; // x coordinates of P4
+		pyramid.polygon_points[3][1] = 100; // y coordinates of P4
 		pyramid.polygon_points[3][2] = 400; // z coordinates of P4
 
 		// P5
-		pyramid.polygon_points[4][0] = -100; // x coordinates of P5
-		pyramid.polygon_points[4][1] = -100; // y coordinates of P5
+		pyramid.polygon_points[4][0] = 100; // x coordinates of P5
+		pyramid.polygon_points[4][1] = 100; // y coordinates of P5
 		pyramid.polygon_points[4][2] = 400; // z coordinates of P5
 
 		// P1
@@ -326,9 +333,9 @@ public class MainProgram extends JFrame {
 
 		// Sets the original perspective projection polygon points and stores
 		// them as screen points.
-		PerspectivePorjection(pyramid, 5);
-		PerspectivePorjection(box, 8);
-		PerspectivePorjection(cube, 8);
+		PerspectiveProjection(pyramid, 5);
+		PerspectiveProjection(box, 8);
+		PerspectiveProjection(cube, 8);
 
 		// must set each object before adding the intial offset
 		// sets the objects back to false (not selected)
@@ -360,8 +367,8 @@ public class MainProgram extends JFrame {
 	public void paintComponent(Graphics g) {
 		DrawPlanes(g);
 		DrawPyramid(g);
-		DrawBox(g);
-		DrawCube(g);
+		// DrawBox(g);
+		// DrawCube(g);
 		DrawButtons(g);
 
 		repaint();
@@ -378,18 +385,18 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] += increment;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] += increment;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] += increment;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -405,18 +412,18 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet) {
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][0] -= increment;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][0] -= increment;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][0] -= increment;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -430,19 +437,19 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] -= increment;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] -= increment;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] -= increment;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 
 			}
 		AddOffset();
@@ -457,17 +464,17 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][1] += increment;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][1] += increment;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][1] += increment;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 
@@ -483,17 +490,17 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][2] -= increment * 15;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][2] -= increment * 15;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][2] -= increment * 15;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -508,17 +515,17 @@ public class MainProgram extends JFrame {
 		if (pyramid.isSet)
 			for (int i = 0; i < 5; i++) {
 				pyramid.polygon_points[i][2] += increment * 15;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
 				box.polygon_points[i][2] += increment * 15;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
 				cube.polygon_points[i][2] += increment * 15;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -541,7 +548,7 @@ public class MainProgram extends JFrame {
 				pyramid.polygon_points[i][0] += pyramid.midpoints[0];
 				pyramid.polygon_points[i][1] += pyramid.midpoints[1];
 				pyramid.polygon_points[i][2] += pyramid.midpoints[2];
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -554,7 +561,7 @@ public class MainProgram extends JFrame {
 				box.polygon_points[i][0] += box.midpoints[0];
 				box.polygon_points[i][1] += box.midpoints[1];
 				box.polygon_points[i][2] += box.midpoints[2];
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -567,7 +574,7 @@ public class MainProgram extends JFrame {
 				cube.polygon_points[i][0] += cube.midpoints[0];
 				cube.polygon_points[i][1] += cube.midpoints[1];
 				cube.polygon_points[i][2] += cube.midpoints[2];
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 
@@ -591,7 +598,7 @@ public class MainProgram extends JFrame {
 				pyramid.polygon_points[i][0] += pyramid.midpoints[0];
 				pyramid.polygon_points[i][1] += pyramid.midpoints[1];
 				pyramid.polygon_points[i][2] += pyramid.midpoints[2];
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		if (box.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -604,7 +611,7 @@ public class MainProgram extends JFrame {
 				box.polygon_points[i][0] += box.midpoints[0];
 				box.polygon_points[i][1] += box.midpoints[1];
 				box.polygon_points[i][2] += box.midpoints[2];
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		if (cube.isSet)
 			for (int i = 0; i < 8; i++) {
@@ -617,7 +624,7 @@ public class MainProgram extends JFrame {
 				cube.polygon_points[i][0] += cube.midpoints[0];
 				cube.polygon_points[i][1] += cube.midpoints[1];
 				cube.polygon_points[i][2] += cube.midpoints[2];
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		AddOffset();
 	}
@@ -642,7 +649,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][1] = y;
 				pyramid.polygon_points[i][2] = z;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 
 		}
@@ -656,7 +663,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][1] = y;
 				box.polygon_points[i][2] = z;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -669,7 +676,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][1] = y;
 				cube.polygon_points[i][2] = z;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -695,7 +702,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][1] = y;
 				pyramid.polygon_points[i][2] = z;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 
 		}
@@ -709,7 +716,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][1] = y;
 				box.polygon_points[i][2] = z;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -722,7 +729,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][1] = y;
 				cube.polygon_points[i][2] = z;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -747,7 +754,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][2] = z;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -760,7 +767,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][2] = z;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -773,7 +780,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][2] = z;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -798,7 +805,7 @@ public class MainProgram extends JFrame {
 				z += pyramid.midpoints[2];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][2] = z;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -811,7 +818,7 @@ public class MainProgram extends JFrame {
 				z += box.midpoints[2];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][2] = z;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -824,7 +831,7 @@ public class MainProgram extends JFrame {
 				z += cube.midpoints[2];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][2] = z;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -849,7 +856,7 @@ public class MainProgram extends JFrame {
 				y += pyramid.midpoints[1];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][1] = y;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -862,7 +869,7 @@ public class MainProgram extends JFrame {
 				y += box.midpoints[1];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][1] = y;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -875,7 +882,7 @@ public class MainProgram extends JFrame {
 				y += cube.midpoints[1];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][1] = y;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -902,7 +909,7 @@ public class MainProgram extends JFrame {
 				y += pyramid.midpoints[1];
 				pyramid.polygon_points[i][0] = x;
 				pyramid.polygon_points[i][1] = y;
-				PerspectivePorjection(pyramid, 5);
+				PerspectiveProjection(pyramid, 5);
 			}
 		}
 		if (box.isSet) {
@@ -915,7 +922,7 @@ public class MainProgram extends JFrame {
 				y += box.midpoints[1];
 				box.polygon_points[i][0] = x;
 				box.polygon_points[i][1] = y;
-				PerspectivePorjection(box, 8);
+				PerspectiveProjection(box, 8);
 			}
 		}
 		if (cube.isSet) {
@@ -928,7 +935,7 @@ public class MainProgram extends JFrame {
 				y += cube.midpoints[1];
 				cube.polygon_points[i][0] = x;
 				cube.polygon_points[i][1] = y;
-				PerspectivePorjection(cube, 8);
+				PerspectiveProjection(cube, 8);
 			}
 		}
 		AddOffset();
@@ -1025,7 +1032,8 @@ public class MainProgram extends JFrame {
 	/*
 	 * Calculates the perspective project points for converting 3D to 2D
 	 */
-	public void PerspectivePorjection(Obj obj, int points) {
+	public void PerspectiveProjection(Obj obj, int points) {
+
 		for (int i = 0; i < points; i++) {
 			obj.screen_points[i][0] = (eye_z * obj.polygon_points[i][0])
 					/ (eye_z + obj.polygon_points[i][2]);
@@ -1036,8 +1044,9 @@ public class MainProgram extends JFrame {
 		}
 	}
 
-	public void PerspectiveProjectionFilling(Obj obj, int points) {
-		for (int i = 0; i < points; i++) {
+	public void PerspectiveProjectionFilling(Obj obj) {
+
+		for (int i = 0; i < 3; i++) {
 			obj.fill_screen_points[i][0] = (eye_z * obj.fill_polygon_points[i][0])
 					/ (eye_z + obj.fill_polygon_points[i][2]);
 			obj.fill_screen_points[i][1] = (eye_z * obj.fill_polygon_points[i][1])
@@ -1555,144 +1564,182 @@ public class MainProgram extends JFrame {
 
 	}
 
-	public void CalculateFill() {
+	public void CalculateFill(double a0, double b0, double c0, double a1,
+			double b1, double c1, double a2, double b2, double c2, Graphics2D g) {
 
-		segP0P1.x0 = pyramid.fill_polygon_points[0][0] = pyramid.polygon_points[0][0]; // P0.x
-		segP0P1.y0 = pyramid.fill_polygon_points[0][1] = pyramid.polygon_points[0][1]; // P0.y
-		segP0P1.z0 = pyramid.fill_polygon_points[0][2] = pyramid.polygon_points[0][2]; // P0.z
-		segP0P1.x1 = pyramid.fill_polygon_points[1][0] = pyramid.polygon_points[1][0]; // P1.x
-		segP0P1.y1 = pyramid.fill_polygon_points[1][1] = pyramid.polygon_points[1][1]; // P1.y
-		segP0P1.z1 = pyramid.fill_polygon_points[1][2] = pyramid.polygon_points[1][2]; // P1.z
-		segP0P2.x0 = pyramid.fill_polygon_points[0][0] = pyramid.polygon_points[0][0]; // P0.x
-		segP0P2.y0 = pyramid.fill_polygon_points[0][1] = pyramid.polygon_points[0][1]; // P0.y
-		segP0P2.z0 = pyramid.fill_polygon_points[0][2] = pyramid.polygon_points[0][2]; // P0.z
-		segP0P2.x1 = pyramid.fill_polygon_points[2][0] = pyramid.polygon_points[2][0]; // P2.x
-		segP0P2.y1 = pyramid.fill_polygon_points[2][1] = pyramid.polygon_points[2][1]; // P2.y
-		segP0P2.z1 = pyramid.fill_polygon_points[2][2] = pyramid.polygon_points[2][2]; // P2.z
-		segP1P2.x0 = pyramid.fill_polygon_points[1][0] = pyramid.polygon_points[1][0]; // P1.x
-		segP1P2.y0 = pyramid.fill_polygon_points[1][1] = pyramid.polygon_points[1][1]; // P1.y
-		segP1P2.z0 = pyramid.fill_polygon_points[1][2] = pyramid.polygon_points[1][2]; // P1.z
-		segP1P2.x1 = pyramid.fill_polygon_points[2][0] = pyramid.polygon_points[2][0]; // P2.x
-		segP1P2.y1 = pyramid.fill_polygon_points[2][1] = pyramid.polygon_points[2][1]; // P2.y
-		segP1P2.z1 = pyramid.fill_polygon_points[2][2] = pyramid.polygon_points[2][2]; // P2.z
+		double[] startpoints = new double[3];
+		double[] endpoints = new double[3];
+		ArrayList<Segment> Global_ET = new ArrayList<Segment>();
+
+		segP0P1.x0 = a0; // P0.x
+		segP0P1.y0 = b0; // P0.y
+		segP0P1.z0 = c0; // P0.z
+		segP0P1.x1 = a1; // P1.x
+		segP0P1.y1 = b1; // P1.y
+		segP0P1.z1 = c1; // P1.z
+		segP0P2.x0 = a0; // P0.x
+		segP0P2.y0 = b0; // P0.y
+		segP0P2.z0 = c0; // P0.z
+		segP0P2.x1 = a2; // P2.x
+		segP0P2.y1 = b2; // P2.y
+		segP0P2.z1 = c2; // P2.z
+		segP1P2.x0 = a1; // P1.x
+		segP1P2.y0 = b1; // P1.y
+		segP1P2.z0 = c1; // P1.z
+		segP1P2.x1 = a2; // P2.x
+		segP1P2.y1 = b2; // P2.y
+		segP1P2.z1 = c2; // P2.z
 
 		segP0P1.maxY = segP0P1.y0;
+		segP0P1.initial_x = segP0P1.x0;
 
-		if (segP0P1.maxY < segP0P1.y1)
+		if (segP0P1.maxY < segP0P1.y1) {
 			segP0P1.maxY = segP0P1.y1;
-		if (segP0P1.maxY < segP0P2.y0)
-			segP0P1.maxY = segP0P2.y0;
-		if (segP0P1.maxY < segP0P2.y1)
-			segP0P1.maxY = segP0P2.y1;
-		if (segP0P1.maxY < segP1P2.y0)
-			segP0P1.maxY = segP1P2.y0;
-		if (segP0P1.maxY < segP1P2.y1)
-			segP0P1.maxY = segP1P2.y1;
+			segP0P1.initial_x = segP0P1.x1;
+		}
 
 		segP0P1.minY = segP0P1.y0;
 
 		if (segP0P1.minY > segP0P1.y1)
 			segP0P1.minY = segP0P1.y1;
-		if (segP0P1.minY > segP0P2.y0)
-			segP0P1.minY = segP0P2.y0;
-		if (segP0P1.minY > segP0P2.y1)
-			segP0P1.minY = segP0P2.y1;
-		if (segP0P1.minY > segP1P2.y0)
-			segP0P1.minY = segP1P2.y0;
-		if (segP0P1.minY > segP1P2.y1)
-			segP0P1.minY = segP1P2.y1;
 
-		if ((segP0P1.y1 - segP0P1.y0) == 0)
-			segP0P1.dx = 0;
-		else
-			segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
-		if (segP0P1.maxY == segP0P1.y0)
-			segP0P1.initial_x = segP0P1.x0;
-		if (segP0P1.maxY == segP0P1.y1)
-			segP0P1.initial_x = segP0P1.x1;
+		segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
 
 		segP0P2.maxY = segP0P2.y0;
+		segP0P2.initial_x = segP0P2.x0;
 
-		if (segP0P2.maxY < segP0P2.y1)
+		if (segP0P2.maxY < segP0P2.y1) {
 			segP0P2.maxY = segP0P2.y1;
-		if (segP0P2.maxY < segP0P2.y0)
-			segP0P2.maxY = segP0P2.y0;
-		if (segP0P2.maxY < segP0P2.y1)
-			segP0P2.maxY = segP0P2.y1;
-		if (segP0P2.maxY < segP1P2.y0)
-			segP0P2.maxY = segP1P2.y0;
-		if (segP0P2.maxY < segP1P2.y1)
-			segP0P2.maxY = segP1P2.y1;
+			segP0P2.initial_x = segP0P2.x1;
+		}
 
 		segP0P2.minY = segP0P2.y0;
 
 		if (segP0P2.minY > segP0P2.y1)
 			segP0P2.minY = segP0P2.y1;
-		if (segP0P2.minY > segP0P2.y0)
-			segP0P2.minY = segP0P2.y0;
-		if (segP0P2.minY > segP0P2.y1)
-			segP0P2.minY = segP0P2.y1;
-		if (segP0P2.minY > segP1P2.y0)
-			segP0P2.minY = segP1P2.y0;
-		if (segP0P2.minY > segP1P2.y1)
-			segP0P2.minY = segP1P2.y1;
 
-		if ((segP0P2.y1 - segP0P2.y0) == 0)
-			segP0P2.dx = 0;
-		else
-			segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
-		if (segP0P2.maxY == segP0P2.y0)
-			segP0P2.initial_x = segP0P2.x0;
-		if (segP0P2.maxY == segP0P2.y1)
-			segP0P2.initial_x = segP0P2.x1;
+		segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
 
 		segP1P2.maxY = segP1P2.y0;
+		segP1P2.initial_x = segP1P2.x0;
 
-		if (segP1P2.maxY < segP1P2.y1)
+		if (segP1P2.maxY < segP1P2.y1) {
 			segP1P2.maxY = segP1P2.y1;
-		if (segP1P2.maxY < segP1P2.y0)
-			segP1P2.maxY = segP1P2.y0;
-		if (segP1P2.maxY < segP1P2.y1)
-			segP1P2.maxY = segP1P2.y1;
-		if (segP1P2.maxY < segP1P2.y0)
-			segP1P2.maxY = segP1P2.y0;
-		if (segP1P2.maxY < segP1P2.y1)
-			segP1P2.maxY = segP1P2.y1;
+			segP1P2.initial_x = segP1P2.x1;
+		}
 
 		segP1P2.minY = segP1P2.y0;
 
 		if (segP1P2.minY > segP1P2.y1)
 			segP1P2.minY = segP1P2.y1;
-		if (segP1P2.minY > segP1P2.y0)
-			segP1P2.minY = segP1P2.y0;
-		if (segP1P2.minY > segP1P2.y1)
-			segP1P2.minY = segP1P2.y1;
-		if (segP1P2.minY > segP1P2.y0)
-			segP1P2.minY = segP1P2.y0;
-		if (segP1P2.minY > segP1P2.y1)
-			segP1P2.minY = segP1P2.y1;
 
-		if ((segP1P2.y1 - segP1P2.y0) == 0)
-			segP1P2.dx = 0;
-		else
-			segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
-		if (segP1P2.maxY == segP1P2.y0)
-			segP1P2.initial_x = segP1P2.x0;
-		if (segP1P2.maxY == segP1P2.y1)
-			segP1P2.initial_x = segP1P2.x1;
+		segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
+
+		Segment[] seg_list = new Segment[3];
+
+		seg_list[0] = segP0P1;
+		seg_list[1] = segP0P2;
+		seg_list[2] = segP1P2;
+
+		/*System.out.println("Current Seg List");
+		System.out.println("i  minY     maxY     x_initial     1/m ");
+		for (int i = 0; i < 3; i++) {
+
+			System.out.println(i + ") " + seg_list[i].minY + " | "
+					+ seg_list[i].maxY + " | " + seg_list[i].initial_x + " | "
+					+ seg_list[i].dx);
+		}*/
 		
-		pyramid.fill_polygon_points[0][0] = segP0P1.initial_x;
-		pyramid.fill_polygon_points[0][1] = segP0P1.maxY;
-		
-		pyramid.fill_polygon_points[1][0] = segP0P1.initial_x - segP0P1.dx;
-		pyramid.fill_polygon_points[1][1] = segP0P1.maxY - 1;
 
-		pyramid.fill_polygon_points[2][0] = segP0P1.initial_x - segP0P1.dx;
-		pyramid.fill_polygon_points[2][1] = segP0P1.maxY - 1;
 
-		PerspectiveProjectionFilling(pyramid, 3);
-		AddFillingOffset();
+		if (seg_list[0].maxY >= seg_list[1].maxY
+				&& seg_list[0].maxY >= seg_list[2].maxY
+				&& seg_list[0].minY >= seg_list[1].minY
+				&& seg_list[0].minY >= seg_list[2].minY) {
+			startpoints[0] = seg_list[0].maxY;
+			endpoints[0] = seg_list[0].minY;
+			Global_ET.add(seg_list[0]);
+			
 
+			if (seg_list[1].maxY >= seg_list[2].maxY
+					&& seg_list[1].minY >= seg_list[2].minY) {
+				startpoints[1] = seg_list[1].maxY;
+				endpoints[1] = seg_list[1].minY;
+				startpoints[2] = seg_list[2].maxY;
+				endpoints[2] = seg_list[2].minY;
+				Global_ET.add(seg_list[1]);
+				Global_ET.add(seg_list[2]);
+			} else {
+				startpoints[1] = seg_list[2].maxY;
+				endpoints[1] = seg_list[2].minY;
+				startpoints[2] = seg_list[1].maxY;
+				endpoints[2] = seg_list[1].minY;
+				Global_ET.add(seg_list[2]);
+				Global_ET.add(seg_list[1]);
+			}
+
+		} else {
+
+			startpoints[2] = seg_list[0].maxY;
+			endpoints[2] = seg_list[0].minY;
+
+			if (seg_list[1].maxY >= seg_list[2].maxY
+					&& seg_list[1].minY >= seg_list[2].minY) {
+				startpoints[0] = seg_list[1].maxY;
+				endpoints[0] = seg_list[1].minY;
+				startpoints[1] = seg_list[2].maxY;
+				endpoints[1] = seg_list[2].minY;
+				Global_ET.add(seg_list[1]);
+				Global_ET.add(seg_list[2]);
+			} else {
+				startpoints[0] = seg_list[2].maxY;
+				endpoints[0] = seg_list[2].minY;
+				startpoints[1] = seg_list[1].maxY;
+				endpoints[1] = seg_list[1].minY;
+				Global_ET.add(seg_list[2]);
+				Global_ET.add(seg_list[1]);
+			}
+			Global_ET.add(seg_list[0]);
+
+		}
+		/*System.out.println("Global table");
+		for (int i = 0; i < 3; i++) {
+			System.out.println(i + ") " + Global_ET.get(i).minY + " | "
+					+ Global_ET.get(i).maxY + " | "
+					+ Global_ET.get(i).initial_x + " | " + Global_ET.get(i).dx);
+		}*/
+
+		double initial_scan_line = Global_ET.get(0).maxY;
+		double end_scan_line = Global_ET.get(1).minY;
+
+		for (int i = (int) initial_scan_line; i > end_scan_line; i--) {
+			if ((i <= startpoints[1] && i >= endpoints[1])
+					&& (i <= startpoints[0] && i >= endpoints[0])) {
+				pyramid.fill_polygon_points[0][0] = Global_ET.get(0).initial_x;
+				pyramid.fill_polygon_points[0][1] = i;
+				pyramid.fill_polygon_points[1][0] = Global_ET.get(1).initial_x;
+				pyramid.fill_polygon_points[1][1] = i;
+				Global_ET.get(0).initial_x += Global_ET.get(0).dx;
+				Global_ET.get(1).initial_x += Global_ET.get(1).dx;
+				PerspectiveProjectionFilling(pyramid);
+				AddFillingOffset();
+				g.drawLine((int)pyramid.fill_screen_points[0][0], (int)pyramid.fill_screen_points[0][1], (int)pyramid.fill_screen_points[1][0], (int)pyramid.fill_screen_points[1][1]);
+				
+
+			} else if ((i <= startpoints[1] && i >= endpoints[1])
+					&& (i <= startpoints[2] && i >= endpoints[2])) {
+				pyramid.fill_polygon_points[0][0] = Global_ET.get(0).initial_x;
+				pyramid.fill_polygon_points[0][1] = i;
+				pyramid.fill_polygon_points[1][0] = Global_ET.get(2).initial_x;
+				pyramid.fill_polygon_points[1][1] = i;
+				Global_ET.get(0).initial_x += Global_ET.get(0).dx;
+				Global_ET.get(2).initial_x += Global_ET.get(2).dx;
+				PerspectiveProjectionFilling(pyramid);
+				AddFillingOffset();
+				g.drawLine((int)pyramid.fill_screen_points[0][0], (int)pyramid.fill_screen_points[0][1], (int)pyramid.fill_screen_points[1][0], (int)pyramid.fill_screen_points[1][1]);
+
+			}
+		}
 
 	}
 
@@ -1726,8 +1773,8 @@ public class MainProgram extends JFrame {
 						- cube.screen_points[i][1];
 			}
 	}
-	
-	public void AddFillingOffset(){
+
+	public void AddFillingOffset() {
 		if (pyramid.fillingIsSet)
 			for (int i = 0; i < 3; i++) {
 				pyramid.fill_screen_points[i][0] = pyramid.offset[0]
@@ -1743,25 +1790,25 @@ public class MainProgram extends JFrame {
 	public void DrawPyramid(Graphics g2) {
 
 		Graphics2D g = (Graphics2D) g2;
-		g.setStroke(new BasicStroke(5));
+		
 
 		if (pyramid.fillingIsSet && pyramid.isSet) {
-			CalculateFill();
+			CalculateFill(pyramid.polygon_points[0][0],
+					pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
+					pyramid.polygon_points[1][0], pyramid.polygon_points[1][1],
+					pyramid.polygon_points[1][2], pyramid.polygon_points[2][0],
+					pyramid.polygon_points[2][1], pyramid.polygon_points[2][2], g);
 			g.setColor(Color.GRAY);
-			g.drawLine((int) pyramid.fill_screen_points[0][0],
+			/*g.drawLine((int) pyramid.fill_screen_points[0][0],
 					(int) pyramid.fill_screen_points[0][1],
-					(int) pyramid.fill_screen_points[0][0],
-					(int) pyramid.fill_screen_points[0][1]);
-			g.drawLine((int) pyramid.fill_screen_points[1][0],
-					(int) pyramid.fill_screen_points[1][1],
-					(int) pyramid.fill_screen_points[2][0],
-					(int) pyramid.fill_screen_points[2][1]);
+					(int) pyramid.fill_screen_points[1][0],
+					(int) pyramid.fill_screen_points[1][1]);*/
 		}
+		g.setStroke(new BasicStroke(2));
 
-		g.setStroke(new BasicStroke(1));
 		// These lines are drawn if back face culling is turned on and the
 		// pyramid is selected
-		
+
 		if (pyramid.isSet && pyramid.cullingIsSet) {
 			CalculateSurfaceNormal();
 			if (pyramid.draw[0]) {
