@@ -30,8 +30,6 @@ import java.util.Random;
 
 public class MainProgram extends JFrame {
 
-	int count = 1;
-
 	// Obj object defining each 3D object
 	public class Obj {
 		// the points of the polygon,
@@ -53,9 +51,10 @@ public class MainProgram extends JFrame {
 	Obj pyramid = new Obj();
 	Obj box = new Obj();
 	Obj cube = new Obj();
-	
+
 	ArrayList<Obj> Obj_List = new ArrayList<Obj>();
-	//current_index;
+
+	// current_index;
 
 	public class Segment {
 		double x0, y0, x1, y1, z0, z1;
@@ -81,8 +80,8 @@ public class MainProgram extends JFrame {
 	// keys are pressed
 	private Image dbImage;
 	private Graphics dbg;
-	
-	//Random colors for filling
+
+	// Random colors for filling
 	int randR = randInt(0, 255);
 	int randG = randInt(0, 255);
 	int randB = randInt(0, 255);
@@ -360,13 +359,13 @@ public class MainProgram extends JFrame {
 		pyramid.isSet = box.isSet = cube.isSet = true;
 		AddOffset();
 		pyramid.isSet = box.isSet = cube.isSet = false;
-		
-		pyramid.wireFrameSet = box.wireFrameSet = true;
-		
+
+		pyramid.wireFrameSet = box.wireFrameSet = cube.wireFrameSet = true;
+
 		// name of the objects
 		box.name = "box";
 		pyramid.name = "pyramid";
-		
+		cube.name = "cube";
 
 		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
@@ -393,7 +392,7 @@ public class MainProgram extends JFrame {
 		DrawPlanes(g);
 		DrawPyramid(g);
 		DrawBox(g);
-		// DrawCube(g);
+		DrawCube(g);
 		DrawButtons(g);
 
 		repaint();
@@ -1074,11 +1073,12 @@ public class MainProgram extends JFrame {
 	 * toggle back face culling and remove faces that should not be shown
 	 */
 	public void BackFaceCullingOn() {
-		if(!pyramid.cullingIsSet && pyramid.isSet)
+		if (!pyramid.cullingIsSet && pyramid.isSet)
 			pyramid.cullingIsSet = true;
-		if(!box.cullingIsSet && box.isSet)
+		if (!box.cullingIsSet && box.isSet)
 			box.cullingIsSet = true;
-		//cube.cullingIsSet = true;
+		if (!cube.cullingIsSet && cube.isSet)
+			cube.cullingIsSet = true;
 
 	}
 
@@ -1087,23 +1087,26 @@ public class MainProgram extends JFrame {
 	 * toggle back face culling and remove faces that should not be shown
 	 */
 	public void BackFaceCullingOff() {
-		if(pyramid.isSet && pyramid.cullingIsSet)
+		if (pyramid.isSet && pyramid.cullingIsSet)
 			pyramid.cullingIsSet = false;
-		if(box.isSet && box.cullingIsSet)
+		if (box.isSet && box.cullingIsSet)
 			box.cullingIsSet = false;
-		//cube.cullingIsSet = false;
+		if (cube.isSet && cube.cullingIsSet)
+			cube.cullingIsSet = false;
 
 	}
-	
+
 	/*
 	 * This function is called by pressing the "P" key. This function will
 	 * toggle polygon filling
 	 */
 	public void FillObjectOn() {
-		if(!pyramid.fillingIsSet && pyramid.isSet)
+		if (!pyramid.fillingIsSet && pyramid.isSet)
 			pyramid.fillingIsSet = true;
-		if(!box.fillingIsSet && box.isSet)
+		if (!box.fillingIsSet && box.isSet)
 			box.fillingIsSet = true;
+		if (!cube.fillingIsSet && cube.isSet)
+			cube.fillingIsSet = true;
 
 	}
 
@@ -1112,33 +1115,51 @@ public class MainProgram extends JFrame {
 	 * toggle polygon filling
 	 */
 	public void FillObjectOff() {
-		if(pyramid.isSet && pyramid.fillingIsSet)
+		if (pyramid.isSet && pyramid.fillingIsSet)
 			pyramid.fillingIsSet = false;
-		if(box.isSet && box.fillingIsSet)
+		if (box.isSet && box.fillingIsSet)
 			box.fillingIsSet = false;
+		if (cube.isSet && cube.fillingIsSet)
+			cube.fillingIsSet = false;
 
 	}
-	
+
 	/*
 	 * This function is called by pressing the "W" key. This function will
 	 * toggle wire frame of each of the objects
 	 */
-	public void ToggleWireframeOn(){
-		if(!pyramid.wireFrameSet && pyramid.isSet)
+	public void ToggleWireframeOn() {
+		if (pyramid.cullingIsSet && pyramid.isSet)
+			pyramid.cullingIsSet = false;
+		if (box.cullingIsSet && box.isSet)
+			box.cullingIsSet = false;
+		if (cube.cullingIsSet && cube.isSet)
+			cube.cullingIsSet = false;
+		if (!pyramid.wireFrameSet && pyramid.isSet)
 			pyramid.wireFrameSet = true;
-		if(!box.wireFrameSet && box.isSet)
+		if (!box.wireFrameSet && box.isSet)
 			box.wireFrameSet = true;
+		if (!cube.wireFrameSet && cube.isSet)
+			cube.wireFrameSet = true;
 	}
-	
+
 	/*
 	 * This function is called by pressing the "Q" key. This function will
 	 * toggle wire frame of each of the objects
 	 */
-	public void ToggleWireframeOff(){
-		if(pyramid.wireFrameSet && pyramid.isSet)
+	public void ToggleWireframeOff() {
+		if (pyramid.cullingIsSet && pyramid.isSet)
+			pyramid.cullingIsSet = false;
+		if (box.cullingIsSet && box.isSet)
+			box.cullingIsSet = false;
+		if (cube.cullingIsSet && cube.isSet)
+			cube.cullingIsSet = false;
+		if (pyramid.wireFrameSet && pyramid.isSet)
 			pyramid.wireFrameSet = false;
-		if(box.wireFrameSet && box.isSet)
+		if (box.wireFrameSet && box.isSet)
 			box.wireFrameSet = false;
+		if (cube.wireFrameSet && cube.isSet)
+			cube.wireFrameSet = false;
 	}
 
 	/*
@@ -1182,14 +1203,14 @@ public class MainProgram extends JFrame {
 			// deteremines wether the polygon will or will not be drawn
 			// This is the front face
 			if (test_draw < 0) {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[0] = false;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[0] = false;
 			} else {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[0] = true;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[0] = true;
 			}
 
@@ -1220,14 +1241,14 @@ public class MainProgram extends JFrame {
 			// deteremines wether the polygon will or will not be drawn
 			// This is the left face
 			if (test_draw < 0) {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[1] = false;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[1] = false;
 			} else {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[1] = true;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[1] = true;
 			}
 
@@ -1258,14 +1279,14 @@ public class MainProgram extends JFrame {
 			// deteremines wether the polygon will or will not be drawn
 			// This is the back face
 			if (test_draw < 0) {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[2] = false;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[2] = false;
 			} else {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[2] = true;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[2] = true;
 			}
 
@@ -1296,14 +1317,14 @@ public class MainProgram extends JFrame {
 			// deteremines wether the polygon will or will not be drawn
 			// This is the right face
 			if (test_draw < 0) {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[3] = false;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[3] = false;
 			} else {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[3] = true;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[3] = true;
 			}
 
@@ -1334,14 +1355,14 @@ public class MainProgram extends JFrame {
 			// deteremines wether the polygon will or will not be drawn
 			// This is the bottom face (base)
 			if (test_draw < 0) {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[4] = false;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[4] = false;
 			} else {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[4] = true;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[4] = true;
 			}
 
@@ -1372,14 +1393,14 @@ public class MainProgram extends JFrame {
 			// deteremines wether the polygon will or will not be drawn
 			// This is the bottom face (base)
 			if (test_draw < 0) {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[5] = false;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[5] = false;
 			} else {
-				if(pyramid.cullingIsSet)
+				if (pyramid.cullingIsSet)
 					pyramid.drawCulling[5] = true;
-				if(pyramid.fillingIsSet)
+				if (pyramid.fillingIsSet)
 					pyramid.drawFilling[5] = true;
 			}
 
@@ -1681,282 +1702,261 @@ public class MainProgram extends JFrame {
 	}
 
 	public void CalculateFill(double a0, double b0, double c0, double a1,
-            double b1, double c1, double a2, double b2, double c2, Graphics2D g, Obj obj) {
-        
+			double b1, double c1, double a2, double b2, double c2,
+			Graphics2D g, Obj obj) {
 
-        double[] startpointsY = new double[3];
-        double[] endpointsY = new double[3];
-        ArrayList<Segment> Global_ET = new ArrayList<Segment>();
-        
+		double[] startpointsY = new double[3];
+		double[] endpointsY = new double[3];
+		ArrayList<Segment> Global_ET = new ArrayList<Segment>();
 
-        segP0P1.x0 = a0; // P0.x
-        segP0P1.y0 = b0; // P0.y
-        segP0P1.z0 = c0; // P0.z
-        segP0P1.x1 = a1; // P1.x
-        segP0P1.y1 = b1; // P1.y
-        segP0P1.z1 = c1; // P1.z
-        segP0P2.x0 = a0; // P0.x
-        segP0P2.y0 = b0; // P0.y
-        segP0P2.z0 = c0; // P0.z
-        segP0P2.x1 = a2; // P2.x
-        segP0P2.y1 = b2; // P2.y
-        segP0P2.z1 = c2; // P2.z
-        segP1P2.x0 = a1; // P1.x
-        segP1P2.y0 = b1; // P1.y
-        segP1P2.z0 = c1; // P1.z
-        segP1P2.x1 = a2; // P2.x
-        segP1P2.y1 = b2; // P2.y
-        segP1P2.z1 = c2; // P2.z
-        
-        segP0P1.x0 = (eye_z * segP0P1.x0)
-                / (eye_z + segP0P1.z0);
-        segP0P1.y0 = (eye_z * segP0P1.y0)
-                / (eye_z + segP0P1.z0);
-        segP0P1.z0 = segP0P1.z0 
-                / (eye_z + segP0P1.z1);
-        segP0P1.x1 = (eye_z * segP0P1.x1)
-                / (eye_z + segP0P1.z1);
-        segP0P1.y1 = (eye_z * segP0P1.y1)
-                / (eye_z + segP0P1.z1);
-        segP0P1.z1 = segP0P1.z1 
-                / (eye_z + segP0P1.z1);
-        segP0P2.x0 = (eye_z * segP0P2.x0)
-                / (eye_z + segP0P2.z0);
-        segP0P2.y0 = (eye_z * segP0P2.y0)
-                / (eye_z + segP0P2.z0);
-        segP0P2.z0 = segP0P2.z0 
-                / (eye_z + segP0P2.z1);
-        segP0P2.x1 = (eye_z * segP0P2.x1)
-                / (eye_z + segP0P2.z1);
-        segP0P2.y1 = (eye_z * segP0P2.y1)
-                / (eye_z + segP0P2.z1);
-        segP0P2.z1 = segP0P2.z1 
-                / (eye_z + segP0P2.z1);
-        segP1P2.x0 = (eye_z * segP1P2.x0)
-                / (eye_z + segP1P2.z0);
-        segP1P2.y0 = (eye_z * segP1P2.y0)
-                / (eye_z + segP1P2.z0);
-        segP1P2.z0 = segP1P2.z0 
-                / (eye_z + segP1P2.z1);
-        segP1P2.x1 = (eye_z * segP1P2.x1)
-                / (eye_z + segP1P2.z1);
-        segP1P2.y1 = (eye_z * segP1P2.y1)
-                / (eye_z + segP1P2.z1);
-        segP1P2.z1 = segP1P2.z1 
-                / (eye_z + segP1P2.z1);
-        
+		segP0P1.x0 = a0; // P0.x
+		segP0P1.y0 = b0; // P0.y
+		segP0P1.z0 = c0; // P0.z
+		segP0P1.x1 = a1; // P1.x
+		segP0P1.y1 = b1; // P1.y
+		segP0P1.z1 = c1; // P1.z
+		segP0P2.x0 = a0; // P0.x
+		segP0P2.y0 = b0; // P0.y
+		segP0P2.z0 = c0; // P0.z
+		segP0P2.x1 = a2; // P2.x
+		segP0P2.y1 = b2; // P2.y
+		segP0P2.z1 = c2; // P2.z
+		segP1P2.x0 = a1; // P1.x
+		segP1P2.y0 = b1; // P1.y
+		segP1P2.z0 = c1; // P1.z
+		segP1P2.x1 = a2; // P2.x
+		segP1P2.y1 = b2; // P2.y
+		segP1P2.z1 = c2; // P2.z
 
-        segP0P1.maxY = segP0P1.y0;
-        segP0P1.initial_x = segP0P1.x0;
+		segP0P1.x0 = (eye_z * segP0P1.x0) / (eye_z + segP0P1.z0);
+		segP0P1.y0 = (eye_z * segP0P1.y0) / (eye_z + segP0P1.z0);
+		segP0P1.z0 = segP0P1.z0 / (eye_z + segP0P1.z1);
+		segP0P1.x1 = (eye_z * segP0P1.x1) / (eye_z + segP0P1.z1);
+		segP0P1.y1 = (eye_z * segP0P1.y1) / (eye_z + segP0P1.z1);
+		segP0P1.z1 = segP0P1.z1 / (eye_z + segP0P1.z1);
+		segP0P2.x0 = (eye_z * segP0P2.x0) / (eye_z + segP0P2.z0);
+		segP0P2.y0 = (eye_z * segP0P2.y0) / (eye_z + segP0P2.z0);
+		segP0P2.z0 = segP0P2.z0 / (eye_z + segP0P2.z1);
+		segP0P2.x1 = (eye_z * segP0P2.x1) / (eye_z + segP0P2.z1);
+		segP0P2.y1 = (eye_z * segP0P2.y1) / (eye_z + segP0P2.z1);
+		segP0P2.z1 = segP0P2.z1 / (eye_z + segP0P2.z1);
+		segP1P2.x0 = (eye_z * segP1P2.x0) / (eye_z + segP1P2.z0);
+		segP1P2.y0 = (eye_z * segP1P2.y0) / (eye_z + segP1P2.z0);
+		segP1P2.z0 = segP1P2.z0 / (eye_z + segP1P2.z1);
+		segP1P2.x1 = (eye_z * segP1P2.x1) / (eye_z + segP1P2.z1);
+		segP1P2.y1 = (eye_z * segP1P2.y1) / (eye_z + segP1P2.z1);
+		segP1P2.z1 = segP1P2.z1 / (eye_z + segP1P2.z1);
 
-        if (segP0P1.maxY < segP0P1.y1) {
-            segP0P1.maxY = segP0P1.y1;
-            segP0P1.initial_x = segP0P1.x1;
-        }
+		segP0P1.maxY = segP0P1.y0;
+		segP0P1.initial_x = segP0P1.x0;
 
-        segP0P1.minY = segP0P1.y0;
+		if (segP0P1.maxY < segP0P1.y1) {
+			segP0P1.maxY = segP0P1.y1;
+			segP0P1.initial_x = segP0P1.x1;
+		}
 
-        if (segP0P1.minY > segP0P1.y1)
-            segP0P1.minY = segP0P1.y1;
+		segP0P1.minY = segP0P1.y0;
 
-        segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
+		if (segP0P1.minY > segP0P1.y1)
+			segP0P1.minY = segP0P1.y1;
 
-        segP0P2.maxY = segP0P2.y0;
-        segP0P2.initial_x = segP0P2.x0;
+		segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
 
-        if (segP0P2.maxY < segP0P2.y1) {
-            segP0P2.maxY = segP0P2.y1;
-            segP0P2.initial_x = segP0P2.x1;
-        }
+		segP0P2.maxY = segP0P2.y0;
+		segP0P2.initial_x = segP0P2.x0;
 
-        segP0P2.minY = segP0P2.y0;
+		if (segP0P2.maxY < segP0P2.y1) {
+			segP0P2.maxY = segP0P2.y1;
+			segP0P2.initial_x = segP0P2.x1;
+		}
 
-        if (segP0P2.minY > segP0P2.y1)
-            segP0P2.minY = segP0P2.y1;
+		segP0P2.minY = segP0P2.y0;
 
-        segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
+		if (segP0P2.minY > segP0P2.y1)
+			segP0P2.minY = segP0P2.y1;
 
-        segP1P2.maxY = segP1P2.y0;
-        segP1P2.initial_x = segP1P2.x0;
+		segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
 
-        if (segP1P2.maxY < segP1P2.y1) {
-            segP1P2.maxY = segP1P2.y1;
-            segP1P2.initial_x = segP1P2.x1;
-        }
+		segP1P2.maxY = segP1P2.y0;
+		segP1P2.initial_x = segP1P2.x0;
 
-        segP1P2.minY = segP1P2.y0;
+		if (segP1P2.maxY < segP1P2.y1) {
+			segP1P2.maxY = segP1P2.y1;
+			segP1P2.initial_x = segP1P2.x1;
+		}
 
-        if (segP1P2.minY > segP1P2.y1)
-            segP1P2.minY = segP1P2.y1;
+		segP1P2.minY = segP1P2.y0;
 
-        segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
+		if (segP1P2.minY > segP1P2.y1)
+			segP1P2.minY = segP1P2.y1;
 
-        Segment[] seg_list = new Segment[3];
+		segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
 
-        seg_list[0] = segP0P1;
-        seg_list[1] = segP0P2;
-        seg_list[2] = segP1P2;
+		Segment[] seg_list = new Segment[3];
 
+		seg_list[0] = segP0P1;
+		seg_list[1] = segP0P2;
+		seg_list[2] = segP1P2;
 
-        if (seg_list[0].maxY >= seg_list[1].maxY
-                && seg_list[0].maxY >= seg_list[2].maxY
-                && seg_list[0].minY >= seg_list[1].minY
-                && seg_list[0].minY >= seg_list[2].minY) {
-            startpointsY[0] = seg_list[0].maxY;
-            endpointsY[0] = seg_list[0].minY;
-            Global_ET.add(seg_list[0]);
+		if (seg_list[0].maxY >= seg_list[1].maxY
+				&& seg_list[0].maxY >= seg_list[2].maxY
+				&& seg_list[0].minY >= seg_list[1].minY
+				&& seg_list[0].minY >= seg_list[2].minY) {
+			startpointsY[0] = seg_list[0].maxY;
+			endpointsY[0] = seg_list[0].minY;
+			Global_ET.add(seg_list[0]);
 
-            if (seg_list[1].maxY >= seg_list[2].maxY
-                    && seg_list[1].minY >= seg_list[2].minY) {
-                startpointsY[1] = seg_list[1].maxY;
-                endpointsY[1] = seg_list[1].minY;
-                startpointsY[2] = seg_list[2].maxY;
-                endpointsY[2] = seg_list[2].minY;
-                Global_ET.add(seg_list[1]);
-                Global_ET.add(seg_list[2]);
-            } else {
-                startpointsY[1] = seg_list[2].maxY;
-                endpointsY[1] = seg_list[2].minY;
-                startpointsY[2] = seg_list[1].maxY;
-                endpointsY[2] = seg_list[1].minY;
-                Global_ET.add(seg_list[2]);
-                Global_ET.add(seg_list[1]);
-            }
+			if (seg_list[1].maxY >= seg_list[2].maxY
+					&& seg_list[1].minY >= seg_list[2].minY) {
+				startpointsY[1] = seg_list[1].maxY;
+				endpointsY[1] = seg_list[1].minY;
+				startpointsY[2] = seg_list[2].maxY;
+				endpointsY[2] = seg_list[2].minY;
+				Global_ET.add(seg_list[1]);
+				Global_ET.add(seg_list[2]);
+			} else {
+				startpointsY[1] = seg_list[2].maxY;
+				endpointsY[1] = seg_list[2].minY;
+				startpointsY[2] = seg_list[1].maxY;
+				endpointsY[2] = seg_list[1].minY;
+				Global_ET.add(seg_list[2]);
+				Global_ET.add(seg_list[1]);
+			}
 
-        } else if (seg_list[1].maxY >= seg_list[0].maxY
-                && seg_list[1].maxY >= seg_list[2].maxY
-                && seg_list[1].minY >= seg_list[0].minY
-                && seg_list[1].minY >= seg_list[2].minY) {
-            startpointsY[0] = seg_list[1].maxY;
-            endpointsY[0] = seg_list[1].minY;
-            Global_ET.add(seg_list[1]);
+		} else if (seg_list[1].maxY >= seg_list[0].maxY
+				&& seg_list[1].maxY >= seg_list[2].maxY
+				&& seg_list[1].minY >= seg_list[0].minY
+				&& seg_list[1].minY >= seg_list[2].minY) {
+			startpointsY[0] = seg_list[1].maxY;
+			endpointsY[0] = seg_list[1].minY;
+			Global_ET.add(seg_list[1]);
 
-            if (seg_list[2].maxY >= seg_list[0].maxY
-                    && seg_list[2].minY >= seg_list[0].minY) {
-                startpointsY[1] = seg_list[2].maxY;
-                endpointsY[1] = seg_list[2].minY;
-                startpointsY[2] = seg_list[0].maxY;
-                endpointsY[2] = seg_list[0].minY;
-                Global_ET.add(seg_list[2]);
-                Global_ET.add(seg_list[0]);
-            } else {
-                startpointsY[1] = seg_list[0].maxY;
-                endpointsY[1] = seg_list[0].minY;
-                startpointsY[2] = seg_list[2].maxY;
-                endpointsY[2] = seg_list[2].minY;
-                Global_ET.add(seg_list[0]);
-                Global_ET.add(seg_list[2]);
-            }
-            // Global_ET.add(seg_list[0]);
+			if (seg_list[2].maxY >= seg_list[0].maxY
+					&& seg_list[2].minY >= seg_list[0].minY) {
+				startpointsY[1] = seg_list[2].maxY;
+				endpointsY[1] = seg_list[2].minY;
+				startpointsY[2] = seg_list[0].maxY;
+				endpointsY[2] = seg_list[0].minY;
+				Global_ET.add(seg_list[2]);
+				Global_ET.add(seg_list[0]);
+			} else {
+				startpointsY[1] = seg_list[0].maxY;
+				endpointsY[1] = seg_list[0].minY;
+				startpointsY[2] = seg_list[2].maxY;
+				endpointsY[2] = seg_list[2].minY;
+				Global_ET.add(seg_list[0]);
+				Global_ET.add(seg_list[2]);
+			}
+			// Global_ET.add(seg_list[0]);
 
-        } else if (seg_list[2].maxY >= seg_list[0].maxY
-                && seg_list[2].maxY >= seg_list[1].maxY
-                && seg_list[2].minY >= seg_list[0].minY
-                && seg_list[2].minY >= seg_list[1].minY) {
-            startpointsY[0] = seg_list[2].maxY;
-            endpointsY[0] = seg_list[2].minY;
-            Global_ET.add(seg_list[2]);
+		} else if (seg_list[2].maxY >= seg_list[0].maxY
+				&& seg_list[2].maxY >= seg_list[1].maxY
+				&& seg_list[2].minY >= seg_list[0].minY
+				&& seg_list[2].minY >= seg_list[1].minY) {
+			startpointsY[0] = seg_list[2].maxY;
+			endpointsY[0] = seg_list[2].minY;
+			Global_ET.add(seg_list[2]);
 
-            if (seg_list[0].maxY >= seg_list[1].maxY
-                    && seg_list[0].minY >= seg_list[1].minY) {
-                startpointsY[1] = seg_list[0].maxY;
-                endpointsY[1] = seg_list[0].minY;
-                startpointsY[2] = seg_list[1].maxY;
-                endpointsY[2] = seg_list[1].minY;
-                Global_ET.add(seg_list[0]);
-                Global_ET.add(seg_list[1]);
-            } else {
-                startpointsY[1] = seg_list[1].maxY;
-                endpointsY[1] = seg_list[1].minY;
-                startpointsY[2] = seg_list[0].maxY;
-                endpointsY[2] = seg_list[0].minY;
-                Global_ET.add(seg_list[1]);
-                Global_ET.add(seg_list[0]);
-            }
-        }
+			if (seg_list[0].maxY >= seg_list[1].maxY
+					&& seg_list[0].minY >= seg_list[1].minY) {
+				startpointsY[1] = seg_list[0].maxY;
+				endpointsY[1] = seg_list[0].minY;
+				startpointsY[2] = seg_list[1].maxY;
+				endpointsY[2] = seg_list[1].minY;
+				Global_ET.add(seg_list[0]);
+				Global_ET.add(seg_list[1]);
+			} else {
+				startpointsY[1] = seg_list[1].maxY;
+				endpointsY[1] = seg_list[1].minY;
+				startpointsY[2] = seg_list[0].maxY;
+				endpointsY[2] = seg_list[0].minY;
+				Global_ET.add(seg_list[1]);
+				Global_ET.add(seg_list[0]);
+			}
+		}
 
-        double start_scan_line = Global_ET.get(0).maxY;
-        double end_scan_line = Global_ET.get(2).minY;
-        double[] drawX = new double[3];
+		double start_scan_line = Global_ET.get(0).maxY;
+		double end_scan_line = Global_ET.get(2).minY;
+		double[] drawX = new double[3];
 
-        drawX[0] = Global_ET.get(0).initial_x;
-        drawX[1] = Global_ET.get(1).initial_x;
-        drawX[2] = Global_ET.get(2).initial_x;
-        
-        
-        if(obj.name == "box")
-        	g.setColor(new Color(232, 223, 9));
-        if(obj.name == "pyramid")
-        	g.setColor(new Color(100, 73, 200));
-        	
-		//g.setColor(new Color(randR, randG, randB));
-        //g.setColor(new Color(232, 223, 9));
-        //g.setColor(new Color(randInt(0, 255), randInt(0, 255), randInt(0, 255)));
-        
-        
-        for (int i = (int) start_scan_line; i > end_scan_line; i--) {
-            // if(i < Global_ET.get(2).maxY){
-            if ((i <= startpointsY[1] && i >= endpointsY[1])
-                    && (i <= startpointsY[0] && i >= endpointsY[0])) {
-                if (drawX[0] > drawX[1]) {
-                    for (int j = (int) drawX[1]; j < drawX[0]; j++) {
-                        obj.fill_screen_points[0][0] = (j + obj.offset[0]);
-                        obj.fill_screen_points[0][1] = (obj.offset[1] - i);
-                        g.drawLine((int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1],
-                                (int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1]);
-                    }
-                } else {
-                    for (int j = (int) drawX[0]; j < drawX[1]; j++) {
-                        obj.fill_screen_points[0][0] = (j + obj.offset[0]);
-                        obj.fill_screen_points[0][1] = (obj.offset[1] - i);
-                        g.drawLine((int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1],
-                                (int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1]);
-                    }
-                }
-                drawX[0] += Global_ET.get(0).dx;
-                drawX[1] += Global_ET.get(1).dx;
+		drawX[0] = Global_ET.get(0).initial_x;
+		drawX[1] = Global_ET.get(1).initial_x;
+		drawX[2] = Global_ET.get(2).initial_x;
 
-            } else if ((i <= startpointsY[1] && i >= endpointsY[1])
-                    && (i <= startpointsY[2] && i >= endpointsY[2])) {
-                if (drawX[2] >= drawX[1]) {
-                    for (int j = (int) drawX[1]; j < drawX[2]; j++) {
-                        obj.fill_screen_points[0][0] = (j + obj.offset[0]);
-                        obj.fill_screen_points[0][1] = (obj.offset[1] - i);
-                        g.drawLine((int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1],
-                                (int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1]);
-                    }
-                } else {
-                    for (int j = (int) drawX[2]; j < drawX[1]; j++) {
-                        obj.fill_screen_points[0][0] = (j + obj.offset[0]);
-                        obj.fill_screen_points[0][1] = (obj.offset[1] - i);
-                        g.drawLine((int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1],
-                                (int) obj.fill_screen_points[0][0],
-                                (int) obj.fill_screen_points[0][1]);
-                    }
-                }
-                drawX[1] += Global_ET.get(1).dx;
-                drawX[2] += Global_ET.get(2).dx;
-            }
-        }
-    }
-	
-	
+		if (obj.name == "box")
+			g.setColor(new Color(232, 223, 9));
+		if (obj.name == "pyramid")
+			g.setColor(new Color(100, 73, 200));
+		if (obj.name == "cube")
+			g.setColor(new Color(15, 125, 90));
+
+		// g.setColor(new Color(randR, randG, randB));
+		// g.setColor(new Color(232, 223, 9));
+		// g.setColor(new Color(randInt(0, 255), randInt(0, 255), randInt(0,
+		// 255)));
+
+		for (int i = (int) start_scan_line; i > end_scan_line; i--) {
+			// if(i < Global_ET.get(2).maxY){
+			if ((i <= startpointsY[1] && i >= endpointsY[1])
+					&& (i <= startpointsY[0] && i >= endpointsY[0])) {
+				if (drawX[0] > drawX[1]) {
+					for (int j = (int) drawX[1]; j < drawX[0]; j++) {
+						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
+						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
+						g.drawLine((int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1],
+								(int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1]);
+					}
+				} else {
+					for (int j = (int) drawX[0]; j < drawX[1]; j++) {
+						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
+						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
+						g.drawLine((int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1],
+								(int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1]);
+					}
+				}
+				drawX[0] += Global_ET.get(0).dx;
+				drawX[1] += Global_ET.get(1).dx;
+
+			} else if ((i <= startpointsY[1] && i >= endpointsY[1])
+					&& (i <= startpointsY[2] && i >= endpointsY[2])) {
+				if (drawX[2] >= drawX[1]) {
+					for (int j = (int) drawX[1]; j < drawX[2]; j++) {
+						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
+						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
+						g.drawLine((int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1],
+								(int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1]);
+					}
+				} else {
+					for (int j = (int) drawX[2]; j < drawX[1]; j++) {
+						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
+						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
+						g.drawLine((int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1],
+								(int) obj.fill_screen_points[0][0],
+								(int) obj.fill_screen_points[0][1]);
+					}
+				}
+				drawX[1] += Global_ET.get(1).dx;
+				drawX[2] += Global_ET.get(2).dx;
+			}
+		}
+	}
+
 	// Produces a random number for filling the triangle
 	public static int randInt(int min, int max) {
-	    // NOTE: Usually this should be a field rather than a method
-	    // variable so that it is not re-seeded every call.
-	    Random rand = new Random();
-	    // nextInt is normally exclusive of the top value,
-	    // so add 1 to make it inclusive
-	    int randomNum = rand.nextInt((max - min) + 1) + min;
-	    return randomNum;
+		// NOTE: Usually this should be a field rather than a method
+		// variable so that it is not re-seeded every call.
+		Random rand = new Random();
+		// nextInt is normally exclusive of the top value,
+		// so add 1 to make it inclusive
+		int randomNum = rand.nextInt((max - min) + 1) + min;
+		return randomNum;
 	}
 
 	/*
@@ -1999,42 +1999,42 @@ public class MainProgram extends JFrame {
 
 		if (pyramid.fillingIsSet) {
 
-				CalculateFill(pyramid.polygon_points[0][0],
+			CalculateFill(pyramid.polygon_points[0][0],
 					pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
 					pyramid.polygon_points[1][0], pyramid.polygon_points[1][1],
 					pyramid.polygon_points[1][2], pyramid.polygon_points[2][0],
 					pyramid.polygon_points[2][1], pyramid.polygon_points[2][2],
 					g, pyramid);
-				CalculateFill(pyramid.polygon_points[0][0],
-						pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
-						pyramid.polygon_points[1][0], pyramid.polygon_points[1][1],
-						pyramid.polygon_points[1][2], pyramid.polygon_points[3][0],
-						pyramid.polygon_points[3][1], pyramid.polygon_points[3][2],
-						g, pyramid);
-				CalculateFill(pyramid.polygon_points[0][0],
-						pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
-						pyramid.polygon_points[2][0], pyramid.polygon_points[2][1],
-						pyramid.polygon_points[2][2], pyramid.polygon_points[4][0],
-						pyramid.polygon_points[4][1], pyramid.polygon_points[4][2],
-						g, pyramid);
-				CalculateFill(pyramid.polygon_points[0][0],
-						pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
-						pyramid.polygon_points[3][0], pyramid.polygon_points[3][1],
-						pyramid.polygon_points[3][2], pyramid.polygon_points[4][0],
-						pyramid.polygon_points[4][1], pyramid.polygon_points[4][2],
-						g, pyramid);
-				CalculateFill(pyramid.polygon_points[1][0],
-						pyramid.polygon_points[1][1], pyramid.polygon_points[1][2],
-						pyramid.polygon_points[2][0], pyramid.polygon_points[2][1],
-						pyramid.polygon_points[2][2], pyramid.polygon_points[4][0],
-						pyramid.polygon_points[4][1], pyramid.polygon_points[4][2],
-						g, pyramid);
-				CalculateFill(pyramid.polygon_points[1][0],
-						pyramid.polygon_points[1][1], pyramid.polygon_points[1][2],
-						pyramid.polygon_points[2][0], pyramid.polygon_points[2][1],
-						pyramid.polygon_points[2][2], pyramid.polygon_points[3][0],
-						pyramid.polygon_points[3][1], pyramid.polygon_points[3][2],
-						g, pyramid);
+			CalculateFill(pyramid.polygon_points[0][0],
+					pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
+					pyramid.polygon_points[1][0], pyramid.polygon_points[1][1],
+					pyramid.polygon_points[1][2], pyramid.polygon_points[3][0],
+					pyramid.polygon_points[3][1], pyramid.polygon_points[3][2],
+					g, pyramid);
+			CalculateFill(pyramid.polygon_points[0][0],
+					pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
+					pyramid.polygon_points[2][0], pyramid.polygon_points[2][1],
+					pyramid.polygon_points[2][2], pyramid.polygon_points[4][0],
+					pyramid.polygon_points[4][1], pyramid.polygon_points[4][2],
+					g, pyramid);
+			CalculateFill(pyramid.polygon_points[0][0],
+					pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
+					pyramid.polygon_points[3][0], pyramid.polygon_points[3][1],
+					pyramid.polygon_points[3][2], pyramid.polygon_points[4][0],
+					pyramid.polygon_points[4][1], pyramid.polygon_points[4][2],
+					g, pyramid);
+			CalculateFill(pyramid.polygon_points[1][0],
+					pyramid.polygon_points[1][1], pyramid.polygon_points[1][2],
+					pyramid.polygon_points[2][0], pyramid.polygon_points[2][1],
+					pyramid.polygon_points[2][2], pyramid.polygon_points[4][0],
+					pyramid.polygon_points[4][1], pyramid.polygon_points[4][2],
+					g, pyramid);
+			CalculateFill(pyramid.polygon_points[1][0],
+					pyramid.polygon_points[1][1], pyramid.polygon_points[1][2],
+					pyramid.polygon_points[2][0], pyramid.polygon_points[2][1],
+					pyramid.polygon_points[2][2], pyramid.polygon_points[3][0],
+					pyramid.polygon_points[3][1], pyramid.polygon_points[3][2],
+					g, pyramid);
 
 		}
 		g.setStroke(new BasicStroke(2));
@@ -2044,228 +2044,216 @@ public class MainProgram extends JFrame {
 
 		if (pyramid.cullingIsSet) {
 			g.setColor(Color.GREEN);
-            CalculateSurfaceNormal();
-            if (pyramid.drawCulling[0]) {
-                g.drawLine((int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1],
-                        (int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1]); // P0 to P2
-                g.drawLine((int) pyramid.screen_points[1][0],
-                        (int) pyramid.screen_points[1][1],
-                        (int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1]); // P0 to P1
-                g.drawLine((int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1],
-                        (int) pyramid.screen_points[1][0],
-                        (int) pyramid.screen_points[1][1]); // P2 to P1
-            }
-            if (pyramid.drawCulling[1]) {
-                g.drawLine((int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1],
-                        (int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1]); // P0 to P2
-                g.drawLine((int) pyramid.screen_points[4][0],
-                        (int) pyramid.screen_points[4][1],
-                        (int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1]); // P0 to P4
-                g.drawLine((int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1],
-                        (int) pyramid.screen_points[4][0],
-                        (int) pyramid.screen_points[4][1]); // P2 to P4
+			CalculateSurfaceNormal();
+			if (pyramid.drawCulling[0]) {
+				g.drawLine((int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1],
+						(int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1]); // P0 to P2
+				g.drawLine((int) pyramid.screen_points[1][0],
+						(int) pyramid.screen_points[1][1],
+						(int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1]); // P0 to P1
+				g.drawLine((int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1],
+						(int) pyramid.screen_points[1][0],
+						(int) pyramid.screen_points[1][1]); // P2 to P1
+			}
+			if (pyramid.drawCulling[1]) {
+				g.drawLine((int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1],
+						(int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1]); // P0 to P2
+				g.drawLine((int) pyramid.screen_points[4][0],
+						(int) pyramid.screen_points[4][1],
+						(int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1]); // P0 to P4
+				g.drawLine((int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1],
+						(int) pyramid.screen_points[4][0],
+						(int) pyramid.screen_points[4][1]); // P2 to P4
 
-            }
-            if (pyramid.drawCulling[2]) {
-                g.drawLine((int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1],
-                        (int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1]); // P0 to P3
-                g.drawLine((int) pyramid.screen_points[4][0],
-                        (int) pyramid.screen_points[4][1],
-                        (int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1]); // P0 to P4
-                g.drawLine((int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1],
-                        (int) pyramid.screen_points[4][0],
-                        (int) pyramid.screen_points[4][1]); // P3 to P4
+			}
+			if (pyramid.drawCulling[2]) {
+				g.drawLine((int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1],
+						(int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1]); // P0 to P3
+				g.drawLine((int) pyramid.screen_points[4][0],
+						(int) pyramid.screen_points[4][1],
+						(int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1]); // P0 to P4
+				g.drawLine((int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1],
+						(int) pyramid.screen_points[4][0],
+						(int) pyramid.screen_points[4][1]); // P3 to P4
 
-            }
-            if (pyramid.drawCulling[3]) {
-                g.drawLine((int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1],
-                        (int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1]); // P0 to P3
-                g.drawLine((int) pyramid.screen_points[1][0],
-                        (int) pyramid.screen_points[1][1],
-                        (int) pyramid.screen_points[0][0],
-                        (int) pyramid.screen_points[0][1]); // P0 to P1
-                g.drawLine((int) pyramid.screen_points[1][0],
-                        (int) pyramid.screen_points[1][1],
-                        (int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1]); // P1 to P3
+			}
+			if (pyramid.drawCulling[3]) {
+				g.drawLine((int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1],
+						(int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1]); // P0 to P3
+				g.drawLine((int) pyramid.screen_points[1][0],
+						(int) pyramid.screen_points[1][1],
+						(int) pyramid.screen_points[0][0],
+						(int) pyramid.screen_points[0][1]); // P0 to P1
+				g.drawLine((int) pyramid.screen_points[1][0],
+						(int) pyramid.screen_points[1][1],
+						(int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1]); // P1 to P3
 
-            }
-            if (pyramid.drawCulling[4]) {
-                g.drawLine((int) pyramid.screen_points[1][0],
-                        (int) pyramid.screen_points[1][1],
-                        (int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1]); // P1 to P3
-                g.drawLine((int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1],
-                        (int) pyramid.screen_points[4][0],
-                        (int) pyramid.screen_points[4][1]); // P3 to P4
-                g.drawLine((int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1],
-                        (int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1]); // P2 to P4
+			}
+			if (pyramid.drawCulling[4]) {
+				g.drawLine((int) pyramid.screen_points[1][0],
+						(int) pyramid.screen_points[1][1],
+						(int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1]); // P1 to P3
+				g.drawLine((int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1],
+						(int) pyramid.screen_points[4][0],
+						(int) pyramid.screen_points[4][1]); // P3 to P4
+				g.drawLine((int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1],
+						(int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1]); // P2 to P4
 
-            }
-            if (pyramid.drawCulling[5]) {
-                g.drawLine((int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1],
-                        (int) pyramid.screen_points[4][0],
-                        (int) pyramid.screen_points[4][1]); // P2 to P4
- 
-                g.drawLine((int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1],
-                        (int) pyramid.screen_points[1][0],
-                        (int) pyramid.screen_points[1][1]); // P2 to P1
-                g.drawLine((int) pyramid.screen_points[3][0],
-                        (int) pyramid.screen_points[3][1],
-                        (int) pyramid.screen_points[2][0],
-                        (int) pyramid.screen_points[2][1]); // P2 to P4
+			}
+			if (pyramid.drawCulling[5]) {
+				g.drawLine((int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1],
+						(int) pyramid.screen_points[4][0],
+						(int) pyramid.screen_points[4][1]); // P2 to P4
 
-            }
-        }
+				g.drawLine((int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1],
+						(int) pyramid.screen_points[1][0],
+						(int) pyramid.screen_points[1][1]); // P2 to P1
+				g.drawLine((int) pyramid.screen_points[3][0],
+						(int) pyramid.screen_points[3][1],
+						(int) pyramid.screen_points[2][0],
+						(int) pyramid.screen_points[2][1]); // P2 to P4
 
-        else if(pyramid.wireFrameSet) {
-        	g.setColor(Color.GREEN);
-            g.drawLine((int) pyramid.screen_points[0][0],
-                    (int) pyramid.screen_points[0][1],
-                    (int) pyramid.screen_points[2][0],
-                    (int) pyramid.screen_points[2][1]); // P0 to P2
+			}
+		}
 
-            g.drawLine((int) pyramid.screen_points[1][0],
-                    (int) pyramid.screen_points[1][1],
-                    (int) pyramid.screen_points[0][0],
-                    (int) pyramid.screen_points[0][1]); // P0 to P2
+		if (pyramid.wireFrameSet && !pyramid.cullingIsSet) {
+			g.setColor(Color.GREEN);
+			g.drawLine((int) pyramid.screen_points[0][0],
+					(int) pyramid.screen_points[0][1],
+					(int) pyramid.screen_points[2][0],
+					(int) pyramid.screen_points[2][1]); // P0 to P2
 
-            g.drawLine((int) pyramid.screen_points[3][0],
-                    (int) pyramid.screen_points[3][1],
-                    (int) pyramid.screen_points[0][0],
-                    (int) pyramid.screen_points[0][1]); // P0 to P3
+			g.drawLine((int) pyramid.screen_points[1][0],
+					(int) pyramid.screen_points[1][1],
+					(int) pyramid.screen_points[0][0],
+					(int) pyramid.screen_points[0][1]); // P0 to P2
 
-            g.drawLine((int) pyramid.screen_points[4][0],
-                    (int) pyramid.screen_points[4][1],
-                    (int) pyramid.screen_points[0][0],
-                    (int) pyramid.screen_points[0][1]); // P0 to P4
-            g.drawLine((int) pyramid.screen_points[2][0],
-                    (int) pyramid.screen_points[2][1],
-                    (int) pyramid.screen_points[4][0],
-                    (int) pyramid.screen_points[4][1]); // P2 to P4
+			g.drawLine((int) pyramid.screen_points[3][0],
+					(int) pyramid.screen_points[3][1],
+					(int) pyramid.screen_points[0][0],
+					(int) pyramid.screen_points[0][1]); // P0 to P3
 
-            g.drawLine((int) pyramid.screen_points[2][0],
-                    (int) pyramid.screen_points[2][1],
-                    (int) pyramid.screen_points[1][0],
-                    (int) pyramid.screen_points[1][1]); // P2 to P1
+			g.drawLine((int) pyramid.screen_points[4][0],
+					(int) pyramid.screen_points[4][1],
+					(int) pyramid.screen_points[0][0],
+					(int) pyramid.screen_points[0][1]); // P0 to P4
+			g.drawLine((int) pyramid.screen_points[2][0],
+					(int) pyramid.screen_points[2][1],
+					(int) pyramid.screen_points[4][0],
+					(int) pyramid.screen_points[4][1]); // P2 to P4
 
-            g.drawLine((int) pyramid.screen_points[3][0],
-                    (int) pyramid.screen_points[3][1],
-                    (int) pyramid.screen_points[4][0],
-                    (int) pyramid.screen_points[4][1]); // P3 to P4
+			g.drawLine((int) pyramid.screen_points[2][0],
+					(int) pyramid.screen_points[2][1],
+					(int) pyramid.screen_points[1][0],
+					(int) pyramid.screen_points[1][1]); // P2 to P1
 
-            g.drawLine((int) pyramid.screen_points[1][0],
-                    (int) pyramid.screen_points[1][1],
-                    (int) pyramid.screen_points[3][0],
-                    (int) pyramid.screen_points[3][1]); // P1 to P3
-            g.drawLine((int) pyramid.screen_points[3][0],
-                    (int) pyramid.screen_points[3][1],
-                    (int) pyramid.screen_points[2][0],
-                    (int) pyramid.screen_points[2][1]); // P1 to P3
-        }
+			g.drawLine((int) pyramid.screen_points[3][0],
+					(int) pyramid.screen_points[3][1],
+					(int) pyramid.screen_points[4][0],
+					(int) pyramid.screen_points[4][1]); // P3 to P4
 
-    }
+			g.drawLine((int) pyramid.screen_points[1][0],
+					(int) pyramid.screen_points[1][1],
+					(int) pyramid.screen_points[3][0],
+					(int) pyramid.screen_points[3][1]); // P1 to P3
+			g.drawLine((int) pyramid.screen_points[3][0],
+					(int) pyramid.screen_points[3][1],
+					(int) pyramid.screen_points[2][0],
+					(int) pyramid.screen_points[2][1]); // P1 to P3
+		}
+
+	}
 
 	// Draws the box onto the canvas
 	/*
 	 * Draws the box object onto the canvas
 	 */
 	public void DrawBox(Graphics g2) {
-		
+
 		Graphics2D g = (Graphics2D) g2;
-		
+
 		if (box.fillingIsSet) {
-			CalculateFill(box.polygon_points[0][0],
-					box.polygon_points[0][1], box.polygon_points[0][2],
+			CalculateFill(box.polygon_points[0][0], box.polygon_points[0][1],
+					box.polygon_points[0][2], box.polygon_points[1][0],
+					box.polygon_points[1][1], box.polygon_points[1][2],
+					box.polygon_points[3][0], box.polygon_points[3][1],
+					box.polygon_points[3][2], g, box);
+			CalculateFill(box.polygon_points[0][0], box.polygon_points[0][1],
+					box.polygon_points[0][2], box.polygon_points[2][0],
+					box.polygon_points[2][1], box.polygon_points[2][2],
+					box.polygon_points[3][0], box.polygon_points[3][1],
+					box.polygon_points[3][2], g, box);
+			CalculateFill(box.polygon_points[0][0], box.polygon_points[0][1],
+					box.polygon_points[0][2], box.polygon_points[6][0],
+					box.polygon_points[6][1], box.polygon_points[6][2],
+					box.polygon_points[4][0], box.polygon_points[4][1],
+					box.polygon_points[4][2], g, box);
+			CalculateFill(box.polygon_points[0][0], box.polygon_points[0][1],
+					box.polygon_points[0][2], box.polygon_points[2][0],
+					box.polygon_points[2][1], box.polygon_points[2][2],
+					box.polygon_points[6][0], box.polygon_points[6][1],
+					box.polygon_points[6][2], g, box);
+			CalculateFill(box.polygon_points[4][0], box.polygon_points[4][1],
+					box.polygon_points[4][2], box.polygon_points[6][0],
+					box.polygon_points[6][1], box.polygon_points[6][2],
+					box.polygon_points[7][0], box.polygon_points[7][1],
+					box.polygon_points[7][2], g, box);
+			CalculateFill(box.polygon_points[5][0], box.polygon_points[5][1],
+					box.polygon_points[5][2], box.polygon_points[7][0],
+					box.polygon_points[7][1], box.polygon_points[7][2],
 					box.polygon_points[1][0], box.polygon_points[1][1],
-					box.polygon_points[1][2], box.polygon_points[3][0],
+					box.polygon_points[1][2], g, box);
+			CalculateFill(box.polygon_points[3][0], box.polygon_points[3][1],
+					box.polygon_points[3][2], box.polygon_points[7][0],
+					box.polygon_points[7][1], box.polygon_points[7][2],
+					box.polygon_points[1][0], box.polygon_points[1][1],
+					box.polygon_points[1][2], g, box);
+			CalculateFill(box.polygon_points[4][0], box.polygon_points[4][1],
+					box.polygon_points[4][2], box.polygon_points[7][0],
+					box.polygon_points[7][1], box.polygon_points[7][2],
+					box.polygon_points[5][0], box.polygon_points[5][1],
+					box.polygon_points[5][2], g, box);
+			CalculateFill(box.polygon_points[0][0], box.polygon_points[0][1],
+					box.polygon_points[0][2], box.polygon_points[1][0],
+					box.polygon_points[1][1], box.polygon_points[1][2],
+					box.polygon_points[5][0], box.polygon_points[5][1],
+					box.polygon_points[5][2], g, box);
+			CalculateFill(box.polygon_points[0][0], box.polygon_points[0][1],
+					box.polygon_points[0][2], box.polygon_points[4][0],
+					box.polygon_points[4][1], box.polygon_points[4][2],
+					box.polygon_points[5][0], box.polygon_points[5][1],
+					box.polygon_points[5][2], g, box);
+			CalculateFill(box.polygon_points[2][0], box.polygon_points[2][1],
+					box.polygon_points[2][2], box.polygon_points[3][0],
 					box.polygon_points[3][1], box.polygon_points[3][2],
-					g, box);
-				CalculateFill(box.polygon_points[0][0],
-						box.polygon_points[0][1], box.polygon_points[0][2],
-						box.polygon_points[2][0], box.polygon_points[2][1],
-						box.polygon_points[2][2], box.polygon_points[3][0],
-						box.polygon_points[3][1], box.polygon_points[3][2],
-						g, box);
-				CalculateFill(box.polygon_points[0][0],
-						box.polygon_points[0][1], box.polygon_points[0][2],
-						box.polygon_points[6][0], box.polygon_points[6][1],
-						box.polygon_points[6][2], box.polygon_points[4][0],
-						box.polygon_points[4][1], box.polygon_points[4][2],
-						g, box);
-				CalculateFill(box.polygon_points[0][0],
-						box.polygon_points[0][1], box.polygon_points[0][2],
-						box.polygon_points[2][0], box.polygon_points[2][1],
-						box.polygon_points[2][2], box.polygon_points[6][0],
-						box.polygon_points[6][1], box.polygon_points[6][2],
-						g, box);
-				CalculateFill(box.polygon_points[4][0],
-						box.polygon_points[4][1], box.polygon_points[4][2],
-						box.polygon_points[6][0], box.polygon_points[6][1],
-						box.polygon_points[6][2], box.polygon_points[7][0],
-						box.polygon_points[7][1], box.polygon_points[7][2],
-						g, box);
-				CalculateFill(box.polygon_points[5][0],
-						box.polygon_points[5][1], box.polygon_points[5][2],
-						box.polygon_points[7][0], box.polygon_points[7][1],
-						box.polygon_points[7][2], box.polygon_points[1][0],
-						box.polygon_points[1][1], box.polygon_points[1][2],
-						g, box);
-				CalculateFill(box.polygon_points[3][0],
-						box.polygon_points[3][1], box.polygon_points[3][2],
-						box.polygon_points[7][0], box.polygon_points[7][1],
-						box.polygon_points[7][2], box.polygon_points[1][0],
-						box.polygon_points[1][1], box.polygon_points[1][2],
-						g, box);
-				CalculateFill(box.polygon_points[4][0],
-						box.polygon_points[4][1], box.polygon_points[4][2],
-						box.polygon_points[7][0], box.polygon_points[7][1],
-						box.polygon_points[7][2], box.polygon_points[5][0],
-						box.polygon_points[5][1], box.polygon_points[5][2],
-						g, box);
-				CalculateFill(box.polygon_points[0][0],
-						box.polygon_points[0][1], box.polygon_points[0][2],
-						box.polygon_points[1][0], box.polygon_points[1][1],
-						box.polygon_points[1][2], box.polygon_points[5][0],
-						box.polygon_points[5][1], box.polygon_points[5][2],
-						g, box);
-				CalculateFill(box.polygon_points[0][0],
-						box.polygon_points[0][1], box.polygon_points[0][2],
-						box.polygon_points[4][0], box.polygon_points[4][1],
-						box.polygon_points[4][2], box.polygon_points[5][0],
-						box.polygon_points[5][1], box.polygon_points[5][2],
-						g, box);
-				CalculateFill(box.polygon_points[2][0],
-						box.polygon_points[2][1], box.polygon_points[2][2],
-						box.polygon_points[3][0], box.polygon_points[3][1],
-						box.polygon_points[3][2], box.polygon_points[7][0],
-						box.polygon_points[7][1], box.polygon_points[7][2],
-						g, box);
-				CalculateFill(box.polygon_points[2][0],
-						box.polygon_points[2][1], box.polygon_points[2][2],
-						box.polygon_points[3][0], box.polygon_points[3][1],
-						box.polygon_points[3][2], box.polygon_points[6][0],
-						box.polygon_points[6][1], box.polygon_points[6][2],
-						g, box);	
+					box.polygon_points[7][0], box.polygon_points[7][1],
+					box.polygon_points[7][2], g, box);
+			CalculateFill(box.polygon_points[2][0], box.polygon_points[2][1],
+					box.polygon_points[2][2], box.polygon_points[3][0],
+					box.polygon_points[3][1], box.polygon_points[3][2],
+					box.polygon_points[6][0], box.polygon_points[6][1],
+					box.polygon_points[6][2], g, box);
 		}
 		if (box.cullingIsSet) {
 			g.setColor(Color.BLUE);
@@ -2302,7 +2290,7 @@ public class MainProgram extends JFrame {
 						(int) box.screen_points[5][1],
 						(int) box.screen_points[1][0],
 						(int) box.screen_points[1][1]); // P4 to P5
-				
+
 				g.drawLine((int) box.screen_points[5][0],
 						(int) box.screen_points[5][1],
 						(int) box.screen_points[7][0],
@@ -2439,7 +2427,7 @@ public class MainProgram extends JFrame {
 			}
 		}
 
-		else if (box.wireFrameSet) {
+		if (box.wireFrameSet && !box.cullingIsSet) {
 			g.setColor(Color.BLUE);
 			// Front face
 			g.drawLine((int) box.screen_points[0][0],
@@ -2521,7 +2509,7 @@ public class MainProgram extends JFrame {
 					(int) box.screen_points[5][1],
 					(int) box.screen_points[1][0],
 					(int) box.screen_points[1][1]); // P4 to P5
-			
+
 			g.drawLine((int) box.screen_points[5][0],
 					(int) box.screen_points[5][1],
 					(int) box.screen_points[7][0],
@@ -2599,138 +2587,247 @@ public class MainProgram extends JFrame {
 	/*
 	 * Draws the cube object onto canvas
 	 */
-	public void DrawCube(Graphics g) {
-		if (cube.cullingIsSet && cube.isSet) {
+	public void DrawCube(Graphics g2) {
+
+		Graphics2D g = (Graphics2D) g2;
+
+		if (cube.fillingIsSet) {
+			CalculateFill(cube.polygon_points[0][0], cube.polygon_points[0][1],
+					cube.polygon_points[0][2], cube.polygon_points[1][0],
+					cube.polygon_points[1][1], cube.polygon_points[1][2],
+					cube.polygon_points[3][0], cube.polygon_points[3][1],
+					cube.polygon_points[3][2], g, cube);
+			CalculateFill(cube.polygon_points[0][0], cube.polygon_points[0][1],
+					cube.polygon_points[0][2], cube.polygon_points[2][0],
+					cube.polygon_points[2][1], cube.polygon_points[2][2],
+					cube.polygon_points[3][0], cube.polygon_points[3][1],
+					cube.polygon_points[3][2], g, cube);
+			CalculateFill(cube.polygon_points[0][0], cube.polygon_points[0][1],
+					cube.polygon_points[0][2], cube.polygon_points[6][0],
+					cube.polygon_points[6][1], cube.polygon_points[6][2],
+					cube.polygon_points[4][0], cube.polygon_points[4][1],
+					cube.polygon_points[4][2], g, cube);
+			CalculateFill(cube.polygon_points[0][0], cube.polygon_points[0][1],
+					cube.polygon_points[0][2], cube.polygon_points[2][0],
+					cube.polygon_points[2][1], cube.polygon_points[2][2],
+					cube.polygon_points[6][0], cube.polygon_points[6][1],
+					cube.polygon_points[6][2], g, cube);
+			CalculateFill(cube.polygon_points[4][0], cube.polygon_points[4][1],
+					cube.polygon_points[4][2], cube.polygon_points[6][0],
+					cube.polygon_points[6][1], cube.polygon_points[6][2],
+					cube.polygon_points[7][0], cube.polygon_points[7][1],
+					cube.polygon_points[7][2], g, cube);
+			CalculateFill(cube.polygon_points[5][0], cube.polygon_points[5][1],
+					cube.polygon_points[5][2], cube.polygon_points[7][0],
+					cube.polygon_points[7][1], cube.polygon_points[7][2],
+					cube.polygon_points[1][0], cube.polygon_points[1][1],
+					cube.polygon_points[1][2], g, cube);
+			CalculateFill(cube.polygon_points[3][0], cube.polygon_points[3][1],
+					cube.polygon_points[3][2], cube.polygon_points[7][0],
+					cube.polygon_points[7][1], cube.polygon_points[7][2],
+					cube.polygon_points[1][0], cube.polygon_points[1][1],
+					cube.polygon_points[1][2], g, cube);
+			CalculateFill(cube.polygon_points[4][0], cube.polygon_points[4][1],
+					cube.polygon_points[4][2], cube.polygon_points[7][0],
+					cube.polygon_points[7][1], cube.polygon_points[7][2],
+					cube.polygon_points[5][0], cube.polygon_points[5][1],
+					cube.polygon_points[5][2], g, cube);
+			CalculateFill(cube.polygon_points[0][0], cube.polygon_points[0][1],
+					cube.polygon_points[0][2], cube.polygon_points[1][0],
+					cube.polygon_points[1][1], cube.polygon_points[1][2],
+					cube.polygon_points[5][0], cube.polygon_points[5][1],
+					cube.polygon_points[5][2], g, cube);
+			CalculateFill(cube.polygon_points[0][0], cube.polygon_points[0][1],
+					cube.polygon_points[0][2], cube.polygon_points[4][0],
+					cube.polygon_points[4][1], cube.polygon_points[4][2],
+					cube.polygon_points[5][0], cube.polygon_points[5][1],
+					cube.polygon_points[5][2], g, cube);
+			CalculateFill(cube.polygon_points[2][0], cube.polygon_points[2][1],
+					cube.polygon_points[2][2], cube.polygon_points[3][0],
+					cube.polygon_points[3][1], cube.polygon_points[3][2],
+					cube.polygon_points[7][0], cube.polygon_points[7][1],
+					cube.polygon_points[7][2], g, cube);
+			CalculateFill(cube.polygon_points[2][0], cube.polygon_points[2][1],
+					cube.polygon_points[2][2], cube.polygon_points[3][0],
+					cube.polygon_points[3][1], cube.polygon_points[3][2],
+					cube.polygon_points[6][0], cube.polygon_points[6][1],
+					cube.polygon_points[6][2], g, cube);
+		}
+		if (cube.cullingIsSet) {
+			g.setColor(Color.CYAN);
+			CalculateSurfaceNormal();
 			if (cube.drawCulling[0]) {
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[0][0],
-						(int) cube.screen_points[0][1],
-						(int) cube.screen_points[2][0],
-						(int) cube.screen_points[2][1]); // P0 to P2
-				g.drawLine((int) cube.screen_points[1][0],
-						(int) cube.screen_points[1][1],
-						(int) cube.screen_points[0][0],
-						(int) cube.screen_points[0][1]); // P0 to P1
-				g.drawLine((int) cube.screen_points[1][0],
-						(int) cube.screen_points[1][1],
-						(int) cube.screen_points[3][0],
-						(int) cube.screen_points[3][1]); // P0 to P3
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[2][0],
-						(int) cube.screen_points[2][1],
-						(int) cube.screen_points[3][0],
-						(int) cube.screen_points[3][1]); // P2 to P3
-			}
-			if (cube.drawCulling[1]) {
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[0][0],
-						(int) cube.screen_points[0][1],
-						(int) cube.screen_points[2][0],
-						(int) cube.screen_points[2][1]); // P0 to P2
-				g.drawLine((int) cube.screen_points[4][0],
-						(int) cube.screen_points[4][1],
-						(int) cube.screen_points[0][0],
-						(int) cube.screen_points[0][1]); // P0 to P4
-				g.drawLine((int) cube.screen_points[4][0],
-						(int) cube.screen_points[4][1],
-						(int) cube.screen_points[6][0],
-						(int) cube.screen_points[6][1]); // P4 to P6
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[2][0],
-						(int) cube.screen_points[2][1],
-						(int) cube.screen_points[6][0],
-						(int) cube.screen_points[6][1]); // P2 to P6
-
-			}
-			if (cube.drawCulling[2]) {
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[4][0],
-						(int) cube.screen_points[4][1],
-						(int) cube.screen_points[5][0],
-						(int) cube.screen_points[5][1]); // P4 to P5
-				g.drawLine((int) cube.screen_points[4][0],
-						(int) cube.screen_points[4][1],
-						(int) cube.screen_points[6][0],
-						(int) cube.screen_points[6][1]); // P4 to P6
-				g.drawLine((int) cube.screen_points[5][0],
-						(int) cube.screen_points[5][1],
-						(int) cube.screen_points[7][0],
-						(int) cube.screen_points[7][1]); // P5 to P7
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[6][0],
-						(int) cube.screen_points[6][1],
-						(int) cube.screen_points[7][0],
-						(int) cube.screen_points[7][1]); // P6 to P7
-
-			}
-			if (cube.drawCulling[3]) {
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[1][0],
-						(int) cube.screen_points[1][1],
-						(int) cube.screen_points[5][0],
-						(int) cube.screen_points[5][1]); // P1 to P5
-				g.drawLine((int) cube.screen_points[5][0],
-						(int) cube.screen_points[5][1],
-						(int) cube.screen_points[7][0],
-						(int) cube.screen_points[7][1]); // P5 to P7
-				g.drawLine((int) cube.screen_points[1][0],
-						(int) cube.screen_points[1][1],
-						(int) cube.screen_points[3][0],
-						(int) cube.screen_points[3][1]); // P1 to P3
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[3][0],
-						(int) cube.screen_points[3][1],
-						(int) cube.screen_points[7][0],
-						(int) cube.screen_points[7][1]); // P3 to P7
-
-			}
-			if (cube.drawCulling[4]) {
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[2][0],
-						(int) cube.screen_points[2][1],
-						(int) cube.screen_points[3][0],
-						(int) cube.screen_points[3][1]); // P2 to P3
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[6][0],
-						(int) cube.screen_points[6][1],
-						(int) cube.screen_points[7][0],
-						(int) cube.screen_points[7][1]); // P6 to P7
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[2][0],
-						(int) cube.screen_points[2][1],
-						(int) cube.screen_points[6][0],
-						(int) cube.screen_points[6][1]); // P2 to P6
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[3][0],
-						(int) cube.screen_points[3][1],
-						(int) cube.screen_points[7][0],
-						(int) cube.screen_points[7][1]); // P3 to P7
-
-			}
-			if (cube.drawCulling[5]) {
-				g.setColor(Color.GRAY);
-				g.drawLine((int) cube.screen_points[0][0],
-						(int) cube.screen_points[0][1],
-						(int) cube.screen_points[4][0],
-						(int) cube.screen_points[4][1]); // P0 to P4
 				g.drawLine((int) cube.screen_points[0][0],
 						(int) cube.screen_points[0][1],
 						(int) cube.screen_points[1][0],
 						(int) cube.screen_points[1][1]); // P0 to P1
 				g.drawLine((int) cube.screen_points[1][0],
 						(int) cube.screen_points[1][1],
-						(int) cube.screen_points[5][0],
-						(int) cube.screen_points[5][1]); // P1 to P5
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P3 to P1
+				g.drawLine((int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P6 to P4
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1]); // P0 to P4
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P5 to P1
+				g.drawLine((int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P0 to P2
+			}
+			if (cube.drawCulling[3]) {
+				// Right Face
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P4 to P5
+
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P5 to P7
+
+			}
+			if (cube.drawCulling[2]) {
+				// Back Face
 				g.drawLine((int) cube.screen_points[4][0],
 						(int) cube.screen_points[4][1],
 						(int) cube.screen_points[5][0],
-						(int) cube.screen_points[5][1]); // P4 to P5
+						(int) cube.screen_points[5][1]); // P0 to P1
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P3 to P1
+				g.drawLine((int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1],
+						(int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1]); // P6 to P4
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P0 to P4
+				g.drawLine((int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P1
+				g.drawLine((int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1],
+						(int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1]); // P0 to P2
+
+			}
+			if (cube.drawCulling[1]) {
+				// Right Face
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P5 to P7
+
+			}
+			if (cube.drawCulling[5]) {
+				// Top Face
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[1][0],
+						(int) cube.screen_points[1][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1],
+						(int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[4][0],
+						(int) cube.screen_points[4][1],
+						(int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[0][0],
+						(int) cube.screen_points[0][1],
+						(int) cube.screen_points[5][0],
+						(int) cube.screen_points[5][1]); // P5 to P7
+
+			}
+			if (cube.drawCulling[4]) {
+				// Bottom Face
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1],
+						(int) cube.screen_points[3][0],
+						(int) cube.screen_points[3][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1],
+						(int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1]); // P4 to P5
+				g.drawLine((int) cube.screen_points[6][0],
+						(int) cube.screen_points[6][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P7
+				g.drawLine((int) cube.screen_points[2][0],
+						(int) cube.screen_points[2][1],
+						(int) cube.screen_points[7][0],
+						(int) cube.screen_points[7][1]); // P5 to P7
 
 			}
 		}
 
-		else {
-			g.setColor(Color.GRAY);
+		if (cube.wireFrameSet && !cube.cullingIsSet) {
+			g.setColor(Color.CYAN);
+			// Front face
 			g.drawLine((int) cube.screen_points[0][0],
 					(int) cube.screen_points[0][1],
 					(int) cube.screen_points[1][0],
@@ -2739,50 +2836,148 @@ public class MainProgram extends JFrame {
 					(int) cube.screen_points[1][1],
 					(int) cube.screen_points[3][0],
 					(int) cube.screen_points[3][1]); // P3 to P1
-			g.drawLine((int) cube.screen_points[6][0],
-					(int) cube.screen_points[6][1],
-					(int) cube.screen_points[4][0],
-					(int) cube.screen_points[4][1]); // P6 to P4
+			g.drawLine((int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P6 to P4
 			g.drawLine((int) cube.screen_points[0][0],
 					(int) cube.screen_points[0][1],
-					(int) cube.screen_points[4][0],
-					(int) cube.screen_points[4][1]); // P0 to P4
-			g.drawLine((int) cube.screen_points[1][0],
-					(int) cube.screen_points[1][1],
-					(int) cube.screen_points[5][0],
-					(int) cube.screen_points[5][1]); // P5 to P1
+					(int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1]); // P0 to P4
 			g.drawLine((int) cube.screen_points[2][0],
 					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1]); // P5 to P1
+			g.drawLine((int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1],
 					(int) cube.screen_points[0][0],
 					(int) cube.screen_points[0][1]); // P0 to P2
+			// Back Face
 			g.drawLine((int) cube.screen_points[4][0],
 					(int) cube.screen_points[4][1],
 					(int) cube.screen_points[5][0],
-					(int) cube.screen_points[5][1]); // P4 to P5
+					(int) cube.screen_points[5][1]); // P0 to P1
+			g.drawLine((int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1],
+					(int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1]); // P3 to P1
+			g.drawLine((int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1],
+					(int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1]); // P6 to P4
+			g.drawLine((int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1],
+					(int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1]); // P0 to P4
+			g.drawLine((int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1],
+					(int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1]); // P5 to P1
+			g.drawLine((int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1],
+					(int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1]); // P0 to P2
+			// Right Face
+			g.drawLine((int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1],
+					(int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P5 to P7
+			// Left Face
+			g.drawLine((int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1],
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P4 to P5
+
 			g.drawLine((int) cube.screen_points[5][0],
 					(int) cube.screen_points[5][1],
 					(int) cube.screen_points[7][0],
 					(int) cube.screen_points[7][1]); // P5 to P7
-			g.setColor(Color.GRAY);
-			g.drawLine((int) cube.screen_points[3][0],
-					(int) cube.screen_points[3][1],
-					(int) cube.screen_points[2][0],
-					(int) cube.screen_points[2][1]); // P2 to P3
-			g.setColor(Color.GRAY);
 			g.drawLine((int) cube.screen_points[7][0],
 					(int) cube.screen_points[7][1],
-					(int) cube.screen_points[6][0],
-					(int) cube.screen_points[6][1]); // P6 to P7
-			g.setColor(Color.GRAY);
-			g.drawLine((int) cube.screen_points[2][0],
-					(int) cube.screen_points[2][1],
-					(int) cube.screen_points[6][0],
-					(int) cube.screen_points[6][1]); // P2 to P6
-			g.setColor(Color.GRAY);
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1],
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P4 to P5
 			g.drawLine((int) cube.screen_points[3][0],
 					(int) cube.screen_points[3][1],
 					(int) cube.screen_points[7][0],
-					(int) cube.screen_points[7][1]); // P3 to P7
+					(int) cube.screen_points[7][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1],
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P5 to P7
+			// Top Face
+			g.drawLine((int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1],
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1],
+					(int) cube.screen_points[1][0],
+					(int) cube.screen_points[1][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1],
+					(int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1],
+					(int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[4][0],
+					(int) cube.screen_points[4][1],
+					(int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[0][0],
+					(int) cube.screen_points[0][1],
+					(int) cube.screen_points[5][0],
+					(int) cube.screen_points[5][1]); // P5 to P7
+			// Bottom Face
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1],
+					(int) cube.screen_points[3][0],
+					(int) cube.screen_points[3][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1],
+					(int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1]); // P4 to P5
+			g.drawLine((int) cube.screen_points[6][0],
+					(int) cube.screen_points[6][1],
+					(int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1]); // P5 to P7
+			g.drawLine((int) cube.screen_points[2][0],
+					(int) cube.screen_points[2][1],
+					(int) cube.screen_points[7][0],
+					(int) cube.screen_points[7][1]); // P5 to P7
 		}
 
 	}
