@@ -1,11 +1,11 @@
 /**
  * 	Author: 	Brock Tubre
- * 	Date: 		December 19, 2014
+ * 	Date: 		Feburary 06, 2015
  * 	CWID:		102-10-73
- * 	Assignment: 1
- * 	File path: 	/Volumes/Partition512/School/CSC470/Assignment1
+ * 	Assignment: 3
+ * 	File path: 	/Volumes/Partition512/School/CSC470/Assignment
  * 
- * 	Description: This program projects a 3D pyramid that renders a wireframe. It allows the user to scale the obejct using SHIFT up and SHIFT down.
+ * 	Description: This program projects a 3D objects onto the screen using nothing but the line draw tool
  * 	The program runs in Eclipse Version: Luna Service Release 1 (4.4.1). 
  */
 
@@ -52,26 +52,29 @@ public class MainProgram extends JFrame {
 	Obj box = new Obj();
 	Obj cube = new Obj();
 
-	ArrayList<Obj> Obj_List = new ArrayList<Obj>();
-
-	// current_index;
-
 	public class Segment {
 		double x0, y0, x1, y1, z0, z1;
-		double maxY, minY, dx, initial_x;
+		double maxY, minY, dx, initial_x, maxX, minX, minZ, maxZ;
 
 	}
 
-	// FRONT FACE
+	// deinfes each segment for polygon fill
 	Segment segP0P1 = new Segment();
 	Segment segP0P2 = new Segment();
 	Segment segP1P2 = new Segment();
 
+	// List of segments
 	ArrayList<Segment> Global_ET = new ArrayList<Segment>();
 
 	// initialization of the window width and the window height
 	final int WIDTH = 800;
 	final int HEIGHT = 600;
+	int count = 0;
+
+	// Z buffer table
+	double[][] ZBuffer = new double[WIDTH][HEIGHT];
+	// stores negative into a varible
+	double neg_inf = Double.NEGATIVE_INFINITY;
 
 	// initialization of x origin and y origin, also screen width and size
 	double eye_z, increment;
@@ -85,12 +88,14 @@ public class MainProgram extends JFrame {
 	int randR = randInt(0, 255);
 	int randG = randInt(0, 255);
 	int randB = randInt(0, 255);
+	int rave = 0;
 
 	// Action listener for the key board inputs
 	public class MyActionListener extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 			// grabs the most recent key that is pressed
 			int keyCode = e.getKeyCode();
+			count = 1;
 
 			switch (keyCode) {
 			// if "R" key is pressed
@@ -159,6 +164,7 @@ public class MainProgram extends JFrame {
 				break;
 			// if "P" key is pressed
 			case KeyEvent.VK_P:
+				rave = 0;
 				FillObjectOn();
 				break;
 			// if "O" key is pressed
@@ -172,6 +178,10 @@ public class MainProgram extends JFrame {
 			// if "O" key is pressed
 			case KeyEvent.VK_Q:
 				ToggleWireframeOff();
+				break;
+			// if "O" key is pressed
+			case KeyEvent.VK_A:
+				rave = 1;
 				break;
 			default:
 				break;
@@ -366,6 +376,10 @@ public class MainProgram extends JFrame {
 		box.name = "box";
 		pyramid.name = "pyramid";
 		cube.name = "cube";
+
+		for (int i = 0; i < WIDTH; i++)
+			for (int j = 0; j < HEIGHT; j++)
+				ZBuffer[i][j] = neg_inf;
 
 		// adds everything to the canvas and sets its attributes
 		addKeyListener(new MyActionListener());
@@ -1700,15 +1714,22 @@ public class MainProgram extends JFrame {
 
 		}
 	}
-
+	
+	/*
+	 * This function does the calculation for polygon filling
+	 */
 	public void CalculateFill(double a0, double b0, double c0, double a1,
 			double b1, double c1, double a2, double b2, double c2,
 			Graphics2D g, Obj obj) {
 
+		// crates the arrays needed to store the values 
 		double[] startpointsY = new double[3];
 		double[] endpointsY = new double[3];
+		double[] startpointsZ = new double[3];
+		double[] endpointsZ = new double[3];
 		ArrayList<Segment> Global_ET = new ArrayList<Segment>();
-
+		
+		// These are the x, y, and z value of the points that are passed into the function
 		segP0P1.x0 = a0; // P0.x
 		segP0P1.y0 = b0; // P0.y
 		segP0P1.z0 = c0; // P0.z
@@ -1728,6 +1749,7 @@ public class MainProgram extends JFrame {
 		segP1P2.y1 = b2; // P2.y
 		segP1P2.z1 = c2; // P2.z
 
+		// Here are the points after they have been projected and prospected
 		segP0P1.x0 = (eye_z * segP0P1.x0) / (eye_z + segP0P1.z0);
 		segP0P1.y0 = (eye_z * segP0P1.y0) / (eye_z + segP0P1.z0);
 		segP0P1.z0 = segP0P1.z0 / (eye_z + segP0P1.z1);
@@ -1747,48 +1769,76 @@ public class MainProgram extends JFrame {
 		segP1P2.y1 = (eye_z * segP1P2.y1) / (eye_z + segP1P2.z1);
 		segP1P2.z1 = segP1P2.z1 / (eye_z + segP1P2.z1);
 
+		// Finds the find and max values of each line segement
 		segP0P1.maxY = segP0P1.y0;
 		segP0P1.initial_x = segP0P1.x0;
+		segP0P1.maxX = segP0P1.x0;
+		segP0P1.maxZ = segP0P1.z0;
 
 		if (segP0P1.maxY < segP0P1.y1) {
 			segP0P1.maxY = segP0P1.y1;
 			segP0P1.initial_x = segP0P1.x1;
+			segP0P1.maxX = segP0P1.x1;
+			segP0P1.maxZ = segP0P1.z1;
 		}
 
 		segP0P1.minY = segP0P1.y0;
+		segP0P1.minX = segP0P1.x1;
+		segP0P1.minZ = segP0P1.z1;
 
-		if (segP0P1.minY > segP0P1.y1)
+		if (segP0P1.minY > segP0P1.y1){
 			segP0P1.minY = segP0P1.y1;
+			segP0P1.minX = segP0P1.x0;
+			segP0P1.minZ = segP0P1.z0;
+		}
 
 		segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
 
 		segP0P2.maxY = segP0P2.y0;
 		segP0P2.initial_x = segP0P2.x0;
+		segP0P2.maxX = segP0P2.x0;
+		segP0P2.maxZ = segP0P2.z0;
 
 		if (segP0P2.maxY < segP0P2.y1) {
 			segP0P2.maxY = segP0P2.y1;
 			segP0P2.initial_x = segP0P2.x1;
+			segP0P2.maxX = segP0P2.x1;
+			segP0P2.maxZ = segP0P2.z1;
 		}
 
 		segP0P2.minY = segP0P2.y0;
+		segP0P2.minX = segP0P2.x1;
+		segP0P2.minZ = segP0P2.z1;
 
-		if (segP0P2.minY > segP0P2.y1)
+		if (segP0P2.minY > segP0P2.y1){
 			segP0P2.minY = segP0P2.y1;
+			segP0P2.minX = segP0P2.x0;
+			segP0P2.minZ = segP0P2.z0;
+		}
 
 		segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
 
 		segP1P2.maxY = segP1P2.y0;
 		segP1P2.initial_x = segP1P2.x0;
+		segP1P2.maxX = segP1P2.x0;
+		segP1P2.maxZ = segP1P2.z0;
 
 		if (segP1P2.maxY < segP1P2.y1) {
 			segP1P2.maxY = segP1P2.y1;
 			segP1P2.initial_x = segP1P2.x1;
+			segP1P2.maxX = segP1P2.x1;
+			segP1P2.maxZ = segP1P2.z1;
 		}
 
 		segP1P2.minY = segP1P2.y0;
+		segP1P2.minX = segP1P2.x1;
+		segP1P2.minZ = segP1P2.z1;
 
-		if (segP1P2.minY > segP1P2.y1)
+		if (segP1P2.minY > segP1P2.y1){
 			segP1P2.minY = segP1P2.y1;
+			segP1P2.minX = segP1P2.x0;
+			segP1P2.minZ = segP1P2.z0;
+		}
 
 		segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
 
@@ -1798,6 +1848,7 @@ public class MainProgram extends JFrame {
 		seg_list[1] = segP0P2;
 		seg_list[2] = segP1P2;
 
+		// Find the starting and end Y values to prepare the pixel drawing
 		if (seg_list[0].maxY >= seg_list[1].maxY
 				&& seg_list[0].maxY >= seg_list[2].maxY
 				&& seg_list[0].minY >= seg_list[1].minY
@@ -1847,7 +1898,6 @@ public class MainProgram extends JFrame {
 				Global_ET.add(seg_list[0]);
 				Global_ET.add(seg_list[2]);
 			}
-			// Global_ET.add(seg_list[0]);
 
 		} else if (seg_list[2].maxY >= seg_list[0].maxY
 				&& seg_list[2].maxY >= seg_list[1].maxY
@@ -1874,15 +1924,18 @@ public class MainProgram extends JFrame {
 				Global_ET.add(seg_list[0]);
 			}
 		}
-
+		
+		// grabs the top maxY value and the minimum minY value
 		double start_scan_line = Global_ET.get(0).maxY;
 		double end_scan_line = Global_ET.get(2).minY;
+		// stores the starting and ending X values to start drawing with
 		double[] drawX = new double[3];
 
 		drawX[0] = Global_ET.get(0).initial_x;
 		drawX[1] = Global_ET.get(1).initial_x;
 		drawX[2] = Global_ET.get(2).initial_x;
 
+		// setst he color for each obj depending on what is it
 		if (obj.name == "box")
 			g.setColor(new Color(232, 223, 9));
 		if (obj.name == "pyramid")
@@ -1892,15 +1945,42 @@ public class MainProgram extends JFrame {
 
 		// g.setColor(new Color(randR, randG, randB));
 		// g.setColor(new Color(232, 223, 9));
-		// g.setColor(new Color(randInt(0, 255), randInt(0, 255), randInt(0,
-		// 255)));
-
+		// RANDOM color
+		if (rave > 0)
+			g.setColor(new Color(randInt(0, 255), randInt(0, 255), randInt(0,
+					255)));
+		
+		// zBuffer stuff that doesnt work
+		double[] A = new double[WIDTH];
+		double[] B = new double[WIDTH];
+		double[] C = new double[WIDTH];
+		
+//		A[0] = Global_ET.get(0).maxZ + (Global_ET.get(1).maxZ - Global_ET.get(0).maxZ) / (Global_ET.get(1).maxY - Global_ET.get(0).maxY);
+//		B[0] = Global_ET.get(0).maxZ + (Global_ET.get(2).maxZ - Global_ET.get(0).maxZ) / (Global_ET.get(2).maxY - Global_ET.get(0).maxY);
+//		C[0] = Global_ET.get(1).maxZ + (Global_ET.get(2).maxZ - Global_ET.get(1).maxZ) / (Global_ET.get(2).maxY - Global_ET.get(1).maxY);
+//		
+//		for(int i = 1; i < (int)(Global_ET.get(1).maxZ - Global_ET.get(0).maxZ); i++)
+//			A[i] = A[i] + ( (Global_ET.get(1).maxZ - Global_ET.get(0).maxZ) /(Global_ET.get(1).maxY - Global_ET.get(0).maxY));
+//		for(int i = 1; i < (int)(Global_ET.get(2).maxZ - Global_ET.get(0).maxZ); i++)
+//			B[i] = B[i] + ( (Global_ET.get(2).maxZ - Global_ET.get(0).maxZ) /(Global_ET.get(2).maxY - Global_ET.get(0).maxY));
+//		for(int i = 1; i < (int)(Global_ET.get(2).maxZ - Global_ET.get(1).maxZ); i++)
+//			C[i] = C[i] + ( (Global_ET.get(2).maxZ - Global_ET.get(1).maxZ) /(Global_ET.get(2).maxY - Global_ET.get(1).maxY));
+		
+		/*
+		 * Here is where the magic happens. The loop with run from the maxY to the minY
+		 * drawing each pixel as the scan line is decressed. 
+		 */
 		for (int i = (int) start_scan_line; i > end_scan_line; i--) {
-			// if(i < Global_ET.get(2).maxY){
 			if ((i <= startpointsY[1] && i >= endpointsY[1])
 					&& (i <= startpointsY[0] && i >= endpointsY[0])) {
 				if (drawX[0] > drawX[1]) {
 					for (int j = (int) drawX[1]; j < drawX[0]; j++) {
+						int c = j;
+						if(c < 0)
+							c = 0;
+						if(c > 255)
+							c = 255;
+						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
 						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
 						g.drawLine((int) obj.fill_screen_points[0][0],
@@ -1910,6 +1990,12 @@ public class MainProgram extends JFrame {
 					}
 				} else {
 					for (int j = (int) drawX[0]; j < drawX[1]; j++) {
+						int c = j;
+						if(c < 0)
+							c = 0;
+						if(c > 255)
+							c = 255;
+						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
 						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
 						g.drawLine((int) obj.fill_screen_points[0][0],
@@ -1925,6 +2011,12 @@ public class MainProgram extends JFrame {
 					&& (i <= startpointsY[2] && i >= endpointsY[2])) {
 				if (drawX[2] >= drawX[1]) {
 					for (int j = (int) drawX[1]; j < drawX[2]; j++) {
+						int c = j;
+						if(c < 0)
+							c = 0;
+						if(c > 255)
+							c = 255;
+						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
 						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
 						g.drawLine((int) obj.fill_screen_points[0][0],
@@ -1934,6 +2026,12 @@ public class MainProgram extends JFrame {
 					}
 				} else {
 					for (int j = (int) drawX[2]; j < drawX[1]; j++) {
+						int c = j;
+						if(c < 0)
+							c = 0;
+						if(c > 255)
+							c = 255;
+						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
 						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
 						g.drawLine((int) obj.fill_screen_points[0][0],
@@ -1948,15 +2046,10 @@ public class MainProgram extends JFrame {
 		}
 	}
 
-	// Produces a random number for filling the triangle
-	public static int randInt(int min, int max) {
-		// NOTE: Usually this should be a field rather than a method
-		// variable so that it is not re-seeded every call.
-		Random rand = new Random();
-		// nextInt is normally exclusive of the top value,
-		// so add 1 to make it inclusive
-		int randomNum = rand.nextInt((max - min) + 1) + min;
-		return randomNum;
+	public void CalculateZBuffer(double a0, double b0, double c0, double a1,
+			double b1, double c1, double a2, double b2, double c2,
+			Graphics2D g, Obj obj) {
+
 	}
 
 	/*
@@ -3045,6 +3138,17 @@ public class MainProgram extends JFrame {
 	/*
 	 * Gets rid of old canvas and prduces new cavnas, reseting the screen
 	 */
+	// Produces a random number for filling the triangle
+	public static int randInt(int min, int max) {
+		// NOTE: Usually this should be a field rather than a method
+		// variable so that it is not re-seeded every call.
+		Random rand = new Random();
+		// nextInt is normally exclusive of the top value,
+		// so add 1 to make it inclusive
+		int randomNum = rand.nextInt((max - min) + 1) + min;
+		return randomNum;
+	}
+
 	public void ResetPyramid() {
 		dispose(); // gets rid of old JFrame window
 		new MainProgram(); // restarts program
