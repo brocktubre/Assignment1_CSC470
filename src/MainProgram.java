@@ -52,24 +52,9 @@ public class MainProgram extends JFrame {
 	Obj box = new Obj();
 	Obj cube = new Obj();
 
-	public class Segment {
-		double x0, y0, x1, y1, z0, z1;
-		double maxY, minY, dx, initial_x, maxX, minX, minZ, maxZ;
-
-	}
-
-	// deinfes each segment for polygon fill
-	Segment segP0P1 = new Segment();
-	Segment segP0P2 = new Segment();
-	Segment segP1P2 = new Segment();
-
-	// List of segments
-	ArrayList<Segment> Global_ET = new ArrayList<Segment>();
-
 	// initialization of the window width and the window height
 	final int WIDTH = 800;
 	final int HEIGHT = 600;
-	int count = 0;
 
 	// Z buffer table
 	double[][] ZBuffer = new double[WIDTH][HEIGHT];
@@ -88,14 +73,12 @@ public class MainProgram extends JFrame {
 	int randR = randInt(0, 255);
 	int randG = randInt(0, 255);
 	int randB = randInt(0, 255);
-	int rave = 0;
 
 	// Action listener for the key board inputs
 	public class MyActionListener extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 			// grabs the most recent key that is pressed
 			int keyCode = e.getKeyCode();
-			count = 1;
 
 			switch (keyCode) {
 			// if "R" key is pressed
@@ -164,7 +147,6 @@ public class MainProgram extends JFrame {
 				break;
 			// if "P" key is pressed
 			case KeyEvent.VK_P:
-				rave = 0;
 				FillObjectOn();
 				break;
 			// if "O" key is pressed
@@ -181,7 +163,6 @@ public class MainProgram extends JFrame {
 				break;
 			// if "O" key is pressed
 			case KeyEvent.VK_A:
-				rave = 1;
 				break;
 			default:
 				break;
@@ -1714,7 +1695,7 @@ public class MainProgram extends JFrame {
 
 		}
 	}
-	
+
 	/*
 	 * This function does the calculation for polygon filling
 	 */
@@ -1722,14 +1703,37 @@ public class MainProgram extends JFrame {
 			double b1, double c1, double a2, double b2, double c2,
 			Graphics2D g, Obj obj) {
 
-		// crates the arrays needed to store the values 
+		class Segment {
+			double x0, y0, x1, y1, z0, z1;
+			double maxY, minY, dx, initial_x;
+
+		}
+		
+		//obj.wireFrameSet = false;
+
+		// deinfes each segment for polygon fill
+		Segment segP0P1 = new Segment();
+		Segment segP0P2 = new Segment();
+		Segment segP1P2 = new Segment();
+
+		// crates the arrays needed to store the values
 		double[] startpointsY = new double[3];
 		double[] endpointsY = new double[3];
-		double[] startpointsZ = new double[3];
-		double[] endpointsZ = new double[3];
 		ArrayList<Segment> Global_ET = new ArrayList<Segment>();
-		
-		// These are the x, y, and z value of the points that are passed into the function
+
+		class Points {
+			double x, y, z;
+		}
+
+		Points _P0 = new Points();
+		Points _P1 = new Points();
+		Points _P2 = new Points();
+		Points temp_P0 = new Points();
+		Points temp_P1 = new Points();
+		Points temp_P2 = new Points();
+
+		// These are the x, y, and z value of the points that are passed into
+		// the function
 		segP0P1.x0 = a0; // P0.x
 		segP0P1.y0 = b0; // P0.y
 		segP0P1.z0 = c0; // P0.z
@@ -1772,72 +1776,48 @@ public class MainProgram extends JFrame {
 		// Finds the find and max values of each line segement
 		segP0P1.maxY = segP0P1.y0;
 		segP0P1.initial_x = segP0P1.x0;
-		segP0P1.maxX = segP0P1.x0;
-		segP0P1.maxZ = segP0P1.z0;
 
 		if (segP0P1.maxY < segP0P1.y1) {
 			segP0P1.maxY = segP0P1.y1;
 			segP0P1.initial_x = segP0P1.x1;
-			segP0P1.maxX = segP0P1.x1;
-			segP0P1.maxZ = segP0P1.z1;
 		}
 
 		segP0P1.minY = segP0P1.y0;
-		segP0P1.minX = segP0P1.x1;
-		segP0P1.minZ = segP0P1.z1;
 
-		if (segP0P1.minY > segP0P1.y1){
+		if (segP0P1.minY > segP0P1.y1) {
 			segP0P1.minY = segP0P1.y1;
-			segP0P1.minX = segP0P1.x0;
-			segP0P1.minZ = segP0P1.z0;
 		}
 
 		segP0P1.dx = -((segP0P1.x1 - segP0P1.x0) / (segP0P1.y1 - segP0P1.y0));
 
 		segP0P2.maxY = segP0P2.y0;
 		segP0P2.initial_x = segP0P2.x0;
-		segP0P2.maxX = segP0P2.x0;
-		segP0P2.maxZ = segP0P2.z0;
 
 		if (segP0P2.maxY < segP0P2.y1) {
 			segP0P2.maxY = segP0P2.y1;
 			segP0P2.initial_x = segP0P2.x1;
-			segP0P2.maxX = segP0P2.x1;
-			segP0P2.maxZ = segP0P2.z1;
 		}
 
 		segP0P2.minY = segP0P2.y0;
-		segP0P2.minX = segP0P2.x1;
-		segP0P2.minZ = segP0P2.z1;
 
-		if (segP0P2.minY > segP0P2.y1){
+		if (segP0P2.minY > segP0P2.y1) {
 			segP0P2.minY = segP0P2.y1;
-			segP0P2.minX = segP0P2.x0;
-			segP0P2.minZ = segP0P2.z0;
 		}
 
 		segP0P2.dx = -((segP0P2.x1 - segP0P2.x0) / (segP0P2.y1 - segP0P2.y0));
 
 		segP1P2.maxY = segP1P2.y0;
 		segP1P2.initial_x = segP1P2.x0;
-		segP1P2.maxX = segP1P2.x0;
-		segP1P2.maxZ = segP1P2.z0;
 
 		if (segP1P2.maxY < segP1P2.y1) {
 			segP1P2.maxY = segP1P2.y1;
 			segP1P2.initial_x = segP1P2.x1;
-			segP1P2.maxX = segP1P2.x1;
-			segP1P2.maxZ = segP1P2.z1;
 		}
 
 		segP1P2.minY = segP1P2.y0;
-		segP1P2.minX = segP1P2.x1;
-		segP1P2.minZ = segP1P2.z1;
 
-		if (segP1P2.minY > segP1P2.y1){
+		if (segP1P2.minY > segP1P2.y1) {
 			segP1P2.minY = segP1P2.y1;
-			segP1P2.minX = segP1P2.x0;
-			segP1P2.minZ = segP1P2.z0;
 		}
 
 		segP1P2.dx = -((segP1P2.x1 - segP1P2.x0) / (segP1P2.y1 - segP1P2.y0));
@@ -1924,76 +1904,99 @@ public class MainProgram extends JFrame {
 				Global_ET.add(seg_list[0]);
 			}
 		}
-		
+
+		// Finding the virtual points to use during z buffering
+		_P0.x = Global_ET.get(0).initial_x;
+		_P0.y = Global_ET.get(0).maxY;
+		if (_P0.x == Global_ET.get(0).x0 && _P0.y == Global_ET.get(0).y0)
+			_P0.z = Global_ET.get(0).z0;
+		else
+			_P0.z = segP0P1.z1;
+
+		_P1.y = Global_ET.get(2).minY;
+		if (_P1.y == Global_ET.get(2).y0) {
+			_P1.x = Global_ET.get(2).x0;
+			_P1.z = Global_ET.get(2).z0;
+		} else {
+			_P1.x = Global_ET.get(2).x1;
+			_P1.z = Global_ET.get(2).z1;
+		}
+
+		_P2.y = endpointsY[0];
+		if (_P2.y == Global_ET.get(1).y1) {
+			_P2.x = Global_ET.get(1).x1;
+			_P2.z = Global_ET.get(1).z1;
+		} else if (_P2.y == Global_ET.get(1).y0) {
+			_P2.x = Global_ET.get(1).x0;
+			_P2.z = Global_ET.get(1).z0;
+		} else if (_P2.y == Global_ET.get(0).y1) {
+			_P2.x = Global_ET.get(0).x1;
+			_P2.z = Global_ET.get(0).z1;
+		} else if (_P2.y == Global_ET.get(0).y0) {
+			_P2.x = Global_ET.get(0).x0;
+			_P2.z = Global_ET.get(0).z0;
+		} else if (_P2.y == Global_ET.get(2).y1) {
+			_P2.x = Global_ET.get(2).x1;
+			_P2.z = Global_ET.get(2).z1;
+		} else if (_P2.y == Global_ET.get(2).y0) {
+			_P2.x = Global_ET.get(2).x0;
+			_P2.z = Global_ET.get(2).z0;
+		}
+
+		//System.out.println("P0: " + _P0.x + ", " + _P0.y + ", " + _P0.z);
+		//System.out.println("P1: " + _P1.x + ", " + _P1.y + ", " + _P1.z);
+		//System.out.println("P2: " + _P2.x + ", " + _P2.y + ", " + _P2.z);
+
 		// grabs the top maxY value and the minimum minY value
-		double start_scan_line = Global_ET.get(0).maxY;
-		double end_scan_line = Global_ET.get(2).minY;
+		double start_scan_line = startpointsY[1];
+		double end_scan_line = endpointsY[1];
 		// stores the starting and ending X values to start drawing with
 		double[] drawX = new double[3];
+		int xoffset = (int) obj.offset[0];
+		int yoffset = (int) obj.offset[1];
 
 		drawX[0] = Global_ET.get(0).initial_x;
 		drawX[1] = Global_ET.get(1).initial_x;
 		drawX[2] = Global_ET.get(2).initial_x;
 
-		// setst he color for each obj depending on what is it
-		if (obj.name == "box")
-			g.setColor(new Color(232, 223, 9));
-		if (obj.name == "pyramid")
-			g.setColor(new Color(100, 73, 200));
-		if (obj.name == "cube")
-			g.setColor(new Color(15, 125, 90));
+		// These are the constants for the line
+		temp_P0.z = _P0.z;
+		temp_P1.z = _P1.z;
+		temp_P2.z = _P2.z;
+		double zEdge0 = (temp_P2.z - temp_P0.z) / (temp_P2.y - temp_P0.y);
+		double zEdge1 = (temp_P1.z - temp_P0.z) / (temp_P1.y - temp_P0.y);
+		double zEdge2 = (temp_P1.z - temp_P2.z) / (temp_P1.y - temp_P2.y);
 
-		// g.setColor(new Color(randR, randG, randB));
-		// g.setColor(new Color(232, 223, 9));
-		// RANDOM color
-		if (rave > 0)
-			g.setColor(new Color(randInt(0, 255), randInt(0, 255), randInt(0,
-					255)));
-		
-		// zBuffer stuff that doesnt work
-		double[] A = new double[WIDTH];
-		double[] B = new double[WIDTH];
-		double[] C = new double[WIDTH];
-		
-//		A[0] = Global_ET.get(0).maxZ + (Global_ET.get(1).maxZ - Global_ET.get(0).maxZ) / (Global_ET.get(1).maxY - Global_ET.get(0).maxY);
-//		B[0] = Global_ET.get(0).maxZ + (Global_ET.get(2).maxZ - Global_ET.get(0).maxZ) / (Global_ET.get(2).maxY - Global_ET.get(0).maxY);
-//		C[0] = Global_ET.get(1).maxZ + (Global_ET.get(2).maxZ - Global_ET.get(1).maxZ) / (Global_ET.get(2).maxY - Global_ET.get(1).maxY);
-//		
-//		for(int i = 1; i < (int)(Global_ET.get(1).maxZ - Global_ET.get(0).maxZ); i++)
-//			A[i] = A[i] + ( (Global_ET.get(1).maxZ - Global_ET.get(0).maxZ) /(Global_ET.get(1).maxY - Global_ET.get(0).maxY));
-//		for(int i = 1; i < (int)(Global_ET.get(2).maxZ - Global_ET.get(0).maxZ); i++)
-//			B[i] = B[i] + ( (Global_ET.get(2).maxZ - Global_ET.get(0).maxZ) /(Global_ET.get(2).maxY - Global_ET.get(0).maxY));
-//		for(int i = 1; i < (int)(Global_ET.get(2).maxZ - Global_ET.get(1).maxZ); i++)
-//			C[i] = C[i] + ( (Global_ET.get(2).maxZ - Global_ET.get(1).maxZ) /(Global_ET.get(2).maxY - Global_ET.get(1).maxY));
-		
 		/*
-		 * Here is where the magic happens. The loop with run from the maxY to the minY
-		 * drawing each pixel as the scan line is decressed. 
+		 * Here is where the magic happens. The loop with run from the maxY to
+		 * the minY drawing each pixel as the scan line is decressed.
 		 */
 		for (int i = (int) start_scan_line; i > end_scan_line; i--) {
-			if ((i <= startpointsY[1] && i >= endpointsY[1])
-					&& (i <= startpointsY[0] && i >= endpointsY[0])) {
+			if (i <= _P0.y && i >= _P2.y && i >= _P1.y) {
 				if (drawX[0] > drawX[1]) {
+					
 					for (int j = (int) drawX[1]; j < drawX[0]; j++) {
-						int c = j;
-						if(c < 0)
-							c = 0;
-						if(c > 255)
-							c = 255;
-						g.setColor(new Color(100, 73, c));
-						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
-						obj.fill_screen_points[0][1] = (obj.offset[1] - i);
-						g.drawLine((int) obj.fill_screen_points[0][0],
-								(int) obj.fill_screen_points[0][1],
-								(int) obj.fill_screen_points[0][0],
-								(int) obj.fill_screen_points[0][1]);
+					
+							int c = j;
+							if (c < 0)
+								c = 0;
+							if (c > 255)
+								c = 255;
+							g.setColor(new Color(100, 73, c));
+							obj.fill_screen_points[0][0] = (j + obj.offset[0]);
+							obj.fill_screen_points[0][1] = (obj.offset[1] - i);
+							g.drawLine((int) obj.fill_screen_points[0][0],
+									(int) obj.fill_screen_points[0][1],
+									(int) obj.fill_screen_points[0][0],
+									(int) obj.fill_screen_points[0][1]);
+						
 					}
 				} else {
 					for (int j = (int) drawX[0]; j < drawX[1]; j++) {
 						int c = j;
-						if(c < 0)
+						if (c < 0)
 							c = 0;
-						if(c > 255)
+						if (c > 255)
 							c = 255;
 						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
@@ -2007,14 +2010,13 @@ public class MainProgram extends JFrame {
 				drawX[0] += Global_ET.get(0).dx;
 				drawX[1] += Global_ET.get(1).dx;
 
-			} else if ((i <= startpointsY[1] && i >= endpointsY[1])
-					&& (i <= startpointsY[2] && i >= endpointsY[2])) {
+			} else if (i <= _P2.y && i >= _P1.y) {
 				if (drawX[2] >= drawX[1]) {
 					for (int j = (int) drawX[1]; j < drawX[2]; j++) {
 						int c = j;
-						if(c < 0)
+						if (c < 0)
 							c = 0;
-						if(c > 255)
+						if (c > 255)
 							c = 255;
 						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
@@ -2027,9 +2029,9 @@ public class MainProgram extends JFrame {
 				} else {
 					for (int j = (int) drawX[2]; j < drawX[1]; j++) {
 						int c = j;
-						if(c < 0)
+						if (c < 0)
 							c = 0;
-						if(c > 255)
+						if (c > 255)
 							c = 255;
 						g.setColor(new Color(100, 73, c));
 						obj.fill_screen_points[0][0] = (j + obj.offset[0]);
@@ -2049,6 +2051,8 @@ public class MainProgram extends JFrame {
 	public void CalculateZBuffer(double a0, double b0, double c0, double a1,
 			double b1, double c1, double a2, double b2, double c2,
 			Graphics2D g, Obj obj) {
+
+		//
 
 	}
 
@@ -2098,6 +2102,7 @@ public class MainProgram extends JFrame {
 					pyramid.polygon_points[1][2], pyramid.polygon_points[2][0],
 					pyramid.polygon_points[2][1], pyramid.polygon_points[2][2],
 					g, pyramid);
+
 			CalculateFill(pyramid.polygon_points[0][0],
 					pyramid.polygon_points[0][1], pyramid.polygon_points[0][2],
 					pyramid.polygon_points[1][0], pyramid.polygon_points[1][1],
